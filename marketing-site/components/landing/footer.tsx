@@ -1,4 +1,4 @@
-import { Github as GithubIcon, Mail, MessageCircle } from "lucide-react";
+import { GitBranch as GithubIcon, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {

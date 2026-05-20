@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Cpu, FlaskConical, Coins, Warehouse, ArrowRight, Github as GithubIcon } from "lucide-react";
+import { Cpu, FlaskConical, Coins, Warehouse, ArrowRight, GitBranch as GithubIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function HeroSection() {
