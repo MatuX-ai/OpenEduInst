@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿# OpenMT - 开源 STEM 教育机构管理工具
 
 ## 🎯 项目概述
@@ -101,3 +102,7 @@ ng serve
 
 ## 许可证
 MIT License
+=======
+# OpenEduInst
+开源STEM教育机构管理系统
+>>>>>>> 7c7e4da1fcdb196649ff8920edfb4fa8d861deac
