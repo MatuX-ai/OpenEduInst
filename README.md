@@ -1,5 +1,4 @@
-<<<<<<< HEAD
-﻿# OpenMT - 开源 STEM 教育机构管理工具
+# OpenMT - 开源 STEM 教育机构管理工具
 
 ## 🎯 项目概述
 
@@ -27,21 +26,23 @@
 **⭐ 必读**：[docs/stem-features-comparison.md](./docs/stem-features-comparison.md) - OpenMT vs 普通教培系统对比
 
 ## 项目结构
-`
+```
 OpenMTEduInst/
- backend/                 # 后端服务
-    models/             # 数据模型
-    routes/             # API 路由
-    services/           # 业务逻辑服务
-    requirements.txt    # Python 依赖
- frontend/               # 前端应用
-    src/
-       app/
-          organization-management/  # 机构管理模块
-       environments/   # 环境配置
-    package.json        # Node.js 依赖
- docs/                   # 文档
-`
+├── backend/                 # 后端服务 (FastAPI)
+│   ├── models/             # 数据模型
+│   ├── routes/             # API 路由
+│   ├── services/           # 业务逻辑服务
+│   ├── scripts/            # 演示数据脚本
+│   └── requirements.txt    # Python 依赖
+├── frontend/               # 前端应用 (Angular)
+│   └── src/
+│       └── app/
+│           └── organization-management/  # 机构管理模块
+├── marketing-site/         # 营销站点 (Next.js) 🆕
+│   ├── app/                # 页面组件
+│   └── components/         # UI 组件
+└── docs/                   # 文档
+```
 
 ## 🎓 适用场景
 
@@ -66,10 +67,11 @@ OpenMTEduInst/
 - ✅ 创客空间调度（实验室预约、安全准入、设备共享）
 
 ## 技术栈
-- 后端: FastAPI + SQLAlchemy + PostgreSQL
-- 前端: Angular + Angular Material
-- 数据库: PostgreSQL
-- 缓存: Redis
+- **后端**: FastAPI + SQLAlchemy + PostgreSQL/SQLite
+- **前端**: Angular 17 + Angular Material
+- **营销站点**: Next.js 16 + TailwindCSS + Framer Motion
+- **缓存**: Redis
+- **部署**: Docker / Vercel
 
 ## 🚀 快速开始
 
@@ -81,28 +83,33 @@ OpenMTEduInst/
 - ✅ 完成 Figma 设计规范文档
 - ✅ 完成演示数据种子脚本
 - ✅ 完成只读账号中间件
-- 🔄 正在进行：Next.js 营销站点初始化
-- ⬜ 待完成：首页开发、Demo 集成、功能详情页
+- ✅ 完成 Next.js 营销站点初始化
+- ✅ 完成首页、Demo 入口、4个功能详情页、下载页
+- 🔄 正在进行：Vercel 部署配置
+- ⬜ 待完成：域名绑定、SEO 优化
 
-详细进度请查看：[docs/README_DEMO_PLAN.md](./docs/README_DEMO_PLAN.md)
+详细进度请查看：[docs/DEV_PROGRESS_REPORT.md](./docs/DEV_PROGRESS_REPORT.md)
 
 ### 后端
-`ash
+```bash
 cd backend
 pip install -r requirements.txt
 uvicorn main:app --reload
-`
+```
 
 ### 前端
-`ash
+```bash
 cd frontend
 npm install
 ng serve
-`
+```
+
+### 营销站点
+```bash
+cd marketing-site
+npm run dev
+# 访问 http://localhost:3000
+```
 
 ## 许可证
 MIT License
-=======
-# OpenEduInst
-开源STEM教育机构管理系统
->>>>>>> 7c7e4da1fcdb196649ff8920edfb4fa8d861deac
