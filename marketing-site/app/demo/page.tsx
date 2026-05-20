@@ -9,12 +9,12 @@ import { Suspense } from "react";
 const organizations = [
   {
     id: "k12",
-    type: "training",
+    type: "k12",
     icon: Bot,
     title: "K12科创中心",
     description: "管理 Arduino/Raspberry Pi 设备、学生创客作品、机器人竞赛培训",
     features: ["设备租赁管理", "学生作品归档", "竞赛报名追踪"],
-    color: "blue",
+    color: "green",
   },
   {
     id: "vocational",
@@ -23,7 +23,7 @@ const organizations = [
     title: "职业学校实训",
     description: "PLC 控制系统、CNC 机床、工业机器人等实训设备管理",
     features: ["实训设备调度", "认证课程管理", "校企合作跟踪"],
-    color: "green",
+    color: "purple",
   },
   {
     id: "training",
@@ -32,7 +32,7 @@ const organizations = [
     title: "编程培训机构",
     description: "Python/C++ 课程、物联网应用开发、AI 教学辅助",
     features: ["Token AI 功能", "课程资源库", "学员进度追踪"],
-    color: "purple",
+    color: "blue",
   },
   {
     id: "bureau",
