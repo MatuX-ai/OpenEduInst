@@ -10,24 +10,28 @@ const organizations = [
     title: "K12科创中心",
     description: "管理 Arduino/Raspberry Pi 设备、学生创客作品、机器人竞赛培训",
     color: "blue",
+    link: "/demo/k12",
   },
   {
     icon: Factory,
     title: "职业学校实训",
     description: "PLC 控制系统、CNC 机床、工业机器人等实训设备管理",
     color: "green",
+    link: "/demo/vocational",
   },
   {
     icon: Code2,
-    title: "编程培训机构",
+    title: "STEM培训机构",
     description: "Python/C++ 课程、物联网应用开发、AI 教学辅助",
     color: "purple",
+    link: "/demo/training",
   },
   {
     icon: Building2,
     title: "教育局监管",
     description: "区内学校 STEM 教育数据统计、设备资源调配、师资培训",
     color: "orange",
+    link: "/demo/bureau",
   },
 ];
 
@@ -74,7 +78,7 @@ export default function OrganizationCards() {
               </p>
               
               <Link
-                href={`/demo?type=${org.title}`}
+                href={org.link}
                 className="inline-flex items-center gap-1 text-sm text-blue-400 hover:text-blue-300 transition-colors"
               >
                 进入 Demo
