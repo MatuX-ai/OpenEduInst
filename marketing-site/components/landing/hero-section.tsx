@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Cpu, FlaskConical, Coins, Warehouse, ArrowRight, Github } from "lucide-react";
+import { Cpu, FlaskConical, Coins, Warehouse, ArrowRight, Github as GithubIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function HeroSection() {
@@ -72,7 +72,7 @@ export default function HeroSection() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-4 text-slate-300 hover:text-white transition-colors"
             >
-              <Github className="w-5 h-5" />
+              <GithubIcon className="w-5 h-5" />
               <span>GitHub</span>
             </a>
           </motion.div>

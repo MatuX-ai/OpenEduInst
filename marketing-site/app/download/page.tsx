@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Docker, Download, Cloud, Terminal, Copy, Check } from "lucide-react";
+import { Ship, Download, Cloud, Terminal, Copy, Check } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -58,7 +58,7 @@ export default function DownloadPage() {
           >
             <div className="flex items-center gap-3 mb-4">
               <div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
-                <Docker className="w-6 h-6 text-blue-500" />
+                <Ship className="w-6 h-6 text-blue-500" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-slate-100">

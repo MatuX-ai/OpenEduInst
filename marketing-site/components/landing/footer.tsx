@@ -1,4 +1,4 @@
-import { Github, Mail, MessageCircle } from "lucide-react";
+import { Github as GithubIcon, Mail, MessageCircle } from "lucide-react";
 import Link from "next/link";
 
 export default function Footer() {
@@ -19,7 +19,7 @@ export default function Footer() {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm transition-colors"
             >
-              <Github className="w-4 h-4" />
+              <GithubIcon className="w-4 h-4" />
               <span>GitHub</span>
             </a>
           </div>
