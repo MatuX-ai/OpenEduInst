@@ -1,0 +1,98 @@
+<div class="month-view-container">
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <div class="nav-controls">
+      <button mat-icon-button (click)="previousMonth()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="today()">
+        本月
+      </button>
+      <button mat-icon-button (click)="nextMonth()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <h2 class="current-month">
+        {{ currentMonth | date:'yyyy 年 MM 月' }}
+      </h2>
+    </div>
+  </div>
+
+  <!-- 加载状态 -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 日历网格 -->
+  <div class="calendar-grid">
+    <!-- 星期标题 -->
+    <div class="weekday-header">
+      @for (day of weekdayHeaders; track day) {
+        <div class="weekday-cell">{{ day }}</div>
+      }
+    </div>
+
+    <!-- 日期网格 -->
+    <div class="days-grid">
+      @for (day of calendarDays; track day.date) {
+        <div
+          class="day-cell"
+          [class.current-month]="day.isCurrentMonth"
+          [class.today]="isToday(day.date)"
+          [class.has-schedules]="day.scheduleCount > 0"
+          (click)="goToWeekView(day.date)">
+
+          <div class="date-number">{{ day.dayOfMonth }}</div>
+
+          <!-- 课程列表 -->
+          @if (day.schedules.length > 0) {
+            <div class="schedules-list">
+              @for (schedule of day.schedules.slice(0, 3); track schedule.id) {
+                <div
+                  class="schedule-dot"
+                  [style.background-color]="getScheduleColor('文化课')"
+                  [matTooltip]="schedule.courseName + ' ' + schedule.startTime">
+                  <span class="schedule-time">{{ schedule.startTime }}</span>
+                </div>
+              }
+              @if (day.schedules.length > 3) {
+                <div class="more-count">+{{ day.schedules.length - 3 }}</div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 空状态 -->
+  @if (!loading && schedules.length === 0) {
+    <div class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <p>暂无排课记录</p>
+    </div>
+  }
+
+  <!-- 图例 -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #11998e;"></div>
+      <span>STEM课程</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #667eea;"></div>
+      <span>文化课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #f093fb;"></div>
+      <span>语言课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #4facfe;"></div>
+      <span>技术课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background-color: #43e97b;"></div>
+      <span>艺术课</span>
+    </div>
+  </div>
+</div>

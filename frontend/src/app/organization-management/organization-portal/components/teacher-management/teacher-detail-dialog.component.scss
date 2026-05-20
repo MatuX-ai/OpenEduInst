@@ -1,0 +1,11 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+// TODO: 此文件的样式需要重新编写
+.dialog-container {
+  min-width: 700px;
+  max-width: 900px;
+
+  @media (max-width: 768px) {
+    min-width: 100%;
+  }
+}

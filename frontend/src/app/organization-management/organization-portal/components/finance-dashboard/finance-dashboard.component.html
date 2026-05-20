@@ -1,0 +1,524 @@
+<!-- 财务管理仪表板模板 -->
+<div class="finance-dashboard">
+  <div class="finance-header">
+    <h1>财务管理</h1>
+    <p>机构财务数据与运营管理</p>
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon revenue-icon">
+          <mat-icon>account_balance_wallet</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">¥{{ monthlyRevenue | number: '1.0-0' }}</h3>
+          <p class="stat-label">本月收入</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon expense-icon">
+          <mat-icon>trending_down</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">¥{{ monthlyExpense | number: '1.0-0' }}</h3>
+          <p class="stat-label">本月支出</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon profit-icon">
+          <mat-icon>show_chart</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">¥{{ netProfit | number: '1.0-0' }}</h3>
+          <p class="stat-label">净利润</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon receivable-icon">
+          <mat-icon>money_off</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">¥{{ outstandingReceivable | number: '1.0-0' }}</h3>
+          <p class="stat-label">待收款</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- 功能标签页 -->
+  <mat-tab-group color="primary">
+    <!-- 学费管理 -->
+    <mat-tab label="学费管理">
+      <div class="tab-content">
+        <div class="tab-header">
+          <h3>学费记录</h3>
+          <button mat-raised-button color="primary" (click)="openTuitionDialog()">
+            <mat-icon>add</mat-icon>
+            新增记录
+          </button>
+        </div>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>筛选学生</mat-label>
+          <input matInput [(ngModel)]="tuitionFilter.studentName" placeholder="输入学生姓名" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>缴费状态</mat-label>
+          <mat-select [(ngModel)]="tuitionFilter.paymentStatus">
+            <mat-option value="">全部</mat-option>
+            <mat-option value="unpaid">未缴费</mat-option>
+            <mat-option value="partial">部分缴费</mat-option>
+            <mat-option value="full_paid">已全额缴费</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <table mat-table [dataSource]="filteredTuitionRecords" class="finance-table">
+          <ng-container matColumnDef="student_name">
+            <th mat-header-cell *matHeaderCellDef>学生</th>
+            <td mat-cell *matCellDef="let record">{{ record.student_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="course_name">
+            <th mat-header-cell *matHeaderCellDef>课程</th>
+            <td mat-cell *matCellDef="let record">{{ record.course_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="final_amount">
+            <th mat-header-cell *matHeaderCellDef>金额</th>
+            <td mat-cell *matCellDef="let record">
+              ¥{{ record.final_amount | number: '1.0-0' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="paid_amount">
+            <th mat-header-cell *matHeaderCellDef>已缴</th>
+            <td mat-cell *matCellDef="let record">
+              ¥{{ record.paid_amount | number: '1.0-0' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="remaining_amount">
+            <th mat-header-cell *matHeaderCellDef>待缴</th>
+            <td mat-cell *matCellDef="let record">
+              ¥{{ record.remaining_amount | number: '1.0-0' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="payment_status">
+            <th mat-header-cell *matHeaderCellDef>状态</th>
+            <td mat-cell *matCellDef="let record">
+              <mat-chip [color]="getPaymentStatusColor(record.payment_status)" selected>
+                {{ getPaymentStatusText(record.payment_status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>操作</th>
+            <td mat-cell *matCellDef="let record">
+              <button
+                mat-icon-button
+                color="primary"
+                matTooltip="收款"
+                (click)="collectPayment(record)"
+              >
+                <mat-icon>payment</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="accent"
+                matTooltip="详情"
+                (click)="viewTuitionDetail(record)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="warn"
+                matTooltip="退费"
+                (click)="applyRefund(record)"
+              >
+                <mat-icon>refund</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="tuitionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: tuitionColumns"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- 薪酬管理 -->
+    <mat-tab label="薪酬管理">
+      <div class="tab-content">
+        <div class="tab-header">
+          <h3>教师薪酬</h3>
+          <div class="header-actions">
+            <button mat-raised-button color="primary" (click)="batchCalculateSalary()">
+              <mat-icon>calculate</mat-icon>
+              批量计算
+            </button>
+          </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>月份</mat-label>
+          <input
+            matInput
+            [matDatepicker]="monthPicker"
+            [(ngModel)]="salaryFilter.month"
+            (dateChange)="onMonthChange($event)"
+          />
+          <mat-datepicker-toggle matSuffix [for]="monthPicker"></mat-datepicker-toggle>
+          <mat-datepicker
+            #monthPicker
+            startView="multi-year"
+            panelClass="example-month-picker"
+          ></mat-datepicker>
+        </mat-form-field>
+
+        <table mat-table [dataSource]="salaries" class="finance-table">
+          <ng-container matColumnDef="teacher_name">
+            <th mat-header-cell *matHeaderCellDef>教师</th>
+            <td mat-cell *matCellDef="let salary">{{ salary.teacher_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="total_salary">
+            <th mat-header-cell *matHeaderCellDef>应发工资</th>
+            <td mat-cell *matCellDef="let salary">
+              ¥{{ salary.total_salary | number: '1.0-0' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="deduction">
+            <th mat-header-cell *matHeaderCellDef>扣款</th>
+            <td mat-cell *matCellDef="let salary">
+              <span class="text-danger">-¥{{ salary.deduction | number: '1.0-0' }}</span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actual_salary">
+            <th mat-header-cell *matHeaderCellDef>实发工资</th>
+            <td mat-cell *matCellDef="let salary">
+              <strong>¥{{ salary.actual_salary | number: '1.0-0' }}</strong>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>状态</th>
+            <td mat-cell *matCellDef="let salary">
+              <mat-chip [color]="getSalaryStatusColor(salary.status)" selected>
+                {{ getSalaryStatusText(salary.status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>操作</th>
+            <td mat-cell *matCellDef="let salary">
+              <button
+                mat-icon-button
+                color="primary"
+                matTooltip="发放"
+                [disabled]="salary.status !== 'ready_to_pay'"
+                (click)="paySalary(salary)"
+              >
+                <mat-icon>attach_money</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                color="accent"
+                matTooltip="详情"
+                (click)="viewSalaryDetail(salary)"
+              >
+                <mat-icon>visibility</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="salaryColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: salaryColumns"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- 课程定价 -->
+    <mat-tab label="课程定价">
+      <div class="tab-content">
+        <div class="tab-header">
+          <h3>课程价格设置</h3>
+          <button mat-raised-button color="primary" (click)="openPricingDialog()">
+            <mat-icon>add</mat-icon>
+            新增定价
+          </button>
+        </div>
+
+        <div class="pricing-grid">
+          <mat-card *ngFor="let pricing of coursePricings" class="pricing-card">
+            <mat-card-header>
+              <mat-card-title>{{ pricing.course_name }}</mat-card-title>
+              <mat-chip [color]="pricing.is_active ? 'primary' : 'warn'" selected>
+                {{ pricing.is_active ? '启用中' : '已停用' }}
+              </mat-chip>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="pricing-detail">
+                <div class="price-item">
+                  <span class="label">基础价格:</span>
+                  <span class="value">¥{{ pricing.base_price | number: '1.0-0' }}</span>
+                </div>
+                <div class="price-item">
+                  <span class="label">定价策略:</span>
+                  <span class="value">{{
+                    getPricingStrategyText(pricing.pricing_strategy)
+                  }}</span>
+                </div>
+                <div class="price-item" *ngIf="pricing.tiered_prices?.length">
+                  <span class="label">阶梯价格:</span>
+                  <ul>
+                    <li *ngFor="let tier of pricing.tiered_prices">
+                      {{ tier.min_students }}-{{ tier.max_students || '+' }}人: ¥{{
+                        tier.price_per_student | number: '1.0-0'
+                      }}/人
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <button mat-button color="primary" (click)="editPricing(pricing)">编辑</button>
+              <button mat-button color="warn" (click)="togglePricingStatus(pricing)">
+                {{ pricing.is_active ? '停用' : '启用' }}
+              </button>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- 消课记录 -->
+    <mat-tab label="消课记录">
+      <div class="tab-content">
+        <div class="tab-header">
+          <h3>课时消耗记录</h3>
+        </div>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>日期范围</mat-label>
+          <mat-date-range-input [rangePicker]="picker">
+            <input
+              matStartDate
+              placeholder="开始日期"
+              [(ngModel)]="consumptionFilter.startDate"
+            />
+            <input matEndDate placeholder="结束日期" [(ngModel)]="consumptionFilter.endDate" />
+          </mat-date-range-input>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+
+        <table mat-table [dataSource]="consumptions" class="finance-table">
+          <ng-container matColumnDef="student_name">
+            <th mat-header-cell *matHeaderCellDef>学生</th>
+            <td mat-cell *matCellDef="let item">{{ item.student_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="course_name">
+            <th mat-header-cell *matHeaderCellDef>课程</th>
+            <td mat-cell *matCellDef="let item">{{ item.course_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="consumed_hours">
+            <th mat-header-cell *matHeaderCellDef>消耗课时</th>
+            <td mat-cell *matCellDef="let item">{{ item.consumed_hours }}小时</td>
+          </ng-container>
+
+          <ng-container matColumnDef="remaining_hours">
+            <th mat-header-cell *matHeaderCellDef>剩余课时</th>
+            <td mat-cell *matCellDef="let item">{{ item.remaining_hours }}小时</td>
+          </ng-container>
+
+          <ng-container matColumnDef="consumption_date">
+            <th mat-header-cell *matHeaderCellDef>消课日期</th>
+            <td mat-cell *matCellDef="let item">
+              {{ item.consumption_date | date: 'yyyy-MM-dd' }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>状态</th>
+            <td mat-cell *matCellDef="let item">
+              <mat-chip [color]="getConsumptionStatusColor(item.status)" selected>
+                {{ getConsumptionStatusText(item.status) }}
+              </mat-chip>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>操作</th>
+            <td mat-cell *matCellDef="let item">
+              <button
+                mat-icon-button
+                color="primary"
+                matTooltip="确认消课"
+                [disabled]="item.status !== 'scheduled'"
+                (click)="confirmConsumption(item)"
+              >
+                <mat-icon>check_circle</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="consumptionColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: consumptionColumns"></tr>
+        </table>
+      </div>
+    </mat-tab>
+
+    <!-- 财务报表 -->
+    <mat-tab label="财务报表">
+      <div class="tab-content">
+        <div class="report-header">
+          <h3>月度财务报表</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>选择月份</mat-label>
+            <input
+              matInput
+              [matDatepicker]="reportMonthPicker"
+              [(ngModel)]="selectedReportMonth"
+              (dateChange)="loadFinancialReport()"
+            />
+            <mat-datepicker-toggle matSuffix [for]="reportMonthPicker"></mat-datepicker-toggle>
+            <mat-datepicker
+              #reportMonthPicker
+              startView="multi-year"
+              panelClass="example-month-picker"
+            ></mat-datepicker>
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="exportReport()">
+            <mat-icon>download</mat-icon>
+            导出报表
+          </button>
+        </div>
+
+        <div class="report-content" *ngIf="financialReport">
+          <!-- 收入汇总 -->
+          <mat-card class="report-section">
+            <mat-card-header>
+              <mat-card-title>收入汇总</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="report-grid">
+                <div class="report-item">
+                  <span class="label">学费收入</span>
+                  <span class="value"
+                    >¥{{ financialReport.income.tuition_income | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">材料费收入</span>
+                  <span class="value"
+                    >¥{{ financialReport.income.material_income | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">其他收入</span>
+                  <span class="value"
+                    >¥{{ financialReport.income.other_income | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item total">
+                  <span class="label">总收入</span>
+                  <span class="value highlight"
+                    >¥{{ financialReport.income.total_income | number: '1.0-0' }}</span
+                  >
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- 支出汇总 -->
+          <mat-card class="report-section">
+            <mat-card-header>
+              <mat-card-title>支出汇总</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="report-grid">
+                <div class="report-item">
+                  <span class="label">薪酬支出</span>
+                  <span class="value"
+                    >¥{{ financialReport.expense.salary_expense | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">房租</span>
+                  <span class="value"
+                    >¥{{ financialReport.expense.rent_expense | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">水电费</span>
+                  <span class="value"
+                    >¥{{ financialReport.expense.utility_expense | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">营销费用</span>
+                  <span class="value"
+                    >¥{{ financialReport.expense.marketing_expense | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item total">
+                  <span class="label">总支出</span>
+                  <span class="value highlight"
+                    >¥{{ financialReport.expense.total_expense | number: '1.0-0' }}</span
+                  >
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- 利润汇总 -->
+          <mat-card class="report-section">
+            <mat-card-header>
+              <mat-card-title>利润分析</mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="report-grid">
+                <div class="report-item">
+                  <span class="label">毛利润</span>
+                  <span class="value"
+                    >¥{{ financialReport.profit.gross_profit | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">净利润</span>
+                  <span class="value highlight"
+                    >¥{{ financialReport.profit.net_profit | number: '1.0-0' }}</span
+                  >
+                </div>
+                <div class="report-item">
+                  <span class="label">利润率</span>
+                  <span class="value">{{ financialReport.profit.profit_margin }}%</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

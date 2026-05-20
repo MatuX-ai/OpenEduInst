@@ -1,0 +1,254 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>学员详情</h2>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (student) {
+    <div mat-dialog-content>
+      <!-- 基本信息卡片 -->
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="student-header">
+            @if (student.avatar) {
+              <img [src]="student.avatar" [alt]="student.name" class="avatar" />
+            } @else {
+              <div class="avatar-placeholder">
+                {{ student.name.charAt(0) }}
+              </div>
+            }
+
+            <div class="student-info">
+              <h3 class="name">{{ student.name }}</h3>
+              <p class="grade">{{ student.grade }}</p>
+              <div class="rating">
+                <mat-chip [color]="getStatusChipColor(student.status)">
+                  {{ getStatusChipLabel(student.status) }}
+                </mat-chip>
+              </div>
+            </div>
+
+            <div class="contact-info">
+              <div class="contact-item">
+                <mat-icon>email</mat-icon>
+                <span>{{ student.email }}</span>
+              </div>
+              @if (student.phone) {
+                <div class="contact-item">
+                  <mat-icon>phone</mat-icon>
+                  <span>{{ student.phone }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-label">报名课程</div>
+              <div class="stat-value">{{ student.enrolledCourses }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">学习进度</div>
+              <div class="stat-value">{{ student.progress }}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">出勤率</div>
+              <div class="stat-value">{{ student.attendanceRate || 0 }}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">总缴费</div>
+              <div class="stat-value">¥{{ (student.totalPayment || 0) / 1000 }}k</div>
+            </div>
+          </div>
+
+          <!-- 家长信息 -->
+          @if (student.parentInfo) {
+            <div class="parent-section">
+              <h4>家长信息</h4>
+              <div class="parent-info">
+                <div class="parent-item">
+                  <span class="label">姓名:</span>
+                  <span class="value">{{ student.parentInfo.name }}</span>
+                </div>
+                <div class="parent-item">
+                  <span class="label">关系:</span>
+                  <span class="value">{{ student.parentInfo.relationship }}</span>
+                </div>
+                <div class="parent-item">
+                  <span class="label">电话:</span>
+                  <span class="value">{{ student.parentInfo.phone }}</span>
+                </div>
+                @if (student.parentInfo.email) {
+                  <div class="parent-item">
+                    <span class="label">邮箱:</span>
+                    <span class="value">{{ student.parentInfo.email }}</span>
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tab 页签 -->
+      <mat-tab-group>
+        <!-- 学习档案 -->
+        <mat-tab label="学习档案">
+          <div class="tab-content">
+            @if (student.learningPortfolio && student.learningPortfolio.length > 0) {
+              <mat-list>
+                @for (record of student.learningPortfolio; track record) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>school</mat-icon>
+                    <div matListItemTitle>{{ record.courseName }}</div>
+                    <div matListItemLine>{{ record.content }}</div>
+                    <div matListItemLine>
+                      <mat-progress-bar
+                        mode="determinate"
+                        [value]="record.completion"
+                        [color]="getProgressColor(record.completion)"
+                        class="progress-bar">
+                      </mat-progress-bar>
+                      <span class="completion-text">{{ record.completion }}%</span>
+                    </div>
+                    @if (record.teacherComment) {
+                      <div matListItemLine class="comment">{{ record.teacherComment }}</div>
+                    }
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无学习记录</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 成绩记录 -->
+        <mat-tab label="成绩记录">
+          <div class="tab-content">
+            @if (student.grades && student.grades.length > 0) {
+              <mat-list>
+                @for (grade of student.grades; track grade) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>assessment</mat-icon>
+                    <div matListItemTitle>{{ grade.examName }}</div>
+                    <div matListItemLine>
+                      <span class="score">{{ grade.score }}/{{ grade.totalScore }}</span>
+                      <span class="percentage">({{ grade.percentage }}%)</span>
+                    </div>
+                    <div matListItemLine class="date">{{ grade.examDate | date:'yyyy-MM-dd' }}</div>
+                    @if (grade.comment) {
+                      <div matListItemLine class="comment">{{ grade.comment }}</div>
+                    }
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无成绩记录</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 出勤记录 -->
+        <mat-tab label="出勤记录">
+          <div class="tab-content">
+            @if (student.attendanceRecords && student.attendanceRecords.length > 0) {
+              <mat-list>
+                @for (record of student.attendanceRecords; track record) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>event</mat-icon>
+                    <div matListItemTitle>{{ record.courseName }}</div>
+                    <div matListItemLine>{{ record.classTime | date:'yyyy-MM-dd HH:mm' }}</div>
+                    <mat-chip [color]="getAttendanceStatusColor(record.status)">
+                      {{ getAttendanceStatusLabel(record.status) }}
+                    </mat-chip>
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无出勤记录</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 缴费记录 -->
+        <mat-tab label="缴费记录">
+          <div class="tab-content">
+            @if (student.paymentRecords && student.paymentRecords.length > 0) {
+              <mat-list>
+                @for (payment of student.paymentRecords; track payment) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>payment</mat-icon>
+                    <div matListItemTitle>{{ payment.itemName }}</div>
+                    <div matListItemLine>
+                      <span class="amount">¥{{ payment.amount }}</span>
+                      <mat-chip [color]="getPaymentStatusColor(payment.status)">
+                        {{ getPaymentStatusLabel(payment.status) }}
+                      </mat-chip>
+                    </div>
+                    <div matListItemLine class="date">{{ payment.paymentDate | date:'yyyy-MM-dd' }}</div>
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无缴费记录</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 已报课程 -->
+        <mat-tab label="已报课程">
+          <div class="tab-content">
+            @if (student.courses && student.courses.length > 0) {
+              <table mat-table [dataSource]="student.courses" class="course-table">
+                <ng-container matColumnDef="courseName">
+                  <th mat-header-cell *matHeaderCellDef>课程名称</th>
+                  <td mat-cell *matCellDef="let course">{{ course.courseName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="teacherName">
+                  <th mat-header-cell *matHeaderCellDef>授课教师</th>
+                  <td mat-cell *matCellDef="let course">{{ course.teacherName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="enrollDate">
+                  <th mat-header-cell *matHeaderCellDef>报名日期</th>
+                  <td mat-cell *matCellDef="let course">{{ course.enrollDate | date:'yyyy-MM-dd' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="duration">
+                  <th mat-header-cell *matHeaderCellDef>课时数</th>
+                  <td mat-cell *matCellDef="let course">{{ course.duration }}课时</td>
+                </ng-container>
+
+                <ng-container matColumnDef="courseStatus">
+                  <th mat-header-cell *matHeaderCellDef>状态</th>
+                  <td mat-cell *matCellDef="let course">
+                    <mat-chip [color]="getCourseStatusColor(course.courseStatus)">
+                      {{ getCourseStatusLabel(course.courseStatus) }}
+                    </mat-chip>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['courseName', 'teacherName', 'enrollDate', 'duration', 'courseStatus']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['courseName', 'teacherName', 'enrollDate', 'duration', 'courseStatus'];"></tr>
+              </table>
+            } @else {
+              <p class="empty-text">暂无课程信息</p>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  }
+
+  <div mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" (click)="onClose()">关闭</button>
+  </div>
+</div>

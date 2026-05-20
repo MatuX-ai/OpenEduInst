@@ -1,0 +1,155 @@
+<div class="stats-container">
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <h2 class="section-title">排课统计</h2>
+
+    <div class="actions">
+      <mat-form-field appearance="outline" class="time-range-select">
+        <mat-label>时间范围</mat-label>
+        <mat-select [(ngModel)]="timeRange" (selectionChange)="onTimeRangeChange()">
+          <mat-option value="week">本周</mat-option>
+          <mat-option value="month">本月</mat-option>
+          <mat-option value="all">全部</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="onExportExcel()">
+        <mat-icon>download</mat-icon>
+        导出 Excel
+      </button>
+
+      <button mat-stroked-button (click)="onPrint()">
+        <mat-icon>print</mat-icon>
+        打印
+      </button>
+    </div>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 总体统计卡片 -->
+  @if (scheduleStats) {
+    <div class="overview-cards">
+      <mat-card class="stat-card total">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon color="primary">event</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ scheduleStats.totalSchedules }}</div>
+            <div class="stat-label">总排课数</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card week">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon color="accent">today</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ scheduleStats.thisWeekSchedules }}</div>
+            <div class="stat-label">本周课程</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card completed">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>check_circle</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ scheduleStats.completedCount }}</div>
+            <div class="stat-label">已完成</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="stat-card rooms">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon>meeting_room</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ scheduleStats.availableClassroomsCount }}</div>
+            <div class="stat-label">空闲教室</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+
+  <!-- 教室使用率统计 -->
+  <div class="stats-section">
+    <h3 class="subsection-title">教室使用率</h3>
+
+    <div class="classroom-stats-grid">
+      @for (stat of classroomUsageStats; track stat.classroomId) {
+        <mat-card class="classroom-stat-card">
+          <mat-card-header>
+            <mat-card-title>{{ stat.classroomName }}</mat-card-title>
+            <mat-card-subtitle>使用率：{{ stat.usageRate }}%</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-progress-bar
+              mode="determinate"
+              [value]="stat.usageRate"
+              [color]="getProgressColor(stat.usageRate)">
+            </mat-progress-bar>
+
+            <div class="stat-details">
+              <div class="detail-item">
+                <span class="label">总课时:</span>
+                <span class="value">{{ stat.totalHours }}小时</span>
+              </div>
+              <div class="detail-item">
+                <span class="label">空闲时段:</span>
+                <span class="value">{{ stat.freeSlots.length }}个</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+
+  <!-- 教师课时统计 -->
+  <div class="stats-section">
+    <h3 class="subsection-title">教师课时统计</h3>
+
+    <div class="teacher-stats-list">
+      @for (stat of teacherHoursStats; track stat.teacherId) {
+        <mat-card class="teacher-stat-card">
+          <mat-card-content>
+            <div class="teacher-header">
+              <div class="teacher-info">
+                <mat-icon>person</mat-icon>
+                <span class="teacher-name">{{ stat.teacherName }}</span>
+              </div>
+              <div class="teacher-hours">
+                <span class="hours-value">{{ stat.totalHours }}</span>
+                <span class="hours-label">总课时</span>
+              </div>
+            </div>
+
+            <div class="course-list">
+              @for (course of stat.courses.slice(0, 3); track course.courseId) {
+                <div class="course-item">
+                  <span class="course-name">{{ course.courseName }}</span>
+                  <span class="course-hours">{{ course.hours }}课时</span>
+                </div>
+              }
+              @if (stat.courses.length > 3) {
+                <div class="more-courses">还有 {{ stat.courses.length - 3 }} 门课程...</div>
+              }
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+    </div>
+  </div>
+</div>

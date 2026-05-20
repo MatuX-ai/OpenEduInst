@@ -1,0 +1,203 @@
+/**
+ * 数据分析服务单元测试
+ *
+ * @fileoverview 测试数据分析的核心业务逻辑
+ * @author AI Assistant
+ * @date 2026-04-04
+ */
+
+import { TestBed } from '@angular/core/testing';
+
+import { DataAnalyticsService } from './data-analytics.service';
+
+describe('DataAnalyticsService', () => {
+  let service: DataAnalyticsService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(DataAnalyticsService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getBusinessOverview()', () => {
+    it('should return business overview data', (done) => {
+      service.getBusinessOverview().subscribe((overview) => {
+        expect(overview).toBeDefined();
+        expect(overview.totalStudents).toBeGreaterThan(0);
+        expect(overview.activeStudents).toBeGreaterThan(0);
+        expect(overview.totalTeachers).toBeGreaterThan(0);
+        expect(overview.monthlyRevenue).toBeGreaterThan(0);
+        expect(overview.yearlyRevenue).toBeGreaterThan(0);
+        done();
+      });
+    });
+  });
+
+  describe('getStudentStats()', () => {
+    it('should return student statistics', (done) => {
+      service.getStudentStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.totalStudents).toBeGreaterThan(0);
+        expect(stats.newStudentsThisMonth).toBeGreaterThanOrEqual(0);
+        expect(stats.retentionRate).toBeGreaterThanOrEqual(0);
+        expect(stats.averageAttendance).toBeGreaterThanOrEqual(0);
+        expect(stats.gradeDistribution).toBeDefined();
+        expect(Array.isArray(stats.gradeDistribution)).toBeTrue();
+        expect(stats.statusDistribution).toBeDefined();
+        expect(Array.isArray(stats.statusDistribution)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getTeacherStats()', () => {
+    it('should return teacher statistics', (done) => {
+      service.getTeacherStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.totalTeachers).toBeGreaterThan(0);
+        expect(stats.activeTeachers).toBeGreaterThanOrEqual(0);
+        expect(stats.averageRating).toBeGreaterThanOrEqual(0);
+        expect(stats.topTeachers).toBeDefined();
+        expect(Array.isArray(stats.topTeachers)).toBeTrue();
+        expect(stats.departmentDistribution).toBeDefined();
+        expect(Array.isArray(stats.departmentDistribution)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getCourseStats()', () => {
+    it('should return course statistics', (done) => {
+      service.getCourseStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.totalCourses).toBeGreaterThan(0);
+        expect(stats.runningCourses).toBeGreaterThanOrEqual(0);
+        expect(stats.popularCourses).toBeDefined();
+        expect(Array.isArray(stats.popularCourses)).toBeTrue();
+        expect(stats.courseTypeDistribution).toBeDefined();
+        expect(Array.isArray(stats.courseTypeDistribution)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getFinanceStats()', () => {
+    it('should return finance statistics', (done) => {
+      service.getFinanceStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.monthlyRevenue).toBeGreaterThan(0);
+        expect(stats.monthlyExpense).toBeGreaterThanOrEqual(0);
+        expect(stats.monthlyProfit).toBeDefined();
+        expect(stats.profitMargin).toBeGreaterThanOrEqual(0);
+        expect(stats.revenueTrend).toBeDefined();
+        expect(Array.isArray(stats.revenueTrend)).toBeTrue();
+        expect(stats.expenseTrend).toBeDefined();
+        expect(Array.isArray(stats.expenseTrend)).toBeTrue();
+        expect(stats.categoryDistribution).toBeDefined();
+        expect(Array.isArray(stats.categoryDistribution)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getTeacherPerformanceRanking()', () => {
+    it('should return teacher performance ranking', (done) => {
+      service.getTeacherPerformanceRanking().subscribe((ranking) => {
+        expect(ranking).toBeDefined();
+        expect(Array.isArray(ranking)).toBeTrue();
+        expect(ranking.length).toBeGreaterThan(0);
+
+        // Check ranking order
+        for (let i = 1; i < ranking.length; i++) {
+          expect(ranking[i - 1].rank).toBeLessThan(ranking[i].rank);
+        }
+        done();
+      });
+    });
+
+    it('should limit results when limit parameter is provided', (done) => {
+      service.getTeacherPerformanceRanking(2).subscribe((ranking) => {
+        expect(ranking.length).toBeLessThanOrEqual(2);
+        done();
+      });
+    });
+  });
+
+  describe('getPopularCourses()', () => {
+    it('should return popular courses list', (done) => {
+      service.getPopularCourses().subscribe((courses) => {
+        expect(courses).toBeDefined();
+        expect(Array.isArray(courses)).toBeTrue();
+        expect(courses.length).toBeGreaterThan(0);
+
+        // Check course data structure
+        courses.forEach((course) => {
+          expect(course.id).toBeDefined();
+          expect(course.name).toBeDefined();
+          expect(course.studentCount).toBeGreaterThanOrEqual(0);
+          expect(course.revenue).toBeGreaterThanOrEqual(0);
+          expect(course.rating).toBeGreaterThanOrEqual(0);
+        });
+        done();
+      });
+    });
+
+    it('should limit results when limit parameter is provided', (done) => {
+      service.getPopularCourses(2).subscribe((courses) => {
+        expect(courses.length).toBeLessThanOrEqual(2);
+        done();
+      });
+    });
+  });
+
+  describe('getRevenueTrend()', () => {
+    it('should return revenue trend data', (done) => {
+      service.getRevenueTrend(6).subscribe((trend) => {
+        expect(trend).toBeDefined();
+        expect(trend.labels).toBeDefined();
+        expect(Array.isArray(trend.labels)).toBeTrue();
+        expect(trend.datasets).toBeDefined();
+        expect(Array.isArray(trend.datasets)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getCustomReports()', () => {
+    it('should return custom reports list', (done) => {
+      service.getCustomReports().subscribe((reports) => {
+        expect(reports).toBeDefined();
+        expect(Array.isArray(reports)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getWarnings()', () => {
+    it('should return data warnings', (done) => {
+      service.getWarnings().subscribe((warnings) => {
+        expect(warnings).toBeDefined();
+        expect(Array.isArray(warnings)).toBeTrue();
+        expect(warnings.length).toBeGreaterThan(0);
+        done();
+      });
+    });
+  });
+
+  describe('getPerformanceForecast()', () => {
+    it('should return performance forecast', (done) => {
+      service.getPerformanceForecast().subscribe((forecast) => {
+        expect(forecast).toBeDefined();
+        expect(forecast.period).toBeDefined();
+        expect(forecast.predictedRevenue).toBeDefined();
+        expect(forecast.predictedStudents).toBeDefined();
+        expect(forecast.confidence).toBeGreaterThanOrEqual(0);
+        expect(forecast.confidence).toBeLessThanOrEqual(1);
+        done();
+      });
+    });
+  });
+});

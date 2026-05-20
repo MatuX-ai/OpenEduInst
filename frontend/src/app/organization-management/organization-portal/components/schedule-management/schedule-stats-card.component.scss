@@ -1,0 +1,299 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.stats-container {
+  padding: tokens.$spacing-lg;
+  background-color: tokens.$color-neutral-100;
+  min-height: 100%;
+}
+
+/* 工具�?*/
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: tokens.$spacing-lg;
+  flex-wrap: wrap;
+  gap: tokens.$spacing-md;
+
+  .section-title {
+    font-size: tokens.$font-size-2xl;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    margin: 0;
+  }
+
+  .actions {
+    display: flex;
+    gap: tokens.$spacing-md;
+    align-items: center;
+    flex-wrap: wrap;
+
+    .time-range-select {
+      min-width: 120px;
+    }
+
+    button {
+      mat-icon {
+        margin-right: tokens.$spacing-sm;
+      }
+    }
+  }
+}
+
+mat-progress-bar {
+  margin-bottom: tokens.$spacing-lg;
+}
+
+/* 总体统计卡片 */
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-xl;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+  transition: transform tokens.$transition-fast;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: tokens.$shadow-md;
+  }
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-md;
+    padding: tokens.$spacing-lg !important;
+  }
+
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: tokens.$radius-lg;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: tokens.$font-size-2xl;
+      width: tokens.$font-size-2xl;
+      height: tokens.$font-size-2xl;
+    }
+  }
+
+  .stat-info {
+    flex: 1;
+  }
+
+  .stat-value {
+    font-size: tokens.$font-size-2xl;
+    font-weight: bold;
+    color: tokens.$color-neutral-900;
+    line-height: 1;
+    margin-bottom: tokens.$spacing-xs;
+  }
+
+  .stat-label {
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-neutral-600;
+  }
+
+  &.total .stat-icon {
+    background-color: #e3f2fd;
+  }
+
+  &.week .stat-icon {
+    background-color: #f3e5f5;
+  }
+
+  &.completed .stat-icon {
+    background-color: #e8f5e9;
+  }
+
+  &.rooms .stat-icon {
+    background-color: #fff3e0;
+  }
+}
+
+/* 统计区域 */
+.stats-section {
+  margin-bottom: tokens.$spacing-xl;
+
+  .subsection-title {
+    font-size: tokens.$font-size-lg;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    margin: 0 0 tokens.$spacing-md 0;
+  }
+}
+
+/* 教室使用率网�?*/
+.classroom-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: tokens.$spacing-md;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.classroom-stat-card {
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+
+  mat-card-header {
+    padding: tokens.$spacing-md !important;
+    border-bottom: 1px solid tokens.$color-neutral-100;
+
+    mat-card-title {
+      font-size: tokens.$font-size-base;
+      font-weight: 600;
+    }
+
+    mat-card-subtitle {
+      font-size: tokens.$font-size-sm;
+      color: tokens.$color-neutral-600;
+    }
+  }
+
+  mat-card-content {
+    padding: tokens.$spacing-md !important;
+  }
+
+  mat-progress-bar {
+    margin-bottom: tokens.$spacing-md;
+    border-radius: tokens.$radius-sm;
+  }
+}
+
+.stat-details {
+  display: flex;
+  justify-content: space-between;
+  gap: tokens.$spacing-md;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-xs;
+  flex: 1;
+
+  .label {
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-neutral-600;
+  }
+
+  .value {
+    font-size: tokens.$font-size-sm;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+  }
+}
+
+/* 教师课时统计列表 */
+.teacher-stats-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: tokens.$spacing-md;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.teacher-stat-card {
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+
+  mat-card-content {
+    padding: tokens.$spacing-md !important;
+  }
+}
+
+.teacher-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: tokens.$spacing-md;
+  padding-bottom: tokens.$spacing-md;
+  border-bottom: 1px solid tokens.$color-neutral-100;
+}
+
+.teacher-info {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-md;
+
+  mat-icon {
+    font-size: tokens.$font-size-xl;
+    width: tokens.$font-size-xl;
+    height: tokens.$font-size-xl;
+    color: tokens.$color-brand-primary;
+  }
+
+  .teacher-name {
+    font-size: tokens.$font-size-base;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+  }
+}
+
+.teacher-hours {
+  text-align: right;
+
+  .hours-value {
+    display: block;
+    font-size: tokens.$font-size-xl;
+    font-weight: bold;
+    color: tokens.$color-brand-primary;
+    line-height: 1;
+  }
+
+  .hours-label {
+    display: block;
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-neutral-600;
+    margin-top: tokens.$spacing-xs;
+  }
+}
+
+.course-list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-sm;
+}
+
+.course-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  background-color: tokens.$color-neutral-100;
+  border-radius: tokens.$radius-sm;
+
+  .course-name {
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-neutral-900;
+  }
+
+  .course-hours {
+    font-size: tokens.$font-size-xs;
+    color: tokens.$color-neutral-600;
+    font-weight: 500;
+  }
+}
+
+.more-courses {
+  font-size: tokens.$font-size-xs;
+  color: tokens.$color-neutral-500;
+  font-style: italic;
+  padding: tokens.$spacing-xs tokens.$spacing-md;
+}

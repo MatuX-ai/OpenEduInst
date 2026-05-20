@@ -1,0 +1,215 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <h2 mat-dialog-title>教师详情</h2>
+    <button mat-icon-button (click)="onClose()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  @if (teacher) {
+    <div mat-dialog-content>
+      <!-- 基本信息卡片 -->
+      <mat-card class="info-card">
+        <mat-card-content>
+          <div class="teacher-header">
+            @if (teacher.avatar) {
+              <img [src]="teacher.avatar" [alt]="teacher.name" class="avatar" />
+            } @else {
+              <div class="avatar-placeholder">
+                {{ teacher.name.charAt(0) }}
+              </div>
+            }
+
+            <div class="teacher-info">
+              <h3 class="name">{{ teacher.name }}</h3>
+              <p class="position">{{ teacher.position || '教师' }}</p>
+              <p class="department">{{ teacher.department }}</p>
+              <div class="rating">
+                @for (star of getRatingStars(teacher.rating); track star) {
+                  <mat-icon class="star">star</mat-icon>
+                }
+                <span>{{ teacher.rating?.toFixed(1) || '0.0' }}</span>
+              </div>
+            </div>
+
+            <div class="contact-info">
+              <div class="contact-item">
+                <mat-icon>email</mat-icon>
+                <span>{{ teacher.email }}</span>
+              </div>
+              @if (teacher.phone) {
+                <div class="contact-item">
+                  <mat-icon>phone</mat-icon>
+                  <span>{{ teacher.phone }}</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-item">
+              <div class="stat-label">教学年限</div>
+              <div class="stat-value">{{ teacher.teachingYears || 0 }}年</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">授课数量</div>
+              <div class="stat-value">{{ teacher.courseCount }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">学生数量</div>
+              <div class="stat-value">{{ teacher.studentCount || 0 }}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">入职日期</div>
+              <div class="stat-value">{{ teacher.hireDate || '-' }}</div>
+            </div>
+          </div>
+
+          @if (teacher.bio) {
+            <div class="bio-section">
+              <h4>个人简介</h4>
+              <p>{{ teacher.bio }}</p>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Tab 页签 -->
+      <mat-tab-group>
+        <!-- 教育背景 -->
+        <mat-tab label="教育背景">
+          <div class="tab-content">
+            @if (teacher.education && teacher.education.length > 0) {
+              <mat-list>
+                @for (edu of teacher.education; track edu) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>school</mat-icon>
+                    <div matListItemTitle>{{ edu.school }}</div>
+                    <div matListItemLine>{{ edu.degree }} - {{ edu.major }}</div>
+                    <div matListItemLine class="date">{{ edu.graduationDate }}</div>
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无教育背景信息</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 工作经历 -->
+        <mat-tab label="工作经历">
+          <div class="tab-content">
+            @if (teacher.workExperience && teacher.workExperience.length > 0) {
+              <mat-list>
+                @for (work of teacher.workExperience; track work) {
+                  <mat-list-item>
+                    <mat-icon matListItemIcon>work</mat-icon>
+                    <div matListItemTitle>{{ work.company }}</div>
+                    <div matListItemLine>{{ work.position }}</div>
+                    <div matListItemLine class="date">
+                      {{ work.startDate }} - {{ work.endDate || '至今' }}
+                    </div>
+                    @if (work.description) {
+                      <div matListItemLine class="description">{{ work.description }}</div>
+                    }
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无工作经历信息</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 资格证书 -->
+        <mat-tab label="资格证书">
+          <div class="tab-content">
+            @if (teacher.certifications && teacher.certifications.length > 0) {
+              <div class="cert-list">
+                @for (cert of teacher.certifications; track cert) {
+                  <mat-chip color="primary">
+                    <mat-icon>verified</mat-icon>
+                    {{ cert }}
+                  </mat-chip>
+                }
+              </div>
+            } @else {
+              <p class="empty-text">暂无资格证书信息</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 学员评价 -->
+        <mat-tab label="学员评价">
+          <div class="tab-content">
+            @if (teacher.reviews && teacher.reviews.length > 0) {
+              <mat-list>
+                @for (review of teacher.reviews; track review) {
+                  <mat-list-item>
+                    <div matListItemAvatar class="review-avatar">
+                      {{ review.studentName.charAt(0) }}
+                    </div>
+                    <div matListItemTitle>
+                      {{ review.studentName }}
+                      <div class="review-rating">
+                        @for (star of getRatingStars(review.rating); track star) {
+                          <mat-icon class="star">star</mat-icon>
+                        }
+                      </div>
+                    </div>
+                    <div matListItemLine class="review-comment">{{ review.comment }}</div>
+                    <div matListItemLine class="review-date">{{ review.createdAt | date:'yyyy-MM-dd' }}</div>
+                  </mat-list-item>
+                }
+              </mat-list>
+            } @else {
+              <p class="empty-text">暂无学员评价</p>
+            }
+          </div>
+        </mat-tab>
+
+        <!-- 授课记录 -->
+        <mat-tab label="授课记录">
+          <div class="tab-content">
+            @if (teacher.teachingRecords && teacher.teachingRecords.length > 0) {
+              <table mat-table [dataSource]="teacher.teachingRecords" class="record-table">
+                <ng-container matColumnDef="courseName">
+                  <th mat-header-cell *matHeaderCellDef>课程名称</th>
+                  <td mat-cell *matCellDef="let record">{{ record.courseName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="scheduleTime">
+                  <th mat-header-cell *matHeaderCellDef>授课时间</th>
+                  <td mat-cell *matCellDef="let record">{{ record.scheduleTime | date:'yyyy-MM-dd HH:mm' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="duration">
+                  <th mat-header-cell *matHeaderCellDef>课时</th>
+                  <td mat-cell *matCellDef="let record">{{ record.duration }}课时</td>
+                </ng-container>
+
+                <ng-container matColumnDef="studentCount">
+                  <th mat-header-cell *matHeaderCellDef>学生数</th>
+                  <td mat-cell *matCellDef="let record">{{ record.studentCount }}人</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+              </table>
+            } @else {
+              <p class="empty-text">暂无授课记录</p>
+            }
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  }
+
+  <div mat-dialog-actions align="end">
+    <button mat-flat-button color="primary" (click)="onClose()">关闭</button>
+  </div>
+</div>

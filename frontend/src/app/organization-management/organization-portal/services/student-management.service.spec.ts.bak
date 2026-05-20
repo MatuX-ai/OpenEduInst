@@ -1,0 +1,185 @@
+/**
+ * 学员管理服务单元测试
+ *
+ * @fileoverview 测试学员管理的核心业务逻辑
+ * @author AI Assistant
+ * @date 2026-04-04
+ */
+
+import { TestBed } from '@angular/core/testing';
+
+import { StudentManagementService } from './student-management.service';
+import { CreateStudentRequest, UpdateStudentRequest, StudentStatus } from '../models/student.models';
+
+describe('StudentManagementService', () => {
+  let service: StudentManagementService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(StudentManagementService);
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getStudentList()', () => {
+    it('should return student list with pagination', (done) => {
+      service.getStudentList({ page: 1, pageSize: 10 }).subscribe((response) => {
+        expect(response).toBeDefined();
+        expect(response.data).toBeDefined();
+        expect(response.total).toBeGreaterThanOrEqual(0);
+        expect(response.page).toBe(1);
+        expect(response.pageSize).toBe(10);
+        done();
+      });
+    });
+
+    it('should filter students by keyword', (done) => {
+      service.getStudentList({ keyword: '张' }).subscribe((response) => {
+        response.data.forEach((student) => {
+          expect(
+            student.name.toLowerCase().includes('张') ||
+            student.email.toLowerCase().includes('张')
+          ).toBeTrue();
+        });
+        done();
+      });
+    });
+
+    it('should filter students by grade', (done) => {
+      service.getStudentList({ grade: '三年级' }).subscribe((response) => {
+        response.data.forEach((student) => {
+          expect(student.grade).toBe('三年级');
+        });
+        done();
+      });
+    });
+
+    it('should filter students by status', (done) => {
+      service.getStudentList({ status: 'active' as StudentStatus }).subscribe((response) => {
+        response.data.forEach((student) => {
+          expect(student.status).toBe('active');
+        });
+        done();
+      });
+    });
+  });
+
+  describe('getStudentDetail()', () => {
+    it('should return student detail for valid id', (done) => {
+      service.getStudentDetail(1).subscribe((detail) => {
+        expect(detail).toBeDefined();
+        expect(detail.id).toBe(1);
+        expect(detail.learningPortfolio).toBeDefined();
+        expect(detail.grades).toBeDefined();
+        expect(detail.attendanceRecords).toBeDefined();
+        expect(detail.paymentRecords).toBeDefined();
+        expect(detail.courses).toBeDefined();
+        done();
+      });
+    });
+
+    it('should throw error for invalid id', () => {
+      expect(() => service.getStudentDetail(9999)).toThrowError('学员 9999 不存在');
+    });
+  });
+
+  describe('createStudent()', () => {
+    it('should create a new student successfully', (done) => {
+      const request: CreateStudentRequest = {
+        name: '测试学生',
+        email: 'test@student.edu.cn',
+        phone: '13800138000',
+        grade: '三年级',
+        parentInfo: {
+          name: '家长',
+          phone: '13900139000',
+          relationship: '父子',
+        },
+      };
+
+      service.createStudent(request).subscribe((student) => {
+        expect(student).toBeDefined();
+        expect(student.name).toBe('测试学生');
+        expect(student.email).toBe('test@student.edu.cn');
+        expect(student.status).toBe('active');
+        expect(student.enrolledCourses).toBe(0);
+        expect(student.progress).toBe(0);
+        done();
+      });
+    });
+  });
+
+  describe('updateStudent()', () => {
+    it('should update student information successfully', (done) => {
+      const request: UpdateStudentRequest = {
+        name: '更新后的名字',
+        phone: '13900000000',
+      };
+
+      service.updateStudent(1, request).subscribe((student) => {
+        expect(student.name).toBe('更新后的名字');
+        expect(student.phone).toBe('13900000000');
+        expect(student.updatedAt).toBeDefined();
+        done();
+      });
+    });
+
+    it('should throw error when updating non-existent student', (done) => {
+      const request: UpdateStudentRequest = { name: '测试' };
+      service.updateStudent(9999, request).subscribe({
+        error: (error) => {
+          expect(error.message).toContain('学员 9999 不存在');
+          done();
+        },
+      });
+    });
+  });
+
+  describe('deleteStudent()', () => {
+    it('should soft delete student by setting status to inactive', (done) => {
+      service.deleteStudent(1).subscribe((result) => {
+        expect(result).toBeTrue();
+
+        service.getStudentDetail(1).subscribe((detail) => {
+          expect(detail.status).toBe('inactive');
+          done();
+        });
+      });
+    });
+
+    it('should return false when deleting non-existent student', (done) => {
+      service.deleteStudent(9999).subscribe((result) => {
+        expect(result).toBeFalse();
+        done();
+      });
+    });
+  });
+
+  describe('getGrades()', () => {
+    it('should return grade list', (done) => {
+      service.getGrades().subscribe((grades) => {
+        expect(grades).toBeDefined();
+        expect(Array.isArray(grades)).toBeTrue();
+        expect(grades.length).toBeGreaterThan(0);
+        done();
+      });
+    });
+  });
+
+  describe('getStats()', () => {
+    it('should return comprehensive student statistics', (done) => {
+      service.getStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.totalStudents).toBeGreaterThan(0);
+        expect(stats.activeStudents).toBeGreaterThanOrEqual(0);
+        expect(stats.inactiveStudents).toBeGreaterThanOrEqual(0);
+        expect(stats.graduatedStudents).toBeGreaterThanOrEqual(0);
+        expect(stats.averageProgress).toBeGreaterThanOrEqual(0);
+        expect(stats.averageAttendance).toBeGreaterThanOrEqual(0);
+        done();
+      });
+    });
+  });
+});

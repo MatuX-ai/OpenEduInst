@@ -1,0 +1,338 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.week-view-container {
+  padding: tokens.$spacing-lg;
+  background-color: tokens.$color-neutral-100;
+  min-height: 100%;
+}
+
+/* 工具�?*/
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: tokens.$spacing-lg;
+  gap: tokens.$spacing-md;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+}
+
+.current-week {
+  font-size: tokens.$font-size-lg;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+  margin: 0 tokens.$spacing-md;
+  white-space: nowrap;
+}
+
+.view-controls {
+  display: flex;
+  gap: tokens.$spacing-sm;
+}
+
+/* 课程表网�?*/
+.schedule-grid {
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border: 1px solid tokens.$color-neutral-300;
+  border-radius: tokens.$radius-md;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: tokens.$shadow-sm;
+}
+
+/* 时间轴表�?*/
+.time-header {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 60px repeat(7, 1fr);
+  border-bottom: 2px solid tokens.$color-neutral-300;
+  background-color: tokens.$color-neutral-50;
+}
+
+.corner-cell {
+  border-right: 1px solid tokens.$color-neutral-300;
+  background-color: tokens.$color-neutral-50;
+}
+
+.day-header {
+  text-align: center;
+  padding: tokens.$spacing-md tokens.$spacing-xs;
+  border-right: 1px solid tokens.$color-neutral-300;
+  transition: background-color tokens.$transition-fast;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  &.today {
+    background-color: tokens.$color-brand-primary-light;  // #e3f2fd
+
+    .day-label {
+      color: tokens.$color-brand-primary;
+      font-weight: bold;
+    }
+  }
+}
+
+.day-label {
+  font-size: tokens.$font-size-sm;
+  color: tokens.$color-neutral-600;
+  font-weight: 500;
+}
+
+/* 时间刻度�?*/
+.time-column {
+  border-right: 2px solid tokens.$color-neutral-300;
+}
+
+.hour-label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: tokens.$font-size-xs;
+  color: tokens.$color-neutral-600;
+  border-bottom: 1px solid tokens.$color-neutral-200;
+  padding-top: tokens.$spacing-xs;
+}
+
+/* 课程内容区域 */
+.schedule-content {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  position: relative;
+  min-height: calc((endHour - startHour) * hourHeight);
+}
+
+.day-column {
+  position: relative;
+  border-right: 1px solid tokens.$color-neutral-200;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+.hour-grid-line {
+  border-bottom: 1px solid tokens.$color-neutral-200;
+  width: 100%;
+}
+
+/* 课程卡片 */
+.schedule-card {
+  position: absolute;
+  left: 2px;
+  right: 2px;
+  border-radius: 4px;
+  padding: 4px 6px;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  overflow: hidden;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 40px;
+
+  /* 边框效果 */
+  border-left: 3px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    z-index: 20;
+  }
+
+  &.cdk-drag-preview {
+    box-sizing: border-box;
+    border-radius: 4px;
+    box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-content {
+  font-size: 11px;
+  line-height: 1.3;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.course-name {
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacher-name {
+  opacity: 0.9;
+  font-size: 10px;
+}
+
+.classroom {
+  opacity: 0.8;
+  font-size: 10px;
+}
+
+.time {
+  opacity: 0.7;
+  font-size: 10px;
+}
+
+.schedule-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  opacity: 0.9;
+}
+
+/* 操作按钮 - 默认隐藏 */
+.card-actions {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .schedule-card:hover & {
+    opacity: 1;
+  }
+
+  button {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 0.25);
+
+    mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+      color: white;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+/* 空状�?*/
+.empty-state {
+  text-align: center;
+  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  margin-top: tokens.$spacing-lg;
+
+  mat-icon {
+    font-size: tokens.$font-size-3xl * 2;
+    width: tokens.$font-size-3xl * 2;
+    height: tokens.$font-size-3xl * 2;
+    color: tokens.$color-neutral-500;
+    margin-bottom: tokens.$spacing-md;
+  }
+
+  p {
+    font-size: tokens.$font-size-base;
+    color: tokens.$color-neutral-600;
+    margin-bottom: tokens.$spacing-lg;
+  }
+}
+
+/* 图例 */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: tokens.$spacing-xl;
+  margin-top: tokens.$spacing-lg;
+  padding: tokens.$spacing-md;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  box-shadow: tokens.$shadow-sm;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  font-size: tokens.$font-size-xs;
+  color: tokens.$color-neutral-600;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: tokens.$radius-sm;
+  flex-shrink: 0;
+}
+
+/* 响应式调�?*/
+@media (max-width: 1024px) {
+  .schedule-grid {
+    font-size: 12px;
+  }
+
+  .course-name {
+    font-size: 12px;
+  }
+
+  .teacher-name,
+  .classroom,
+  .time {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-controls {
+    justify-content: center;
+  }
+
+  .current-week {
+    font-size: 14px;
+    margin: 0 8px;
+  }
+
+  .schedule-grid {
+    overflow-x: auto;
+  }
+
+  .day-label {
+    font-size: 11px;
+  }
+
+  .schedule-card {
+    left: 2px;
+    right: 2px;
+    padding: 6px;
+  }
+
+  .card-actions {
+    opacity: 1;
+  }
+}

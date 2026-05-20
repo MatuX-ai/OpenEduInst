@@ -1,0 +1,42 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.dialog-container {
+  min-width: 500px;
+  max-width: 600px;
+
+  @media (max-width: 600px) {
+    min-width: 100%;
+  }
+}
+
+h2[mat-dialog-title] {
+  margin: 0 0 tokens.$spacing-md 0;
+  font-size: tokens.$font-size-xl;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+}
+
+mat-progress-bar {
+  margin-top: -(tokens.$spacing-md);
+  margin-bottom: tokens.$spacing-md;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: tokens.$spacing-md;
+}
+
+.required {
+  color: tokens.$color-error;
+  margin-left: tokens.$spacing-xs;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+[mat-dialog-actions] {
+  padding-top: tokens.$spacing-md;
+  gap: tokens.$spacing-sm;
+}

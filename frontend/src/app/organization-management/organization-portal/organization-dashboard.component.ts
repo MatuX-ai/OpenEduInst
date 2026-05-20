@@ -1,0 +1,1189 @@
+import { CommonModule } from '@angular/common';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, Observable, of, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+import {
+  Activity,
+  Alert,
+  CourseInfo,
+  CourseStats,
+  EnrollmentStats,
+  OrgAdminService,
+  OrgOverview,
+  StudentInfo,
+  TeacherInfo,
+} from '../../core/services/org-admin.service';
+import { OrganizationContextService, OrganizationType } from '../../core/services/organization-context.service';
+import { UnifiedCourseService } from '../../core/services/unified-course.service';
+import { UnifiedCourse } from '../../models/unified-course.models';
+
+import { ActivityAlertPanelComponent } from './components/activity-alert-panel/activity-alert-panel.component';
+import { CourseManagementPanelComponent } from './components/course-management-panel/course-management-panel.component';
+import { MatuxCoreMetricsComponent, DashboardMetrics } from './components/dashboard-overview/matux-core-metrics.component';
+import { MatuxCommonFunctionsComponent, CommonFunctionItem } from './components/dashboard-overview/matux-common-functions.component';
+import { MatuxQuickActionsComponent, QuickActionItem } from './components/dashboard-overview/matux-quick-actions.component';
+import { MatuxResourceCenterComponent, ResourceItem } from './components/dashboard-overview/matux-resource-center.component';
+import { TrainingDashboardComponent } from './components/dashboard-overview/training-dashboard.component';
+import { K12DashboardComponent } from './components/dashboard-overview/k12-dashboard.component';
+import { VocationalDashboardComponent } from './components/dashboard-overview/vocational-dashboard.component';
+import { BureauDashboardComponent } from './components/dashboard-overview/bureau-dashboard.component';
+import { EducationStatsPanelComponent } from './components/education-stats-panel/education-stats-panel.component';
+import { TeacherStudentPanelComponent } from './components/teacher-student-panel/teacher-student-panel.component';
+import {
+  DashboardData,
+  Organization,
+  OrganizationDashboardService,
+} from './organization-dashboard.service';
+import { OrganizationEditDialogComponent } from './organization-edit-dialog.component';
+
+@Component({
+  selector: 'app-organization-dashboard',
+  template: `
+    <div class="organization-dashboard">
+      <!-- 加载状态 -->
+      <div *ngIf="loading" class="loading-container">
+        <mat-spinner diameter="50"></mat-spinner>
+        <p>正在加载仪表盘数据...</p>
+      </div>
+
+      <!-- 主要内容区域 -->
+      <div *ngIf="!loading && dashboardData" class="dashboard-content">
+        <!-- 根据组织类型动态渲染驾驶舱 -->
+        <app-training-dashboard 
+          *ngIf="orgContext.isType('training_institution')"
+          [metrics]="matuxMetrics">
+        </app-training-dashboard>
+
+        <app-k12-dashboard 
+          *ngIf="orgContext.isType('k12_school')"
+          [metrics]="{ totalStudents: matuxMetrics.activeStudents, attendanceRate: '98%', activeClasses: 12 }">
+        </app-k12-dashboard>
+
+        <app-vocational-dashboard 
+          *ngIf="orgContext.isType('vocational_school')"
+          [metrics]="{ equipmentUsage: '85%', employmentRate: '96%', coopProjects: 24 }">
+        </app-vocational-dashboard>
+
+        <app-bureau-dashboard 
+          *ngIf="orgContext.isType('education_bureau')"
+          [metrics]="{ schoolCount: 45, teacherTotal: 3200, budgetExec: '78%' }">
+        </app-bureau-dashboard>
+
+        <!-- 默认显示通用指标（兼容其他类型） -->
+        <app-matux-core-metrics 
+          *ngIf="!orgContext.isType('training_institution') && !orgContext.isType('k12_school') && !orgContext.isType('vocational_school') && !orgContext.isType('education_bureau')"
+          [metrics]="matuxMetrics">
+        </app-matux-core-metrics>
+
+        <!-- 常用功能矩阵 (仅培训机构显示) -->
+        <app-matux-common-functions 
+          *ngIf="orgContext.isType('training_institution')"
+          [items]="commonFunctions" 
+          (select)="onFunctionSelect($event)">
+        </app-matux-common-functions>
+
+        <!-- 快捷操作栏 -->
+        <app-matux-quick-actions 
+          [actions]="quickActions" 
+          (actionClick)="onQuickAction($event)">
+        </app-matux-quick-actions>
+
+        <!-- 教学资源中心 -->
+        <app-matux-resource-center 
+          [items]="resourceItems" 
+          (select)="onResourceSelect($event)">
+        </app-matux-resource-center>
+
+        <!-- 图表区域（暂未启用） -->
+        <div class="charts-placeholder">
+          <mat-card>
+            <mat-card-content>
+              <p>图表功能正在开发中...</p>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- 最近活动和警报 -->
+        <app-activity-alert-panel
+          [activities]="dashboardData.recentActivities"
+          [alerts]="dashboardData.alerts"
+        ></app-activity-alert-panel>
+      </div>
+
+      <!-- 错误状态 -->
+      <div *ngIf="!loading && !dashboardData && error" class="error-container">
+        <mat-icon class="error-icon">error</mat-icon>
+        <h3>加载失败</h3>
+        <p>{{ error }}</p>
+        <button mat-raised-button color="primary" (click)="refreshData()">重试</button>
+      </div>
+
+      <!-- 教育场景模块：机构概览 -->
+      <app-education-stats-panel
+        *ngIf="!loading && !educationLoading && orgOverview"
+        [overview]="orgOverview"
+        [enrollmentStats]="enrollmentStats"
+        [courseStats]="courseStats"
+        (refresh)="loadEducationData()"
+        (goToFinance)="goToFinance()"
+        (goToClassrooms)="goToClassrooms()"
+        (goToWechatCS)="goToWechatCS()"
+      ></app-education-stats-panel>
+
+      <!-- 教育模块加载状态 -->
+      <div *ngIf="educationLoading" class="education-loading">
+        <mat-spinner diameter="40"></mat-spinner>
+        <p>正在加载教育模块数据...</p>
+      </div>
+
+      <!-- 教育场景模块：课程运营与师生管理 -->
+      <app-course-management-panel
+        *ngIf="!loading && !educationLoading && !educationError"
+        [popularCourses$]="popularCourses$"
+        [courses]="courses"
+        (viewCourseDetail)="onViewCourseDetail($event)"
+        (addCourse)="onAddCourse()"
+        (viewCourse)="onViewCourse($event)"
+        (editCourse)="onEditCourse($event)"
+        (deleteCourse)="onDeleteCourse($event)"
+      ></app-course-management-panel>
+
+      <app-teacher-student-panel
+        *ngIf="!loading && !educationLoading && !educationError"
+        [teachers]="teachers"
+        [students]="students"
+        (addTeacher)="onAddTeacher()"
+        (viewTeacher)="onViewTeacher($event)"
+        (editTeacher)="onEditTeacher($event)"
+        (addStudent)="onAddStudent()"
+        (viewStudent)="onViewStudent($event)"
+        (editStudent)="onEditStudent($event)"
+      ></app-teacher-student-panel>
+    </div>
+  `,
+  styles: [
+    `
+      @use '../../../styles/design-tokens' as tokens;
+
+      .organization-dashboard {
+        height: 100%;
+        overflow-y: auto;
+        padding: tokens.$spacing-lg; // 24px
+        max-width: 1600px;
+        margin: 0 auto;
+      }
+
+      .dashboard-header {
+        margin-bottom: tokens.$spacing-xl; // 32px
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: tokens.$spacing-md; // 16px
+      }
+
+      .header-content h1 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: tokens.$spacing-md; // 12px
+        color: tokens.$color-neutral-900; // #333
+        font-size: tokens.$font-size-4xl; // 36px ≈ 2rem
+      }
+
+      .header-actions {
+        display: flex;
+        gap: tokens.$spacing-md; // 12px
+      }
+
+      .loading-container,
+      .error-container,
+      .education-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: tokens.$spacing-xxl tokens.$spacing-lg; // 48px 24px
+        text-align: center;
+      }
+
+      .education-loading {
+        padding: tokens.$spacing-xl tokens.$spacing-lg; // 32px 24px
+        margin: tokens.$spacing-xl 0; // 32px
+        border-radius: tokens.$radius-lg; // 12px
+        background-color: tokens.$color-neutral-50; // #f8f9fa
+        border: 1px solid tokens.$color-neutral-200; // #e9ecef
+      }
+
+      .education-loading p {
+        margin-top: tokens.$spacing-md; // 16px
+        color: tokens.$color-neutral-700; // #666
+        font-size: tokens.$font-size-sm; // 14px ≈ 0.95rem
+      }
+
+      .education-error {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: tokens.$spacing-xl tokens.$spacing-lg; // 32px 24px
+        margin: tokens.$spacing-xl 0; // 32px
+        border-radius: tokens.$radius-lg; // 12px
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        color: #856404;
+      }
+
+      .education-error mat-icon {
+        font-size: tokens.$font-size-2xl * 2; // 48px
+        width: tokens.$font-size-2xl * 2; // 48px
+        height: tokens.$font-size-2xl * 2; // 48px
+        margin-bottom: tokens.$spacing-lg; // 16px
+        color: tokens.$color-warning; // #ff9800
+      }
+
+      .education-error button {
+        margin-top: tokens.$spacing-lg; // 16px
+      }
+
+      .error-container .error-icon {
+        font-size: tokens.$font-size-2xl * 2; // 48px
+        width: tokens.$font-size-2xl * 2; // 48px
+        height: tokens.$font-size-2xl * 2; // 48px
+        color: tokens.$color-error; // #f44336
+        margin-bottom: tokens.$spacing-lg; // 16px
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: tokens.$spacing-lg;
+        margin-bottom: tokens.$spacing-xl;
+      }
+
+      .unified-courses-section {
+        margin-bottom: tokens.$spacing-xl;
+      }
+
+      .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: tokens.$spacing-md;
+      }
+
+      .stat-card {
+        border-radius: tokens.$radius-lg;
+        box-shadow: tokens.$shadow-md;
+        transition:
+          transform tokens.$transition-fast,
+          box-shadow tokens.$transition-fast;
+      }
+
+      .stat-card:hover {
+        transform: translateY(-4px);
+        box-shadow: tokens.$shadow-lg;
+      }
+
+      .stat-header {
+        display: flex;
+        align-items: center;
+        gap: tokens.$spacing-md;
+        margin-bottom: tokens.$spacing-md;
+      }
+
+      .stat-icon {
+        font-size: tokens.$font-size-xl + 4;
+        width: tokens.$font-size-xl + 4;
+        height: tokens.$font-size-xl + 4;
+        border-radius: tokens.$radius-full;
+        padding: tokens.$spacing-md;
+        color: white;
+      }
+
+      .stat-icon.active {
+        background: linear-gradient(135deg, #4caf50, #2e7d32);
+      }
+      .stat-icon.projects {
+        background: linear-gradient(135deg, #2196f3, #1565c0);
+      }
+      .stat-icon.users {
+        background: linear-gradient(135deg, #ff9800, #ef6c00);
+      }
+      .stat-icon.hardware {
+        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+      }
+
+      .stat-icon.students {
+        background: linear-gradient(135deg, #00bcd4, #00838f);
+      }
+      .stat-icon.teachers {
+        background: linear-gradient(135deg, #ff9800, #ef6c00);
+      }
+      .stat-icon.courses {
+        background: linear-gradient(135deg, #4caf50, #2e7d32);
+      }
+      .stat-icon.members {
+        background: linear-gradient(135deg, #3f51b5, #283593);
+      }
+      .stat-icon.enrollment {
+        background: linear-gradient(135deg, #e91e63, #ad1457);
+      }
+      .stat-icon.completion {
+        background: linear-gradient(135deg, #673ab7, #4527a0);
+      }
+      .stat-icon.revenue {
+        background: linear-gradient(135deg, #ffc107, #ff8f00);
+      }
+      .stat-icon.satisfaction {
+        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+      }
+      .stat-icon.finance {
+        background: linear-gradient(135deg, #009688, #00796b);
+      }
+      .stat-icon.classroom {
+        background: linear-gradient(135deg, #ff5722, #e64a19);
+      }
+      .stat-icon.wechat-cs {
+        background: linear-gradient(135deg, #07c160, #05a050);
+      }
+
+      .finance-quick-access {
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+      }
+
+      .finance-quick-access:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 150, 136, 0.2);
+      }
+
+      .classroom-quick-access {
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+      }
+
+      .classroom-quick-access:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(255, 87, 34, 0.2);
+      }
+
+      .wechat-cs-quick-access {
+        cursor: pointer;
+        transition: all tokens.$transition-normal;
+      }
+
+      .wechat-cs-quick-access:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(7, 193, 96, 0.2);
+      }
+
+      .stat-card h3 {
+        margin: 0;
+        font-size: tokens.$font-size-base;
+        color: tokens.$color-neutral-600;
+        font-weight: 500;
+      }
+
+      .stat-value {
+        font-size: tokens.$font-size-4xl;
+        font-weight: 700;
+        color: tokens.$color-neutral-900;
+        margin: tokens.$spacing-sm 0;
+      }
+
+      .stat-footer {
+        font-size: tokens.$font-size-sm;
+        color: tokens.$color-neutral-500;
+        font-weight: 500;
+      }
+
+      .charts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+        gap: tokens.$spacing-lg;
+        margin-bottom: tokens.$spacing-xl;
+      }
+
+      .chart-card {
+        border-radius: tokens.$radius-lg;
+        box-shadow: tokens.$shadow-md;
+      }
+
+      .chart-card mat-card-header {
+        padding: tokens.$spacing-md tokens.$spacing-lg 0 tokens.$spacing-lg;
+      }
+
+      .chart-card mat-card-title {
+        font-size: tokens.$font-size-xl;
+        font-weight: 600;
+        color: tokens.$color-neutral-900;
+      }
+
+      .chart-container {
+        height: 300px;
+        width: 100%;
+      }
+
+      .activities-alerts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: tokens.$spacing-lg;
+      }
+
+      .activities-card,
+      .alerts-card {
+        border-radius: tokens.$radius-lg;
+        box-shadow: tokens.$shadow-md;
+      }
+
+      .activity-list,
+      .alert-list {
+        max-height: 300px;
+        overflow-y: auto;
+      }
+
+      .activity-item,
+      .alert-item {
+        display: flex;
+        align-items: flex-start;
+        gap: tokens.$spacing-md;
+        padding: tokens.$spacing-md;
+        border-bottom: 1px solid tokens.$color-neutral-200;
+      }
+
+      .activity-item:last-child,
+      .alert-item:last-child {
+        border-bottom: none;
+      }
+
+      .activity-item.warning,
+      .alert-item.medium {
+        background-color: tokens.$color-warning-light; // #fff3e0
+      }
+
+      .activity-item.error,
+      .alert-item.high {
+        background-color: tokens.$color-error-light; // #ffebee
+      }
+
+      .activity-icon,
+      .alert-icon {
+        font-size: tokens.$font-size-lg;
+        width: tokens.$font-size-lg;
+        height: tokens.$font-size-lg;
+        margin-top: 2px;
+      }
+
+      .activity-content,
+      .alert-content {
+        flex: 1;
+      }
+
+      .activity-description,
+      .alert-message {
+        font-size: tokens.$font-size-base;
+        color: tokens.$color-neutral-900;
+        margin-bottom: tokens.$spacing-xs;
+      }
+
+      .activity-time,
+      .alert-time {
+        font-size: tokens.$font-size-xs;
+        color: tokens.$color-neutral-500;
+      }
+
+      /* 教育场景模块样式 */
+      .education-section {
+        margin-top: tokens.$spacing-xl;
+      }
+
+      .section-title {
+        font-size: tokens.$font-size-2xl;
+        font-weight: 600;
+        margin: 0 0 tokens.$spacing-lg 0;
+        color: tokens.$color-neutral-900;
+      }
+
+      .stat-icon.students {
+        background: linear-gradient(135deg, #4caf50, #2e7d32);
+      }
+      .stat-icon.teachers {
+        background: linear-gradient(135deg, #2196f3, #1565c0);
+      }
+      .stat-icon.courses {
+        background: linear-gradient(135deg, #ff9800, #ef6c00);
+      }
+      .stat-icon.members {
+        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+      }
+
+      .tab-content {
+        padding: tokens.$spacing-lg 0;
+      }
+
+      .tab-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: tokens.$spacing-lg;
+      }
+
+      .tab-header h3 {
+        margin: 0;
+        font-size: tokens.$font-size-xl;
+        font-weight: 600;
+        color: tokens.$color-neutral-900;
+      }
+
+      .edu-table {
+        width: 100%;
+      }
+
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: tokens.$spacing-xl;
+        color: tokens.$color-neutral-400;
+      }
+
+      .empty-state mat-icon {
+        font-size: tokens.$font-size-2xl * 2;
+        width: tokens.$font-size-2xl * 2;
+        height: tokens.$font-size-2xl * 2;
+        margin-bottom: tokens.$spacing-md;
+      }
+
+      @media (max-width: 1200px) {
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .organization-dashboard {
+          padding: tokens.$spacing-md;
+        }
+
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-actions {
+          width: 100%;
+          justify-content: flex-end;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .activities-alerts-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    `,
+  ],
+  standalone: true,
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatProgressSpinnerModule,
+    MatSnackBarModule,
+    MatDialogModule,
+    MatTableModule,
+    MatChipsModule,
+    MatTabsModule,
+    MatTooltipModule,
+    MatuxCoreMetricsComponent,
+    MatuxCommonFunctionsComponent,
+    MatuxQuickActionsComponent,
+    MatuxResourceCenterComponent,
+    TrainingDashboardComponent,
+    K12DashboardComponent,
+    VocationalDashboardComponent,
+    BureauDashboardComponent,
+    EducationStatsPanelComponent,
+    CourseManagementPanelComponent,
+    TeacherStudentPanelComponent,
+    ActivityAlertPanelComponent,
+  ],
+})
+export class OrganizationDashboardComponent implements OnInit, OnDestroy {
+  organization: Organization | null = null;
+  dashboardData: DashboardData | null = null;
+  loading = true;
+  error: string | null = null;
+
+  // 教育模块数据
+  orgOverview: OrgOverview | null = null;
+  courses: CourseInfo[] = [];
+  teachers: TeacherInfo[] = [];
+  students: StudentInfo[] = [];
+
+  // 新增教育模块数据（使用强类型）
+  enrollmentStats: EnrollmentStats | null = null;
+  courseStats: CourseStats | null = null;
+  recentActivities: Activity[] = [];
+  alerts: Alert[] = [];
+
+  // 数据加载状态
+  educationLoading = false;
+  educationError = false;
+
+  // 统一课程数据流（将在 ngOnInit 中初始化）
+  popularCourses$!: Observable<UnifiedCourse[]>;
+
+  // 表格列定义
+  courseColumns = ['name', 'category', 'enrollmentCount', 'status', 'actions'];
+  teacherColumns = [
+    'name',
+    'department',
+    'courseCount',
+    'activeHours',
+    'performanceScore',
+    'status',
+  ];
+  studentColumns = ['name', 'grade', 'enrolledCourses', 'progress', 'attendanceRate', 'status'];
+
+  private subscriptions: Subscription[] = [];
+  private orgId!: number;
+
+  // MatuX 原型数据
+  matuxMetrics: DashboardMetrics = { activeStudents: 0, monthlyRevenue: '¥0', courseCompletionRate: '0%' };
+  commonFunctions: CommonFunctionItem[] = [
+    { id: 'leads', title: '招生线索', icon: 'person_add', count: '15位待跟进', color: '#2196f3' },
+    { id: 'schedule', title: '智能排课', icon: 'calendar_today', count: '本周42节课', color: '#4caf50' },
+    { id: 'settlement', title: '课时结算', icon: 'payments', count: '待确认8单', color: '#ff9800' },
+    { id: 'live', title: '直播授课', icon: 'videocam', count: '在线教室3间', color: '#9c27b0' }
+  ];
+  quickActions: QuickActionItem[] = [
+    { id: 'enroll', label: '快速报名', icon: 'how_to_reg' },
+    { id: 'leave', label: '请假处理', icon: 'event_busy' },
+    { id: 'homework', label: '作业批改', icon: 'assignment_turned_in' },
+    { id: 'checkin', label: '签到打卡', icon: 'check_circle' },
+    { id: 'renew', label: '续费提醒', icon: 'repeat' }
+  ];
+  resourceItems: ResourceItem[] = [
+    { id: 'courseware', title: '课件发布', description: '同步教学资源', icon: 'cloud_upload' },
+    { id: 'promotion', title: '活动推广', description: '朋友圈海报生成', icon: 'share' },
+    { id: 'report', title: '学情报告', description: '一键发送家长', icon: 'description' },
+    { id: 'material', title: '素材库', description: '教案与习题集', icon: 'library_books' }
+  ];
+
+  /**
+   * 常用功能选择处理
+   */
+  onFunctionSelect(item: CommonFunctionItem): void {
+    console.log('Selected function:', item);
+    // TODO: 根据 ID 导航到对应页面
+    if (item.id === 'schedule') {
+      void this.router.navigate(['/management/organization', this.orgId, 'schedules']);
+    }
+  }
+
+  /**
+   * 快捷操作点击处理
+   */
+  onQuickAction(action: QuickActionItem): void {
+    console.log('Quick action clicked:', action);
+    // TODO: 打开对应的快速操作对话框
+  }
+
+  /**
+   * 资源中心选择处理
+   */
+  onResourceSelect(item: ResourceItem): void {
+    console.log('Selected resource:', item);
+    // TODO: 导航到资源管理页面
+  }
+
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private dashboardService: OrganizationDashboardService,
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog,
+    private orgAdminService: OrgAdminService,
+    private unifiedCourseService: UnifiedCourseService,
+    private orgContext: OrganizationContextService,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    this.subscriptions.push(
+      this.route.params.subscribe((params) => {
+        const id = +params['id'];
+        // 严格校验 ID 有效性
+        if (!id || isNaN(id)) {
+          console.error('[Dashboard] 无效的机构ID:', params['id']);
+          this.snackBar.open('无效的机构ID,请重新选择', '关闭', {
+            duration: 3000,
+            panelClass: ['error-snackbar'],
+          });
+          return;
+        }
+
+        this.orgId = id;
+        console.log('[Dashboard] 获取到机构ID:', this.orgId);
+        this.dashboardService.setCurrentOrgId(this.orgId);
+        this.loadData();
+        this.loadPopularCourses();
+      })
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
+  }
+
+  /**
+   * 加载热门课程
+   */
+  loadPopularCourses(): void {
+    this.popularCourses$ = this.unifiedCourseService.getPopularCourses(undefined, 6).pipe(
+      catchError((error) => {
+        console.warn('加载热门课程失败，尝试加载最新课程:', error);
+        // 如果热门课程加载失败，尝试加载最新课程
+        return this.unifiedCourseService.getNewestCourses(6).pipe(
+          catchError((err) => {
+            console.error('加载最新课程也失败，使用空数组:', err);
+            // 如果都失败，返回空数组（UnifiedCourseService 内部已有 Mock 数据 fallback）
+            return of([]);
+          })
+        );
+      })
+    );
+  }
+
+  /**
+   * 查看课程详情
+   */
+  onViewCourseDetail(_courseId: number): void {
+    // TODO: 实现路由导航到课程详情页面
+  }
+
+  /**
+   * 跳转到财务管理页面
+   */
+  goToFinance(): void {
+    if (!this.orgId) {
+      console.error('机构ID不存在');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'finance']);
+  }
+
+  /**
+   * 跳转到教室管理页面
+   */
+  goToClassrooms(): void {
+    if (!this.orgId) {
+      console.error('机构ID不存在');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'classrooms']);
+  }
+
+  /**
+   * 跳转到微信客服页面
+   */
+  goToWechatCS(): void {
+    if (!this.orgId) {
+      console.error('机构ID不存在');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'wechat-cs']);
+  }
+
+  loadData(): void {
+    this.loading = true;
+    this.error = null;
+
+    // 设置超时处理，避免无限等待
+    const timeoutId = setTimeout(() => {
+      if (this.loading) {
+        this.error = '数据加载超时，请检查网络连接或后端服务状态';
+        this.loading = false;
+        this.snackBar
+          .open('数据加载超时', '重试', {
+            duration: 5000,
+            panelClass: ['error-snackbar'],
+          })
+          .onAction()
+          .subscribe(() => {
+            this.refreshData();
+          });
+      }
+    }, 10000); // 10秒超时
+
+    this.subscriptions.push(
+      this.dashboardService.getDashboardData(this.orgId).subscribe({
+        next: (data) => {
+          clearTimeout(timeoutId);
+          this.dashboardData = data;
+          this.organization = data.organization;
+          this.setupCharts();
+          this.loading = false;
+          // 手动触发变更检测，避免 ExpressionChangedAfterItHasBeenCheckedError
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          clearTimeout(timeoutId);
+          this.error = this.getErrorMessage(err);
+          this.loading = false;
+          this.snackBar.open(this.error, '关闭', {
+            duration: 5000,
+            panelClass: ['error-snackbar'],
+          });
+          // 手动触发变更检测
+          this.cdr.detectChanges();
+        },
+      })
+    );
+
+    this.subscriptions.push(
+      this.orgAdminService.getOrgMetrics(this.orgId).subscribe({
+        next: (metrics) => {
+          this.matuxMetrics = metrics;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to load metrics:', err)
+      })
+    );
+
+    // 加载教育模块数据
+    this.loadEducationData();
+  }
+
+  /**
+   * 加载教育场景模块数据
+   */
+  /**
+   * 加载教育场景模块数据（使用新的getOrgDashboard方法一次性获取所有数据）
+   */
+  loadEducationData(): void {
+    this.educationLoading = true;
+    this.educationError = false;
+
+    this.subscriptions.push(
+      this.orgAdminService.getOrgDashboard(this.orgId).subscribe({
+        next: (dashboardData) => {
+          // 解构Dashboard数据
+          this.orgOverview = dashboardData.overview;
+          this.courses = dashboardData.courses || [];
+          this.teachers = dashboardData.teachers || [];
+          this.students = dashboardData.students || [];
+          this.enrollmentStats = dashboardData.enrollmentStats;
+          this.courseStats = dashboardData.courseStats;
+          this.recentActivities = dashboardData.recentActivities || [];
+          this.alerts = dashboardData.alerts || [];
+
+          this.educationLoading = false;
+          this.showSnackbar('教育模块数据加载成功', 'success');
+          // 手动触发变更检测
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('加载教育模块数据失败:', err);
+          this.educationError = true;
+          this.educationLoading = false;
+
+          // 尝试回退到独立API调用
+          this.fallbackToIndividualAPIs();
+        },
+      })
+    );
+  }
+
+  /**
+   * 回退到独立API调用（当getOrgDashboard失败时使用）
+   */
+  private fallbackToIndividualAPIs(): void {
+    // 尝试使用独立 API 调用回退...
+
+    const requests: [
+      Observable<OrgOverview>,
+      Observable<CourseInfo[]>,
+      Observable<TeacherInfo[]>,
+      Observable<StudentInfo[]>,
+      Observable<EnrollmentStats>,
+      Observable<CourseStats>,
+    ] = [
+      this.orgAdminService.getOrgOverview(this.orgId),
+      this.orgAdminService.getOrgCourses(this.orgId),
+      this.orgAdminService.getOrgTeachers(this.orgId),
+      this.orgAdminService.getOrgStudents(this.orgId),
+      this.orgAdminService.getEnrollmentStats(this.orgId),
+      this.orgAdminService.getCourseStats(this.orgId),
+    ];
+
+    this.subscriptions.push(
+      forkJoin<
+        [OrgOverview, CourseInfo[], TeacherInfo[], StudentInfo[], EnrollmentStats, CourseStats]
+      >(requests).subscribe({
+        next: (results) => {
+          const [overview, courses, teachers, students, enrollmentStats, courseStats] = results;
+          this.orgOverview = overview;
+          this.courses = courses || [];
+          this.teachers = teachers || [];
+          this.students = students || [];
+          this.enrollmentStats = enrollmentStats;
+          this.courseStats = courseStats;
+
+          this.showSnackbar('教育模块数据已使用回退模式加载', 'info');
+        },
+        error: (err) => {
+          console.error('回退模式加载失败:', err);
+          this.showSnackbar('无法加载教育模块数据', 'error');
+        },
+      })
+    );
+  }
+
+  refreshData(): void {
+    this.loadData();
+  }
+
+  setupCharts(): void {
+    // 图表功能暂未启用
+  }
+
+  openEditDialog(): void {
+    if (!this.organization) return;
+
+    const dialogRef = this.dialog.open(OrganizationEditDialogComponent, {
+      width: '600px',
+      data: { organization: this.organization },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.updateOrganization(result as Partial<Organization>);
+      }
+    });
+  }
+
+  updateOrganization(orgData: Partial<Organization>): void {
+    if (!this.organization) return;
+
+    this.subscriptions.push(
+      this.dashboardService.updateOrganization(this.orgId, orgData).subscribe({
+        next: (updatedOrg) => {
+          this.organization = updatedOrg;
+          this.showSnackbar('机构信息更新成功', 'success');
+        },
+        error: (err) => {
+          const errorMessage = err instanceof Error ? err.message : '更新失败';
+          this.showSnackbar(errorMessage, 'error');
+        },
+      })
+    );
+  }
+
+  /**
+   * 显示通知消息
+   */
+  private showSnackbar(
+    message: string,
+    type: 'success' | 'error' | 'info' | 'warning' = 'info'
+  ): void {
+    const panelClassMap = {
+      success: ['success-snackbar'],
+      error: ['error-snackbar'],
+      info: [],
+      warning: ['warning-snackbar'],
+    };
+
+    this.snackBar.open(message, '关闭', {
+      duration: 3000,
+      panelClass: panelClassMap[type],
+    });
+  }
+
+  /**
+   * 根据错误类型返回友好的错误消息
+   */
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof Error) {
+      // 网络错误
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        return '网络连接失败，请检查网络设置或后端服务是否启动';
+      }
+      // HTTP 404 错误
+      if (error.message.includes('404')) {
+        return '请求的资源不存在，可能是API端点配置错误';
+      }
+      // HTTP 500 错误
+      if (error.message.includes('500')) {
+        return '服务器内部错误，请联系管理员检查数据库配置和服务状态';
+      }
+      // HTTP 503 错误
+      if (error.message.includes('503')) {
+        return '服务暂时不可用，请稍后重试';
+      }
+      return error.message;
+    }
+    return '加载数据失败，未知错误';
+  }
+
+  formatTime(timestamp: string): string {
+    return new Date(timestamp).toLocaleString('zh-CN');
+  }
+
+  /**
+   * 快速添加课程
+   */
+  quickAddCourse(): void {
+    const dialogRef = this.dialog.open(OrganizationEditDialogComponent, {
+      width: '500px',
+      data: {
+        title: '快速添加课程',
+        formConfig: {
+          fields: [
+            { name: 'name', label: '课程名称', type: 'text', required: true },
+            { name: 'category', label: '课程类别', type: 'text', required: true },
+            { name: 'capacity', label: '最大容量', type: 'number', required: true },
+            { name: 'description', label: '课程描述', type: 'textarea' },
+          ],
+        },
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.addCourse(result as Partial<CourseInfo>);
+      }
+    });
+  }
+
+  /**
+   * 添加新课程
+   */
+  private addCourse(courseData: Partial<CourseInfo>): void {
+    // 调用API添加课程
+    this.orgAdminService.createCourse(this.orgId, courseData).subscribe({
+      next: (newCourse) => {
+        this.showSnackbar('课程添加成功', 'success');
+        this.courses = [...this.courses, newCourse];
+      },
+      error: (err) => {
+        const errorMessage = err instanceof Error ? err.message : '添加失败';
+        this.showSnackbar(errorMessage, 'error');
+      },
+    });
+  }
+
+  /**
+   * 刷新教育模块数据
+   */
+  refreshEducationData(): void {
+    this.educationLoading = true;
+    this.educationError = false;
+    this.loadEducationData();
+  }
+
+  /**
+   * 导出报表
+   */
+  exportReport(): void {
+    this.showSnackbar('报表导出功能正在开发中...', 'info');
+    // TODO: 实现报表导出逻辑
+  }
+
+  // ==================== 课程管理事件处理 ====================
+
+  onAddCourse(): void {
+    if (!this.orgId || isNaN(this.orgId)) {
+      console.error('[Dashboard] 机构ID无效,无法添加课程');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'courses'], {
+      queryParams: { action: 'add' },
+    });
+  }
+
+  onViewCourse(courseId: number): void {
+    // TODO: 打开课程详情对话框或导航到详情页
+    console.log('查看课程:', courseId);
+  }
+
+  onEditCourse(courseId: number): void {
+    // TODO: 打开课程编辑对话框
+    console.log('编辑课程:', courseId);
+  }
+
+  onDeleteCourse(_courseId: number): void {
+    if (confirm('确定要删除这个课程吗？')) {
+      // TODO: 调用服务删除课程
+      this.showSnackbar('课程删除功能待实现', 'info');
+    }
+  }
+
+  // ==================== 师生管理事件处理 ====================
+
+  onAddTeacher(): void {
+    if (!this.orgId || isNaN(this.orgId)) {
+      console.error('[Dashboard] 机构ID无效,无法添加教师');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'teachers'], {
+      queryParams: { action: 'add' },
+    });
+  }
+
+  onViewTeacher(teacherId: number): void {
+    // TODO: 打开教师详情对话框
+    console.log('查看教师:', teacherId);
+  }
+
+  onEditTeacher(teacherId: number): void {
+    // TODO: 打开教师编辑对话框
+    console.log('编辑教师:', teacherId);
+  }
+
+  onAddStudent(): void {
+    if (!this.orgId || isNaN(this.orgId)) {
+      console.error('[Dashboard] 机构ID无效,无法添加学生');
+      return;
+    }
+    void this.router.navigate(['/management/organization', this.orgId, 'students'], {
+      queryParams: { action: 'add' },
+    });
+  }
+
+  onViewStudent(studentId: number): void {
+    // TODO: 打开学生详情对话框
+    console.log('查看学生:', studentId);
+  }
+
+  onEditStudent(studentId: number): void {
+    // TODO: 打开学生编辑对话框
+    console.log('编辑学生:', studentId);
+  }
+
+  /**
+   * 返回上一页
+   */
+}

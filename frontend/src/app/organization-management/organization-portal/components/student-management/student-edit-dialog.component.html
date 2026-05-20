@@ -1,0 +1,116 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ title }}</h2>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div mat-dialog-content>
+    <form>
+      <!-- 姓名 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>姓名 <span class="required">*</span></mat-label>
+        <input matInput [(ngModel)]="formData.name" name="name" required />
+      </mat-form-field>
+
+      <!-- 邮箱 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>邮箱 <span class="required">*</span></mat-label>
+        <input matInput [(ngModel)]="formData.email" name="email" type="email" required />
+      </mat-form-field>
+
+      <!-- 电话 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>电话</mat-label>
+        <input matInput [(ngModel)]="formData.phone" name="phone" type="tel" />
+      </mat-form-field>
+
+      <!-- 年级 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>年级 <span class="required">*</span></mat-label>
+        <mat-select [(ngModel)]="formData.grade" name="grade" required>
+          @for (grade of gradeOptions; track grade) {
+            <mat-option [value]="grade">{{ grade }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- 报名日期 -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>报名日期</mat-label>
+        <input matInput [(ngModel)]="formData.enrollmentDate" name="enrollmentDate" type="date" />
+      </mat-form-field>
+
+      <!-- 状态（仅编辑模式） -->
+      @if (isEditMode) {
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>状态</mat-label>
+          <mat-select [(ngModel)]="formData.status" name="status">
+            @for (option of statusOptions; track option) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      <!-- 家长信息 -->
+      <div class="parent-info-section">
+        <div class="section-header">
+          <h3>家长信息</h3>
+          @if (!formData.parentInfo) {
+            <button mat-stroked-button color="primary" type="button" (click)="onAddParentInfo()">
+              <mat-icon>add</mat-icon>
+              添加家长信息
+            </button>
+          } @else {
+            <button mat-stroked-button color="warn" type="button" (click)="onRemoveParentInfo()">
+              <mat-icon>delete</mat-icon>
+              移除
+            </button>
+          }
+        </div>
+
+        @if (formData.parentInfo) {
+          <div class="parent-info-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>家长姓名</mat-label>
+              <input matInput [(ngModel)]="formData.parentInfo.name" name="parentName" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>电话号码</mat-label>
+              <input matInput [(ngModel)]="formData.parentInfo.phone" name="parentPhone" />
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>关系</mat-label>
+              <mat-select [(ngModel)]="formData.parentInfo.relationship" name="relationship">
+                @for (rel of relationshipOptions; track rel) {
+                  <mat-option [value]="rel">{{ rel }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>邮箱</mat-label>
+              <input matInput [(ngModel)]="formData.parentInfo.email" name="parentEmail" type="email" />
+            </mat-form-field>
+          </div>
+        }
+      </div>
+    </form>
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">
+      取消
+    </button>
+    <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="loading">
+      @if (loading) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        {{ isEditMode ? '保存' : '添加' }}
+      }
+    </button>
+  </div>
+</div>

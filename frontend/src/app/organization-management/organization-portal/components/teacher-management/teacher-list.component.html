@@ -1,0 +1,276 @@
+<div class="teacher-list-container">
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon total">people</mat-icon>
+          <h3>教师总数</h3>
+        </div>
+        <div class="stat-value">{{ stats?.totalCount || 0 }}</div>
+        <div class="stat-footer">全部在职教师</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon active">check_circle</mat-icon>
+          <h3>在职教师</h3>
+        </div>
+        <div class="stat-value">{{ stats?.activeCount || 0 }}</div>
+        <div class="stat-footer">正在授课中</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon leave">schedule</mat-icon>
+          <h3>请假教师</h3>
+        </div>
+        <div class="stat-value">{{ stats?.onLeaveCount || 0 }}</div>
+        <div class="stat-footer">暂时不在岗</div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-header">
+          <mat-icon class="stat-icon rating">star</mat-icon>
+          <h3>平均评分</h3>
+        </div>
+        <div class="stat-value">{{ stats?.averageRating?.toFixed(1) || 0 }}</div>
+        <div class="stat-footer">学员评价</div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- 操作工具栏 -->
+  <div class="toolbar">
+    <h1><mat-icon>person</mat-icon> 教师管理</h1>
+    <div class="actions">
+      <button mat-raised-button color="primary" (click)="createTeacher()">
+        <mat-icon>add</mat-icon>
+        添加教师
+      </button>
+    </div>
+  </div>
+
+  <!-- 加载状态 -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>正在加载教师列表...</p>
+  </div>
+
+  <!-- 错误状态 -->
+  <div *ngIf="!loading && error" class="error-container">
+    <mat-icon class="error-icon">error</mat-icon>
+    <h3>加载失败</h3>
+    <p>{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadTeachers()">重试</button>
+  </div>
+
+  <!-- 筛选和批量操作工具栏 -->
+  @if (!loading && !error) {
+    <div class="filter-toolbar">
+      <!-- 搜索框 -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>搜索教师</mat-label>
+        <input
+          matInput
+          [value]="filter.search || ''"
+          (input)="onSearchInput($event)"
+          placeholder="姓名或邮箱"
+        />
+      </mat-form-field>
+
+      <!-- 部门筛选 -->
+      <mat-form-field appearance="outline">
+        <mat-label>部门</mat-label>
+        <mat-select [value]="filter.department || ''" (selectionChange)="filter.department = $any($event).value; applyFilter()">
+          <mat-option value="">全部部门</mat-option>
+          @for (dept of departments; track dept) {
+            <mat-option [value]="dept">{{ dept }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <!-- 状态筛选 -->
+      <mat-form-field appearance="outline">
+        <mat-label>状态</mat-label>
+        <mat-select [value]="filter.status || ''" (selectionChange)="filter.status = $any($event).value; applyFilter()">
+          <mat-option value="">全部状态</mat-option>
+          <mat-option value="active">在职</mat-option>
+          <mat-option value="inactive">离职</mat-option>
+          <mat-option value="on_leave">请假</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- 重置按钮 -->
+      <button mat-stroked-button (click)="resetFilter()">
+        <mat-icon>refresh</mat-icon>
+        重置
+      </button>
+
+      <!-- 批量操作区域 -->
+      @if (selectedTeacherIds.length > 0) {
+        <div class="batch-operations">
+          <span class="selected-count">已选 {{ selectedTeacherIds.length }} 位教师</span>
+
+          <button mat-stroked-button color="warn" (click)="batchDelete()">
+            <mat-icon>delete</mat-icon>
+            批量删除
+          </button>
+
+          <button mat-stroked-button (click)="batchChangeStatus('active')">
+            <mat-icon>check_circle</mat-icon>
+            设为在职
+          </button>
+
+          <button mat-stroked-button (click)="batchChangeStatus('on_leave')">
+            <mat-icon>schedule</mat-icon>
+            设为请假
+          </button>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- 教师列表 -->
+  <div *ngIf="!loading && !error && teachers.length > 0" class="content">
+    <table mat-table [dataSource]="teachers" class="mat-elevation-z8 teacher-table">
+      <!-- 选择列 -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            [checked]="selectedTeacherIds.length === teachers.length && teachers.length > 0"
+            (change)="onSelectAll($event)">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let teacher">
+          <mat-checkbox
+            [checked]="selectedTeacherIds.includes(teacher.id)"
+            (change)="onTeacherToggle(teacher.id, $event)"
+            (click)="$event.stopPropagation()">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- ID 列 -->
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef>ID</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.id }}</td>
+      </ng-container>
+
+      <!-- 姓名 列 -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef>姓名</th>
+        <td mat-cell *matCellDef="let teacher">
+          <div class="teacher-info">
+            <img
+              *ngIf="teacher.avatar"
+              [src]="teacher.avatar"
+              alt="{{ teacher.name }}"
+              class="avatar"
+            />
+            <span>{{ teacher.name }}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- 邮箱列 -->
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef>邮箱</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.email }}</td>
+      </ng-container>
+
+      <!-- 电话列 -->
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>电话</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.phone || '-' }}</td>
+      </ng-container>
+
+      <!-- 部门列 -->
+      <ng-container matColumnDef="department">
+        <th mat-header-cell *matHeaderCellDef>部门</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.department }}</td>
+      </ng-container>
+
+      <!-- 职位列 -->
+      <ng-container matColumnDef="position">
+        <th mat-header-cell *matHeaderCellDef>职位</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.position || '-' }}</td>
+      </ng-container>
+
+      <!-- 授课数 列 -->
+      <ng-container matColumnDef="courseCount">
+        <th mat-header-cell *matHeaderCellDef>授课数</th>
+        <td mat-cell *matCellDef="let teacher">{{ teacher.courseCount }}</td>
+      </ng-container>
+
+      <!-- 评分列 -->
+      <ng-container matColumnDef="rating">
+        <th mat-header-cell *matHeaderCellDef>评分</th>
+        <td mat-cell *matCellDef="let teacher">
+          <div class="rating-display" *ngIf="teacher.rating">
+            <mat-icon>star</mat-icon>
+            {{ teacher.rating.toFixed(1) }}
+          </div>
+        </td>
+      </ng-container>
+
+      <!-- 状态列 -->
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef>状态</th>
+        <td mat-cell *matCellDef="let teacher">
+          <mat-chip [color]="getTeacherStatusColor(teacher.status)">
+            {{ getTeacherStatusText(teacher.status) }}
+          </mat-chip>
+        </td>
+      </ng-container>
+
+      <!-- 操作列 -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>操作</th>
+        <td mat-cell *matCellDef="let teacher">
+          <button
+            mat-icon-button
+            color="primary"
+            (click)="viewTeacher(teacher)"
+            matTooltip="查看详情"
+          >
+            <mat-icon>visibility</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="accent"
+            (click)="editTeacher(teacher)"
+            matTooltip="编辑"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            color="warn"
+            (click)="deleteTeacher(teacher.id)"
+            matTooltip="删除"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+  </div>
+
+  <!-- 空状态 -->
+  <div *ngIf="!loading && !error && teachers.length === 0" class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <h3>暂无教师数据</h3>
+    <p>点击上方按钮添加第一个教师</p>
+  </div>
+</div>

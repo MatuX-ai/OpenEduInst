@@ -1,0 +1,200 @@
+<div class="batch-schedule-container">
+  <div class="page-header">
+    <button mat-button (click)="goBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+      返回课表
+    </button>
+    <h2 class="page-title">批量排课</h2>
+  </div>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 步骤指示 -->
+  <div class="steps-indicator">
+    <div class="step" [class.active]="stepIndex === 0">
+      <div class="step-number">1</div>
+      <div class="step-label">选择课程</div>
+    </div>
+    <div class="step-line"></div>
+    <div class="step" [class.active]="stepIndex === 1">
+      <div class="step-number">2</div>
+      <div class="step-label">统一设置</div>
+    </div>
+  </div>
+
+  <!-- 步骤 1: 选择课程 -->
+  @if (stepIndex === 0) {
+    <div class="step-content">
+      <mat-card class="course-list-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-checkbox
+              [checked]="selectedCourseIds.length === courses.length && courses.length > 0"
+              (change)="onSelectAll($event)">
+              全选
+            </mat-checkbox>
+            <span class="selected-count">已选 {{ getSelectedCount() }} 门</span>
+          </mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <div class="course-grid">
+            @for (course of courses; track course.id) {
+              <mat-card
+                class="course-item"
+                [class.selected]="selectedCourseIds.includes(course.id)">
+                <mat-card-content>
+                  <div class="course-header">
+                    <mat-checkbox
+                      [checked]="selectedCourseIds.includes(course.id)"
+                      (change)="onCourseToggle(course.id, $event)">
+                    </mat-checkbox>
+                    <div class="course-info">
+                      <div class="course-name">{{ course.name }}</div>
+                      <div class="course-code">{{ course.code }}</div>
+                    </div>
+                  </div>
+
+                  <div class="course-details">
+                    <div class="detail-row">
+                      <mat-icon>person</mat-icon>
+                      <span>{{ course.teacherName }}</span>
+                    </div>
+                    <div class="detail-row">
+                      <mat-icon>access_time</mat-icon>
+                      <span>{{ course.duration }}分钟</span>
+                    </div>
+                    <div class="detail-row">
+                      <mat-icon>category</mat-icon>
+                      <span>{{ course.type }}</span>
+                    </div>
+                  </div>
+                </mat-card-content>
+              </mat-card>
+            }
+          </div>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-button disabled>上一步</button>
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="nextStep()"
+            [disabled]="getSelectedCount() === 0">
+            下一步
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+
+  <!-- 步骤 2: 统一设置 -->
+  @if (stepIndex === 1) {
+    <div class="step-content">
+      <mat-card class="settings-card">
+        <mat-card-header>
+          <mat-card-title>统一时间设置</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+          <form>
+            <!-- 教师信息 -->
+            @if (getCommonTeacher()) {
+              <div class="teacher-info">
+                <mat-icon>info</mat-icon>
+                <span>所有课程均由 <strong>{{ getCommonTeacher() }}</strong> 授课</span>
+              </div>
+            } @else {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>授课教师</mat-label>
+                <mat-select [(ngModel)]="formData.teacherId" name="teacherId">
+                  <!-- TODO: 加载教师列表 -->
+                  <mat-option [value]="1">张老师</mat-option>
+                  <mat-option [value]="2">李老师</mat-option>
+                </mat-select>
+              </mat-form-field>
+            }
+
+            <!-- 星期选择 -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>星期 <span class="required">*</span></mat-label>
+              <mat-select [(ngModel)]="formData.dayOfWeek" name="dayOfWeek" required>
+                @for (day of weekDays; track day.value) {
+                  <mat-option [value]="day.value">{{ day.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <!-- 时间范围 -->
+            <div class="time-range-group">
+              <mat-form-field appearance="outline" class="time-field">
+                <mat-label>开始时间 <span class="required">*</span></mat-label>
+                <input matInput type="time" [(ngModel)]="formData.startTime" name="startTime" required />
+              </mat-form-field>
+
+              <mat-icon>trending_flat</mat-icon>
+
+              <mat-form-field appearance="outline" class="time-field">
+                <mat-label>结束时间 <span class="required">*</span></mat-label>
+                <input matInput type="time" [(ngModel)]="formData.endTime" name="endTime" required />
+              </mat-form-field>
+            </div>
+
+            <!-- 开始日期 -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>开始日期 <span class="required">*</span></mat-label>
+              <input matInput type="date" [(ngModel)]="formData.startDate" name="startDate" required />
+            </mat-form-field>
+
+            <!-- 重复设置 -->
+            <div class="repeat-section">
+              <h4>重复设置</h4>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>重复类型</mat-label>
+                <mat-select [(ngModel)]="formData.repeatType" name="repeatType">
+                  @for (type of repeatTypes; track type.value) {
+                    <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              @if (formData.repeatType !== 'none') {
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>重复周数</mat-label>
+                  <input matInput type="number" [(ngModel)]="formData.repeatWeeks" name="repeatWeeks" min="1" max="52" />
+                </mat-form-field>
+              }
+            </div>
+
+            <!-- 课程预览 -->
+            <div class="course-preview">
+              <h4>将为此{{ getSelectedCount() }}门课程创建排课记录：</h4>
+              <div class="preview-list">
+                @for (courseId of selectedCourseIds.slice(0, 5); track courseId) {
+                  <div class="preview-item">
+                    <mat-icon>check_circle</mat-icon>
+                    <span>{{ courses.find(c => c.id === courseId)?.name }}</span>
+                  </div>
+                }
+                @if (selectedCourseIds.length > 5) {
+                  <div class="preview-more">还有 {{ selectedCourseIds.length - 5 }} 门...</div>
+                }
+              </div>
+            </div>
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions align="end">
+          <button mat-button (click)="previousStep()">上一步</button>
+          <button mat-flat-button color="primary" (click)="onSubmit()">
+            确认批量排课
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  }
+</div>

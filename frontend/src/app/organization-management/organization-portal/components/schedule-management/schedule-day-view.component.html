@@ -1,0 +1,157 @@
+<div class="day-view-container">
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <div class="nav-controls">
+      <button mat-icon-button (click)="previousDay()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="today()">
+        今天
+      </button>
+      <button mat-icon-button (click)="nextDay()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <h2 class="current-date">
+        {{ getFormattedDate() }}
+      </h2>
+    </div>
+
+    <div class="view-controls">
+      <mat-form-field appearance="outline" class="date-picker">
+        <input matInput [matDatepicker]="picker" [(ngModel)]="currentDate" (dateChange)="onDateChange()" />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+
+      <button mat-stroked-button color="primary" (click)="onAddSchedule()">
+        <mat-icon>add</mat-icon>
+        添加课程
+      </button>
+    </div>
+  </div>
+
+  <!-- 加载状态 -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 日视图时间轴 -->
+  <div class="day-schedule">
+    <!-- 时间刻度 -->
+    <div class="time-column">
+      @for (hour of hourLabels; track hour) {
+        <div class="hour-label" [style.height.px]="hourHeight">
+          {{ hour.toString().padStart(2, '0') }}:00
+        </div>
+      }
+    </div>
+
+    <!-- 课程内容 -->
+    <div class="day-content">
+      <!-- 时间网格线 -->
+      @for (hour of hourLabels; track hour) {
+        <div class="hour-grid-line" [style.height.px]="hourHeight"></div>
+      }
+
+      <!-- 当前时间线 -->
+      @if (isToday(currentDate)) {
+        <div
+          class="current-time-line"
+          [style.top.px]="getCurrentTimePosition()">
+          <div class="time-dot"></div>
+          <div class="time-line"></div>
+        </div>
+      }
+
+      <!-- 课程卡片 -->
+      @for (schedule of schedules; track schedule.id) {
+        <div
+          class="schedule-card"
+          [style.top.px]="getScheduleTop(schedule)"
+          [style.height.px]="getScheduleHeight(schedule)"
+          [style.background]="getScheduleColor(schedule.courseType || 'STEM课程')"
+          (click)="onEditSchedule(schedule)">
+
+          <div class="card-content">
+            <div class="course-name">{{ schedule.courseName }}</div>
+            <div class="teacher-name">{{ schedule.teacherName }}</div>
+            @if (schedule.classroomName) {
+              <div class="classroom">@{{ schedule.classroomName }}</div>
+            }
+            <div class="time-range">
+              {{ schedule.startTime }} - {{ schedule.endTime }}
+            </div>
+            @if (schedule.studentIds && schedule.studentIds.length > 0) {
+              <div class="student-count">
+                <mat-icon>people</mat-icon>
+                {{ schedule.studentIds.length }}人
+              </div>
+            }
+          </div>
+
+          <div class="card-actions">
+            <button mat-icon-button color="accent" (click)="onAdjustSchedule(schedule); $event.stopPropagation()">
+              <mat-icon>swap_horiz</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="onDeleteSchedule(schedule); $event.stopPropagation()">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 空状态 -->
+  @if (!loading && schedules.length === 0) {
+    <div class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <p>今日暂无课程安排</p>
+      <button mat-flat-button color="primary" (click)="onAddSchedule()">
+        <mat-icon>add</mat-icon>
+        添加第一门课程
+      </button>
+    </div>
+  }
+
+  <!-- 课程列表（底部摘要） -->
+  @if (schedules.length > 0) {
+    <div class="summary-cards">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon">
+            <mat-icon color="primary">menu_book</mat-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-value">{{ schedules.length }}</div>
+            <div class="summary-label">今日课程</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon">
+            <mat-icon color="accent">access_time</mat-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-value">{{ getTotalHours() }}</div>
+            <div class="summary-label">总课时</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <div class="summary-icon">
+            <mat-icon>people</mat-icon>
+          </div>
+          <div class="summary-info">
+            <div class="summary-value">{{ getTotalStudents() }}</div>
+            <div class="summary-label">学生总数</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</div>

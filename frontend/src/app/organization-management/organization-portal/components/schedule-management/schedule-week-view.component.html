@@ -1,0 +1,132 @@
+<div class="week-view-container">
+  <!-- 工具栏 -->
+  <div class="toolbar">
+    <div class="nav-controls">
+      <button mat-icon-button (click)="previousWeek()">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="today()">
+        本周
+      </button>
+      <button mat-icon-button (click)="nextWeek()">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <h2 class="current-week">
+        {{ currentWeekStart | date:'yyyy 年 MM 月 dd 日' }} -
+        {{ (currentWeekStart.getDate() + 6) | date:'dd 日' }}
+      </h2>
+    </div>
+
+    <div class="view-controls">
+      <button mat-stroked-button color="primary" (click)="onAddSchedule()">
+        <mat-icon>add</mat-icon>
+        添加课程
+      </button>
+    </div>
+  </div>
+
+  <!-- 加载状态 -->
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 周视图表格 -->
+  <div class="schedule-grid">
+    <!-- 时间轴表头 -->
+    <div class="time-header">
+      <div class="corner-cell"></div>
+      @for (day of weekDays; track day.day) {
+        <div class="day-header" [class.today]="isToday(day.date)">
+          <div class="day-label">{{ day.label }}</div>
+        </div>
+      }
+    </div>
+
+    <!-- 时间刻度 -->
+    <div class="time-column">
+      @for (hour of hourLabels; track hour) {
+        <div class="hour-label" [style.height.px]="hourHeight">
+          {{ hour.toString().padStart(2, '0') }}:00
+        </div>
+      }
+    </div>
+
+    <!-- 课程网格 -->
+    <div class="schedule-content" cdkDropList (cdkDropListDropped)="onDrop($event)">
+      @for (day of weekDays; track day.day) {
+        <div class="day-column" [attr.data-day]="day.day">
+          <!-- 时间网格线 -->
+          @for (hour of hourLabels; track hour) {
+            <div class="hour-grid-line" [style.height.px]="hourHeight"></div>
+          }
+
+          <!-- 课程卡片 -->
+          @for (schedule of getSchedulesByDay(day.day); track schedule.id) {
+            <div
+              class="schedule-card"
+              [style.top.px]="getScheduleTop(schedule)"
+              [style.height.px]="getScheduleHeight(schedule)"
+              [style.background]="getScheduleColor(schedule.courseType || 'STEM课程')"
+              cdkDrag
+              (click)="onEditSchedule(schedule)"
+              [matTooltip]="getScheduleTooltip(schedule)">
+
+              <div class="card-content">
+                <div class="course-name">{{ schedule.courseName }}</div>
+                <div class="schedule-info">
+                  <span class="teacher-name">{{ schedule.teacherName }}</span>
+                  <span class="time-range">{{ schedule.startTime }} - {{ schedule.endTime }}</span>
+                </div>
+              </div>
+
+              <div class="card-actions">
+                <button mat-icon-button (click)="onAdjustSchedule(schedule); $event.stopPropagation()">
+                  <mat-icon>swap_horiz</mat-icon>
+                </button>
+                <button mat-icon-button (click)="onDeleteSchedule(schedule); $event.stopPropagation()">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- 空状态 -->
+  @if (!loading && schedules.length === 0) {
+    <div class="empty-state">
+      <mat-icon>event_busy</mat-icon>
+      <p>暂无排课记录</p>
+      <button mat-flat-button color="primary" (click)="onAddSchedule()">
+        <mat-icon>add</mat-icon>
+        添加第一门课程
+      </button>
+    </div>
+  }
+
+  <!-- 图例 -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"></div>
+      <span>STEM课程</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+      <span>文化课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+      <span>语言课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);"></div>
+      <span>技术课</span>
+    </div>
+    <div class="legend-item">
+      <div class="legend-color" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);"></div>
+      <span>艺术课</span>
+    </div>
+  </div>
+</div>

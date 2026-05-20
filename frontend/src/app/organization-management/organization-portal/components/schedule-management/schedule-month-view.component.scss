@@ -1,0 +1,264 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.month-view-container {
+  padding: tokens.$spacing-lg;
+  background-color: tokens.$color-neutral-100;
+  min-height: 100%;
+}
+
+/* 工具栏 */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: tokens.$spacing-lg;
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+}
+
+.current-month {
+  font-size: tokens.$font-size-lg;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+  margin: 0 tokens.$spacing-md;
+  white-space: nowrap;
+}
+
+/* 日历网格 */
+.calendar-grid {
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  overflow: hidden;
+  box-shadow: tokens.$shadow-sm;
+}
+
+/* 星期标题 */
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border-bottom: 2px solid tokens.$color-neutral-300;
+  background-color: tokens.$color-neutral-50;
+}
+
+.weekday-cell {
+  text-align: center;
+  padding: tokens.$spacing-md tokens.$spacing-xs;
+  font-size: tokens.$font-size-sm;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+  border-right: 1px solid tokens.$color-neutral-300;
+
+  &:last-child {
+    border-right: none;
+  }
+}
+
+/* 日期网格 */
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  grid-auto-rows: minmax(100px, 1fr);
+}
+
+.day-cell {
+  min-height: 120px;
+  padding: tokens.$spacing-xs;
+  border-right: 1px solid tokens.$color-neutral-200;
+  border-bottom: 1px solid tokens.$color-neutral-200;
+  cursor: pointer;
+  transition: background-color tokens.$transition-fast;
+
+  &:nth-child(7n) {
+    border-right: none;
+  }
+
+  &:not(.current-month) {
+    background-color: tokens.$color-neutral-50;
+    opacity: 0.6;
+  }
+
+  &:hover {
+    background-color: tokens.$color-neutral-100;
+  }
+
+  &.today {
+    background-color: tokens.$color-brand-primary-light;  // #e3f2fd
+
+    .date-number {
+      background-color: tokens.$color-brand-primary;
+      color: white;
+    }
+  }
+
+  &.has-schedules {
+    background-color: tokens.$color-warning-light;  // #fff3e0
+  }
+}
+
+.date-number {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: tokens.$radius-full;
+  font-size: tokens.$font-size-sm;
+  font-weight: 500;
+  color: tokens.$color-neutral-900;
+  margin-bottom: tokens.$spacing-md;
+}
+
+/* 课程列表 */
+.schedules-list {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-xs;
+}
+
+.schedule-dot {
+  padding: tokens.$spacing-xs calc(tokens.$spacing-xs - 2px);
+  border-radius: tokens.$radius-sm;
+  color: white;
+  font-size: calc(tokens.$font-size-xs - 2px);
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  transition: transform tokens.$transition-fast;
+
+  &:hover {
+    transform: translateX(2px);
+  }
+}
+
+.schedule-time {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.more-count {
+  font-size: calc(tokens.$font-size-xs - 2px);
+  color: tokens.$color-neutral-600;
+  text-align: center;
+  padding: calc(tokens.$spacing-xs - 4px);
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  margin-top: tokens.$spacing-lg;
+
+  mat-icon {
+    font-size: tokens.$font-size-3xl * 2;
+    width: tokens.$font-size-3xl * 2;
+    height: tokens.$font-size-3xl * 2;
+    color: tokens.$color-neutral-500;
+    margin-bottom: tokens.$spacing-md;
+  }
+
+  p {
+    font-size: tokens.$font-size-base;
+    color: tokens.$color-neutral-600;
+    margin-bottom: tokens.$spacing-lg;
+  }
+}
+
+/* 图例 */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: tokens.$spacing-xl;
+  margin-top: tokens.$spacing-lg;
+  padding: tokens.$spacing-md;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  box-shadow: tokens.$shadow-sm;
+
+  @media (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  font-size: tokens.$font-size-xs;
+  color: tokens.$color-neutral-600;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: tokens.$radius-sm;
+  flex-shrink: 0;
+}
+
+/* 响应式设计 */
+@media (max-width: 1024px) {
+  .days-grid {
+    grid-auto-rows: minmax(80px, 1fr);
+  }
+
+  .day-cell {
+    min-height: 80px;
+    padding: 4px;
+  }
+
+  .date-number {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 12px;
+  }
+
+  .schedule-dot {
+    font-size: 10px;
+    padding: 2px 4px;
+  }
+
+  .schedule-time {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-controls {
+    justify-content: center;
+  }
+
+  .current-month {
+    font-size: 16px;
+    margin: 0 8px;
+  }
+
+  .weekday-cell {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+
+  .days-grid {
+    grid-auto-rows: minmax(60px, 1fr);
+  }
+
+  .day-cell {
+    min-height: 60px;
+    padding: 4px;
+  }
+
+  .schedule-dot {
+    display: none; // 移动端隐藏课程详情，只显示数量
+  }
+
+  .more-count {
+    display: block;
+    font-size: 10px;
+  }
+}

@@ -1,0 +1,21 @@
+<div class="stats-container">
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div class="stats-grid">
+    @for (stat of displayedStats; track stat.title) {
+      <mat-card class="stat-card" [ngStyle]="{ 'background': stat.gradient }">
+        <mat-card-content>
+          <div class="stat-icon">
+            <mat-icon [style.color]="stat.color">{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <div class="stat-value">{{ stat.value }}</div>
+            <div class="stat-label">{{ stat.title }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+</div>

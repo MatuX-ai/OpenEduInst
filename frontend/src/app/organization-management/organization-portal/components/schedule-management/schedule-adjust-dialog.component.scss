@@ -1,0 +1,220 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.dialog-container {
+  min-width: 600px;
+  max-width: 700px;
+
+  @media (max-width: 600px) {
+    min-width: 100%;
+  }
+}
+
+h2[mat-dialog-title] {
+  margin: 0 0 tokens.$spacing-md 0;
+  font-size: tokens.$font-size-xl;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+}
+
+mat-progress-bar {
+  margin-top: -(tokens.$spacing-md);
+  margin-bottom: tokens.$spacing-md;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: tokens.$spacing-md;
+}
+
+.required {
+  color: tokens.$color-error;
+  margin-left: tokens.$spacing-xs;
+}
+
+/* 步进器样�?*/
+mat-stepper {
+  ::ng-deep {
+    .mat-step-header {
+      padding: tokens.$spacing-md;
+
+      .mat-step-label {
+        font-size: tokens.$font-size-sm;
+        font-weight: 500;
+      }
+    }
+
+    .mat-step-content {
+      padding: tokens.$spacing-md 0;
+    }
+  }
+}
+
+.stepper-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: tokens.$spacing-lg;
+  gap: tokens.$spacing-sm;
+}
+
+/* 原课程信息卡�?*/
+.original-info {
+  margin-bottom: tokens.$spacing-lg;
+
+  h4 {
+    font-size: tokens.$font-size-base;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    margin: 0 0 tokens.$spacing-md 0;
+  }
+}
+
+.info-card {
+  padding: tokens.$spacing-md;
+  background-color: tokens.$color-neutral-100;
+  border-radius: tokens.$radius-md;
+  border-left: 4px solid tokens.$color-warning;
+
+  .course-name {
+    font-size: tokens.$font-size-base;
+    font-weight: bold;
+    color: tokens.$color-neutral-900;
+    margin-bottom: tokens.$spacing-sm;
+  }
+
+  .teacher-name {
+    font-size: tokens.$font-size-sm;
+    color: tokens.$color-neutral-600;
+    margin-bottom: tokens.$spacing-md;
+  }
+
+  .time-info,
+  .classroom-name {
+    display: flex;
+    align-items: center;
+    gap: tokens.$spacing-sm;
+    font-size: tokens.$font-size-xs + 2;
+    color: tokens.$color-neutral-600;
+    margin-bottom: tokens.$spacing-xs - 2;
+
+    mat-icon {
+      font-size: tokens.$font-size-lg;
+      color: tokens.$color-neutral-500;
+    }
+  }
+}
+
+/* 新时间段标题 */
+form {
+  h4 {
+    font-size: tokens.$font-size-base;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    margin: tokens.$spacing-lg 0 tokens.$spacing-md 0;
+  }
+}
+
+/* 时间范围�?*/
+.time-range-group {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-md;
+
+  .time-field {
+    flex: 1;
+  }
+
+  mat-icon {
+    color: tokens.$color-neutral-500;
+    margin-top: tokens.$spacing-lg;
+  }
+}
+
+/* 时间对比区域 */
+.time-comparison {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: tokens.$spacing-md;
+  padding: tokens.$spacing-md;
+  background-color: tokens.$color-neutral-100;
+  border-radius: tokens.$radius-md;
+  margin-top: tokens.$spacing-lg;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+  }
+
+  mat-icon {
+    color: tokens.$color-brand-primary;
+    font-size: tokens.$font-size-xl;
+
+    @media (max-width: 600px) {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.comparison-item {
+  flex: 1;
+  padding: tokens.$spacing-md;
+  border-radius: tokens.$radius-sm;
+  text-align: center;
+
+  &.original {
+    background-color: tokens.$color-error-light;  // #ffebee
+
+    .label {
+      font-size: tokens.$font-size-xs;
+      color: tokens.$color-error-dark;  // #c62828
+      font-weight: 600;
+      margin-bottom: tokens.$spacing-sm;
+    }
+
+    .value {
+      font-size: tokens.$font-size-sm;
+      color: tokens.$color-neutral-900;
+      font-weight: 600;
+    }
+  }
+
+  &.new {
+    background-color: tokens.$color-success-light;  // #e8f5e9
+
+    .label {
+      font-size: tokens.$font-size-xs;
+      color: tokens.$color-success-dark;  // #2e7d32
+      font-weight: 600;
+      margin-bottom: tokens.$spacing-sm;
+    }
+
+    .value {
+      font-size: tokens.$font-size-sm;
+      color: tokens.$color-neutral-900;
+      font-weight: 600;
+    }
+  }
+}
+
+/* 冲突提示 */
+.conflict-warning {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-md;
+  padding: tokens.$spacing-sm tokens.$spacing-md;
+  background-color: tokens.$color-error-light;
+  border-radius: tokens.$radius-md;
+  margin-top: tokens.$spacing-md;
+  color: tokens.$color-error-dark;
+  font-weight: 500;
+
+  mat-icon {
+    color: tokens.$color-error-dark;
+  }
+}
+
+/* 对话框底部操作栏 */
+[mat-dialog-actions] {
+  padding-top: tokens.$spacing-md;
+  gap: tokens.$spacing-sm;
+}

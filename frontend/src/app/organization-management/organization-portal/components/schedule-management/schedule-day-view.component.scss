@@ -1,0 +1,339 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.day-view-container {
+  padding: tokens.$spacing-lg;
+  background-color: tokens.$color-neutral-100;
+  min-height: 100%;
+}
+
+/* 工具�?*/
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: tokens.$spacing-lg;
+  gap: tokens.$spacing-md;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.nav-controls {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+}
+
+.current-date {
+  font-size: tokens.$font-size-lg;
+  font-weight: 600;
+  color: tokens.$color-neutral-900;
+  margin: 0 tokens.$spacing-md;
+  white-space: nowrap;
+}
+
+.view-controls {
+  display: flex;
+  gap: tokens.$spacing-sm;
+  align-items: center;
+
+  .date-picker {
+    width: 160px;
+  }
+}
+
+/* 日视图时间轴 */
+.day-schedule {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 0;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  overflow: hidden;
+  box-shadow: tokens.$shadow-sm;
+}
+
+/* 时间刻度�?*/
+.time-column {
+  border-right: 2px solid tokens.$color-neutral-300;
+}
+
+.hour-label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  font-size: tokens.$font-size-xs;
+  color: tokens.$color-neutral-600;
+  border-bottom: 1px solid tokens.$color-neutral-200;
+  padding-top: tokens.$spacing-xs;
+}
+
+/* 课程内容区域 */
+.day-content {
+  position: relative;
+  min-height: calc((endHour - startHour) * hourHeight);
+}
+
+.hour-grid-line {
+  border-bottom: 1px solid tokens.$color-neutral-200;
+  width: 100%;
+}
+
+/* 当前时间�?*/
+.current-time-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  pointer-events: none;
+
+  .time-dot {
+    position: absolute;
+    left: -6px;
+    top: -6px;
+    width: 12px;
+    height: 12px;
+    background-color: tokens.$color-error;
+    border-radius: tokens.$radius-full;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .time-line {
+    border-top: 2px solid tokens.$color-error;
+    width: 100%;
+  }
+}
+
+/* 课程卡片 */
+.schedule-card {
+  position: absolute;
+  left: tokens.$spacing-xs;
+  right: tokens.$spacing-xs;
+  border-radius: tokens.$radius-md;
+  padding: tokens.$spacing-md;
+  color: white;
+  cursor: pointer;
+  transition: transform tokens.$transition-fast, box-shadow tokens.$transition-fast;
+  overflow: hidden;
+  z-index: 10;
+
+  &:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+}
+
+.card-content {
+  font-size: tokens.$font-size-xs;
+  line-height: 1.5;
+}
+
+.course-name {
+  font-weight: bold;
+  font-size: tokens.$font-size-sm;
+  margin-bottom: tokens.$spacing-sm;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacher-name {
+  opacity: 0.95;
+  margin-bottom: tokens.$spacing-xs;
+  font-size: tokens.$font-size-xs;
+}
+
+.classroom {
+  opacity: 0.85;
+  font-size: tokens.$font-size-xs;
+  margin-bottom: tokens.$spacing-xs;
+}
+
+.time-range {
+  opacity: 0.8;
+  font-size: tokens.$font-size-xs;
+  font-weight: 600;
+  margin-bottom: tokens.$spacing-sm;
+}
+
+.student-count {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-xs;
+  font-size: tokens.$font-size-xs - 2;
+  opacity: 0.75;
+
+  mat-icon {
+    font-size: tokens.$font-size-lg;
+    width: tokens.$font-size-lg;
+    height: tokens.$font-size-lg;
+  }
+}
+
+.card-actions {
+  position: absolute;
+  top: tokens.$spacing-xs;
+  right: tokens.$spacing-xs;
+  display: flex;
+  gap: tokens.$spacing-xs;
+  opacity: 0;
+  transition: opacity tokens.$transition-fast;
+
+  .schedule-card:hover & {
+    opacity: 1;
+  }
+
+  button {
+    width: 28px;
+    height: 28px;
+    background-color: rgba(255, 255, 255, 0.3);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: white;
+    }
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+}
+
+/* 空状�?*/
+.empty-state {
+  text-align: center;
+  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  background-color: white;
+  border-radius: tokens.$radius-md;
+  margin-top: tokens.$spacing-lg;
+
+  mat-icon {
+    font-size: tokens.$font-size-3xl * 2;
+    width: tokens.$font-size-3xl * 2;
+    height: tokens.$font-size-3xl * 2;
+    color: tokens.$color-neutral-500;
+    margin-bottom: tokens.$spacing-md;
+  }
+
+  p {
+    font-size: tokens.$font-size-base;
+    color: tokens.$color-neutral-600;
+    margin-bottom: tokens.$spacing-lg;
+  }
+}
+
+/* 统计卡片 */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: tokens.$spacing-md;
+  margin-top: tokens.$spacing-lg;
+}
+
+.summary-card {
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+  transition: transform tokens.$transition-fast;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    padding: 20px !important;
+  }
+}
+
+.summary-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: tokens.$radius-lg;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: tokens.$spacing-md;
+  font-size: tokens.$font-size-xl + 4;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.summary-info {
+  flex: 1;
+}
+
+.summary-value {
+  font-size: tokens.$font-size-2xl;
+  font-weight: bold;
+  color: tokens.$color-neutral-900;
+  margin-bottom: tokens.$spacing-xs;
+}
+
+.summary-label {
+  font-size: tokens.$font-size-sm;
+  color: tokens.$color-neutral-600;
+}
+
+/* 响应式调�?*/
+@media (max-width: 1024px) {
+  .day-schedule {
+    font-size: 12px;
+  }
+
+  .course-name {
+    font-size: 14px;
+  }
+
+  .teacher-name,
+  .classroom,
+  .time-range {
+    font-size: 12px;
+  }
+
+  .summary-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav-controls {
+    justify-content: center;
+  }
+
+  .current-date {
+    font-size: 16px;
+    margin: 0 8px;
+  }
+
+  .view-controls {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .date-picker {
+    width: 100%;
+  }
+
+  .day-schedule {
+    overflow-x: auto;
+  }
+
+  .schedule-card {
+    left: 4px;
+    right: 4px;
+    padding: 8px;
+  }
+
+  .card-actions {
+    opacity: 1;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}

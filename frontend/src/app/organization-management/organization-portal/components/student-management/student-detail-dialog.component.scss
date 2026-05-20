@@ -1,0 +1,247 @@
+@use '../../../../../styles/design-tokens' as tokens;
+
+.dialog-container {
+  min-width: 700px;
+  max-width: 900px;
+
+  @media (max-width: 768px) {
+    min-width: 100%;
+  }
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: tokens.$spacing-md;
+  border-bottom: 1px solid tokens.$color-neutral-300;
+
+  h2[mat-dialog-title] {
+    margin: 0;
+    font-size: tokens.$font-size-xl;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+  }
+
+  button[mat-icon-button] {
+    margin-right: -(tokens.$spacing-xs);
+  }
+}
+
+mat-progress-bar {
+  margin-top: -(tokens.$spacing-md);
+  margin-bottom: tokens.$spacing-md;
+}
+
+.info-card {
+  margin-bottom: tokens.$spacing-lg;
+  border-radius: tokens.$radius-lg;
+  box-shadow: tokens.$shadow-sm;
+}
+
+.student-header {
+  display: flex;
+  gap: tokens.$spacing-lg;
+  margin-bottom: tokens.$spacing-lg;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: tokens.$radius-full;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100px;
+  height: 100px;
+  border-radius: tokens.$radius-full;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: tokens.$font-size-4xl;
+  font-weight: bold;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.name {
+  font-size: tokens.$font-size-xl;
+  font-weight: bold;
+  color: tokens.$color-neutral-900;
+  margin: 0 0 tokens.$spacing-sm 0;
+}
+
+.grade {
+  font-size: tokens.$font-size-base;
+  color: tokens.$color-neutral-600;
+  margin: tokens.$spacing-xs 0;
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: tokens.$spacing-sm;
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: tokens.$spacing-sm;
+  font-size: tokens.$font-size-sm;
+  color: tokens.$color-neutral-600;
+
+  mat-icon {
+    font-size: tokens.$font-size-lg;
+    color: tokens.$color-neutral-500;
+  }
+}
+
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: tokens.$spacing-md;
+  margin-bottom: tokens.$spacing-lg;
+  padding: tokens.$spacing-md;
+  background-color: tokens.$color-neutral-100;
+  border-radius: tokens.$radius-md;
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-label {
+  font-size: tokens.$font-size-xs + 2;
+  color: tokens.$color-neutral-600;
+  margin-bottom: tokens.$spacing-sm;
+}
+
+.stat-value {
+  font-size: tokens.$font-size-lg;
+  font-weight: bold;
+  color: tokens.$color-neutral-900;
+}
+
+.parent-section {
+  h4 {
+    font-size: tokens.$font-size-base;
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    margin: 0 0 tokens.$spacing-md 0;
+  }
+
+  .parent-info {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: tokens.$spacing-md;
+
+    .parent-item {
+      display: flex;
+      gap: tokens.$spacing-sm;
+
+      .label {
+        font-weight: 600;
+        color: tokens.$color-neutral-600;
+      }
+
+      .value {
+        color: tokens.$color-neutral-900;
+      }
+    }
+  }
+}
+
+mat-tab-group {
+  ::ng-deep {
+    .mat-mdc-tab-body-wrapper {
+      min-height: 300px;
+    }
+  }
+}
+
+.tab-content {
+  padding: tokens.$spacing-md 0;
+}
+
+.empty-text {
+  text-align: center;
+  color: tokens.$color-neutral-500;
+  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  font-size: tokens.$font-size-sm;
+}
+
+mat-list-item {
+  background-color: tokens.$color-neutral-50;
+  margin-bottom: tokens.$spacing-sm;
+  border-radius: tokens.$radius-md;
+}
+
+.progress-bar {
+  width: 200px;
+  margin-right: tokens.$spacing-sm;
+}
+
+.completion-text {
+  font-size: tokens.$font-size-xs + 2;
+  color: tokens.$color-neutral-600;
+}
+
+.comment {
+  font-size: tokens.$font-size-xs + 2;
+  color: tokens.$color-neutral-600;
+  font-style: italic;
+}
+
+.score {
+  font-weight: bold;
+  color: tokens.$color-neutral-900;
+  margin-right: tokens.$spacing-sm;
+}
+
+.percentage {
+  color: tokens.$color-neutral-600;
+}
+
+.amount {
+  font-weight: bold;
+  color: tokens.$color-success;
+  margin-right: tokens.$spacing-sm;
+}
+
+.course-table {
+  width: 100%;
+
+  th.mat-header-cell {
+    font-weight: 600;
+    color: tokens.$color-neutral-900;
+    background-color: tokens.$color-neutral-50;
+  }
+
+  td.mat-cell {
+    padding: tokens.$spacing-md;
+  }
+
+  tr.mat-row:hover {
+    background-color: tokens.$color-neutral-100;
+  }
+}
+
+[mat-dialog-actions] {
+  padding-top: tokens.$spacing-md;
+  border-top: 1px solid tokens.$color-neutral-300;
+}

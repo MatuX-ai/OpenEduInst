@@ -1,0 +1,249 @@
+@import '../../../../../../styles/design-tokens/index';
+
+.teacher-list-container {
+  padding: $spacing-lg;
+}
+
+/* 筛选工具栏 */
+.filter-toolbar {
+  display: flex;
+  gap: $spacing-md;
+  align-items: center;
+  padding: $spacing-md;
+  background-color: white;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+  flex-wrap: wrap;
+
+  .search-field {
+    flex: 1;
+    min-width: 200px;
+
+    mat-icon {
+      color: $color-neutral-500;
+    }
+  }
+
+  mat-form-field {
+    min-width: 150px;
+  }
+
+  .batch-operations {
+    display: flex;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-left: auto;
+    padding-left: $spacing-md;
+    border-left: 1px solid $color-neutral-300;
+
+    .selected-count {
+      font-size: $font-size-sm;
+      font-weight: 600;
+      color: $color-brand-primary;
+      margin-right: $spacing-xs;
+    }
+
+    button {
+      mat-icon {
+        margin-right: 4px;
+      }
+    }
+  }
+}
+
+/* 表格复选框�?*/
+.mat-column-select {
+  width: 60px;
+  text-align: center;
+
+  mat-checkbox {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
+}
+
+.stat-card {
+  border-radius: 0; // 方形卡片
+  box-shadow: $shadow-md;
+  transition: transform $transition-fast;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+
+  mat-card-content {
+    padding: $spacing-lg;
+  }
+}
+
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
+
+  h3 {
+    margin: 0;
+    font-size: $font-size-base;
+    color: $color-neutral-600;
+    font-weight: 500;
+  }
+}
+
+.stat-icon {
+  font-size: $font-size-xl + 4;
+  width: $font-size-xl + 4;
+  height: $font-size-xl + 4;
+  border-radius: 0; // 方形图标
+  padding: $spacing-md;
+  color: white;
+
+  &.total {
+    background: linear-gradient(135deg, #2196f3, #1565c0);
+  }
+
+  &.active {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+  }
+
+  &.leave {
+    background: linear-gradient(135deg, #ff9800, #ef6c00);
+  }
+
+  &.rating {
+    background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+  }
+}
+
+.stat-value {
+  font-size: $font-size-4xl;
+  font-weight: 700;
+  color: $color-neutral-900;
+  margin: $spacing-sm 0;
+}
+
+.stat-footer {
+  font-size: $font-size-sm;
+  color: $color-neutral-500;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  h1 {
+    display: flex;
+    align-items: center;
+    gap: $spacing-md;
+    margin: 0;
+    font-size: $font-size-3xl;
+    color: $color-neutral-900;
+  }
+
+  .actions {
+    display: flex;
+    gap: $spacing-md;
+  }
+}
+
+.loading-container,
+.error-container,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: $spacing-3xl $spacing-lg;
+  text-align: center;
+}
+
+.error-container {
+  mat-icon.error-icon {
+    font-size: $font-size-2xl * 2;
+    width: $font-size-2xl * 2;
+    height: $font-size-2xl * 2;
+    color: $color-error;
+    margin-bottom: $spacing-md;
+  }
+
+  p {
+    color: $color-neutral-600;
+    margin: $spacing-sm 0 $spacing-md;
+  }
+}
+
+.empty-state {
+  background: $color-neutral-100;
+  border-radius: $radius-md;
+
+  mat-icon {
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-500;
+    margin-bottom: $spacing-md;
+  }
+
+  h3 {
+    margin: 0 0 $spacing-sm;
+    color: $color-neutral-600;
+  }
+
+  p {
+    margin: 0;
+    color: $color-neutral-500;
+  }
+}
+
+.teacher-table {
+  width: 100%;
+  border-radius: $radius-md;
+  overflow: hidden;
+
+  th {
+    background: $color-neutral-100;
+    font-weight: 600;
+    color: $color-neutral-900;
+  }
+
+  td {
+    padding: $spacing-md;
+  }
+}
+
+.teacher-info {
+  display: flex;
+  align-items: center;
+  gap: $spacing-md;
+
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-full;
+    object-fit: cover;
+  }
+}
+
+.rating-display {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  color: $color-warning;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: $font-size-lg;
+    width: $font-size-lg;
+    height: $font-size-lg;
+  }
+}

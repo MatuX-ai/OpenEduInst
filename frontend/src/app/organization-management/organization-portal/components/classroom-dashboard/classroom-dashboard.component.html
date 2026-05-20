@@ -1,0 +1,176 @@
+<div class="classroom-dashboard">
+  <div class="dashboard-header">
+    <h1><mat-icon>meeting_room</mat-icon> 教室管理</h1>
+    <p>机构教室资源与设备管理</p>
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon total-icon">
+          <mat-icon>business</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ stats?.totalClassrooms || 0 }}</h3>
+          <p class="stat-label">教室总数</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon available-icon">
+          <mat-icon>check_circle</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ stats?.availableClassrooms || 0 }}</h3>
+          <p class="stat-label">可用教室</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon capacity-icon">
+          <mat-icon>people</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ stats?.totalCapacity || 0 }}</h3>
+          <p class="stat-label">总容纳人数</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-icon utilization-icon">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+        <div class="stat-info">
+          <h3 class="stat-value">{{ stats?.utilizationRate || 0 }}%</h3>
+          <p class="stat-label">平均使用率</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- 操作工具栏 -->
+  <div class="toolbar">
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>搜索</mat-label>
+        <input matInput [(ngModel)]="searchKeyword" (input)="applyFilter()" placeholder="教室名称或位置" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>教室类型</mat-label>
+        <mat-select [(ngModel)]="selectedType" (selectionChange)="applyFilter()">
+          <mat-option value="">全部类型</mat-option>
+          @for (type of classroomTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>状态</mat-label>
+        <mat-select [(ngModel)]="selectedStatus" (selectionChange)="applyFilter()">
+          <mat-option value="">全部状态</mat-option>
+          <mat-option value="true">可用</mat-option>
+          <mat-option value="false">不可用</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-stroked-button (click)="resetFilter()">
+        <mat-icon>refresh</mat-icon>
+        重置
+      </button>
+    </div>
+
+    <button mat-raised-button color="primary" (click)="openAddDialog()">
+      <mat-icon>add</mat-icon>
+      添加教室
+    </button>
+  </div>
+
+  <!-- 加载状态 -->
+  @if (loading) {
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>正在加载教室列表...</p>
+    </div>
+  }
+
+  <!-- 教室列表 -->
+  @if (!loading && classrooms.length > 0) {
+    <div class="classroom-grid">
+      @for (classroom of filteredClassrooms; track classroom.id) {
+        <mat-card class="classroom-card" [class.unavailable]="!classroom.isAvailable">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon [color]="classroom.isAvailable ? 'accent' : undefined">
+                {{ getClassroomIcon(classroom.type || '') }}
+              </mat-icon>
+              {{ classroom.name }}
+            </mat-card-title>
+            <mat-card-subtitle>{{ classroom.type }}</mat-card-subtitle>
+          </mat-card-header>
+
+          <mat-card-content>
+            <div class="classroom-details">
+              <div class="detail-row">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ classroom.location || '未指定位置' }}</span>
+              </div>
+              <div class="detail-row">
+                <mat-icon>people</mat-icon>
+                <span>容量：{{ classroom.capacity }}人</span>
+              </div>
+              @if (classroom.equipment && classroom.equipment.length > 0) {
+                <div class="detail-row">
+                  <mat-icon>build</mat-icon>
+                  <div class="equipment-list">
+                    @for (item of classroom.equipment.slice(0, 3); track item) {
+                      <mat-chip>{{ item }}</mat-chip>
+                    }
+                    @if (classroom.equipment.length > 3) {
+                      <mat-chip>+{{ classroom.equipment.length - 3 }}</mat-chip>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+
+            @if (classroom.description) {
+              <p class="description">{{ classroom.description }}</p>
+            }
+          </mat-card-content>
+
+          <mat-card-actions align="end">
+            <button mat-button (click)="viewClassroom(classroom)">
+              <mat-icon>visibility</mat-icon>
+              查看
+            </button>
+            <button mat-button (click)="editClassroom(classroom)">
+              <mat-icon>edit</mat-icon>
+              编辑
+            </button>
+            <button mat-button color="warn" (click)="deleteClassroom(classroom)">
+              <mat-icon>delete</mat-icon>
+              删除
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  }
+
+  @if (!loading && classrooms.length === 0) {
+    <div class="empty-state">
+      <mat-icon>meeting_room</mat-icon>
+      <h3>暂无教室数据</h3>
+      <p>点击右上角添加第一个教室</p>
+    </div>
+  }
+</div>

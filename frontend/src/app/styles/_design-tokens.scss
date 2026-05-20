@@ -1,0 +1,27 @@
+/* 组织类型主题色定义 */
+$org-theme-training: #1976d2; // 培训机构：专业蓝
+$org-theme-k12: #4caf50;      // K12学校：生机绿
+$org-theme-vocational: #ff9800; // 职业学校：活力橙
+$org-theme-bureau: #9c27b0;   // 教育局：稳重紫
+
+@mixin org-theme($type) {
+  @if $type == 'training' {
+    --primary-color: #{$org-theme-training};
+  } @else if $type == 'k12' {
+    --primary-color: #{$org-theme-k12};
+  } @else if $type == 'vocational' {
+    --primary-color: #{$org-theme-vocational};
+  } @else if $type == 'bureau' {
+    --primary-color: #{$org-theme-bureau};
+  }
+}
+
+.dashboard-card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-4px);
+  }
+}

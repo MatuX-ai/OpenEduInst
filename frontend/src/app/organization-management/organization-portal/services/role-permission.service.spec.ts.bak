@@ -1,0 +1,208 @@
+/**
+ * 角色权限管理服务单元测试
+ *
+ * @fileoverview 测试角色权限管理的核心业务逻辑
+ * @author AI Assistant
+ * @date 2026-04-04
+ */
+
+import { TestBed } from '@angular/core/testing';
+import { MatDialog } from '@angular/material/dialog';
+
+import { RolePermissionService } from './role-permission.service';
+import { CreateRoleRequest, UpdateRoleRequest, AssignRoleRequest } from '../models/role-permission.models';
+
+describe('RolePermissionService', () => {
+  let service: RolePermissionService;
+  let dialogSpy: jasmine.SpyObj<MatDialog>;
+
+  beforeEach(() => {
+    const spy = jasmine.createSpyObj('MatDialog', ['open']);
+
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: MatDialog, useValue: spy }
+      ]
+    });
+
+    service = TestBed.inject(RolePermissionService);
+    dialogSpy = TestBed.inject(MatDialog) as jasmine.SpyObj<MatDialog>;
+  });
+
+  it('should be created', () => {
+    expect(service).toBeTruthy();
+  });
+
+  describe('getRoles()', () => {
+    it('should return role list', (done) => {
+      service.getRoles().subscribe((roles) => {
+        expect(roles).toBeDefined();
+        expect(Array.isArray(roles)).toBeTrue();
+        expect(roles.length).toBeGreaterThan(0);
+        done();
+      });
+    });
+
+    it('should filter roles by keyword', (done) => {
+      service.getRoles({ keyword: '教师' }).subscribe((roles) => {
+        roles.forEach((role) => {
+          expect(
+            role.name.includes('教师') ||
+            role.description.includes('教师')
+          ).toBeTrue();
+        });
+        done();
+      });
+    });
+  });
+
+  describe('getRoleById()', () => {
+    it('should return role detail for valid id', (done) => {
+      service.getRoleById(1).subscribe((role) => {
+        expect(role).toBeDefined();
+        expect(role.id).toBe(1);
+        expect(role.permissions).toBeDefined();
+        done();
+      });
+    });
+
+    it('should throw error for invalid id', () => {
+      expect(() => service.getRoleById(9999)).toThrow();
+    });
+  });
+
+  describe('createRole()', () => {
+    it('should create a new role successfully', (done) => {
+      const request: CreateRoleRequest = {
+        name: '测试角色',
+        code: 'test_role',
+        description: '用于测试的角色',
+        dataScope: 'self',
+      };
+
+      service.createRole(request).subscribe((role) => {
+        expect(role).toBeDefined();
+        expect(role.name).toBe('测试角色');
+        expect(role.code).toBe('test_role');
+        expect(role.isSystem).toBeFalse();
+        done();
+      });
+    });
+  });
+
+  describe('updateRole()', () => {
+    it('should update role information successfully', (done) => {
+      const request: UpdateRoleRequest = {
+        name: '更新后的角色名',
+        description: '更新后的描述',
+      };
+
+      service.updateRole(1, request).subscribe((role) => {
+        expect(role.name).toBe('更新后的角色名');
+        expect(role.description).toBe('更新后的描述');
+        done();
+      });
+    });
+
+    it('should throw error when updating non-existent role', (done) => {
+      const request: UpdateRoleRequest = { name: '测试' };
+      service.updateRole(9999, request).subscribe({
+        error: (error) => {
+          expect(error).toBeDefined();
+          done();
+        },
+      });
+    });
+  });
+
+  describe('deleteRole()', () => {
+    it('should delete role successfully', (done) => {
+      service.deleteRole(4).subscribe((result) => {
+        expect(result).toBeTrue();
+        done();
+      });
+    });
+
+    it('should prevent deletion of system roles', (done) => {
+      service.deleteRole(1).subscribe((result) => {
+        expect(result).toBeFalse();
+        done();
+      });
+    });
+  });
+
+  describe('getPermissions()', () => {
+    it('should return permission tree', (done) => {
+      service.getPermissions().subscribe((permissions) => {
+        expect(permissions).toBeDefined();
+        expect(Array.isArray(permissions)).toBeTrue();
+        expect(permissions.length).toBeGreaterThan(0);
+
+        // Check permission structure
+        permissions.forEach((perm) => {
+          expect(perm.id).toBeDefined();
+          expect(perm.name).toBeDefined();
+          expect(perm.code).toBeDefined();
+          expect(perm.type).toBeDefined();
+        });
+        done();
+      });
+    });
+  });
+
+  describe('assignRoleToUser()', () => {
+    it('should assign role to user successfully', (done) => {
+      const request: AssignRoleRequest = {
+        userId: 1,
+        roleId: 3,
+      };
+
+      service.assignRoleToUser(request).subscribe((result) => {
+        expect(result).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('removeRoleFromUser()', () => {
+    it('should remove role from user successfully', (done) => {
+      service.removeRoleFromUser(1, 3).subscribe((result) => {
+        expect(result).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getUserRoles()', () => {
+    it('should return user roles', (done) => {
+      service.getUserRoles(1).subscribe((roles) => {
+        expect(roles).toBeDefined();
+        expect(Array.isArray(roles)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getOperationLogs()', () => {
+    it('should return operation logs', (done) => {
+      service.getOperationLogs().subscribe((logs) => {
+        expect(logs).toBeDefined();
+        expect(Array.isArray(logs)).toBeTrue();
+        done();
+      });
+    });
+  });
+
+  describe('getPermissionStats()', () => {
+    it('should return permission statistics', (done) => {
+      service.getPermissionStats().subscribe((stats) => {
+        expect(stats).toBeDefined();
+        expect(stats.totalRoles).toBeGreaterThanOrEqual(0);
+        expect(stats.totalPermissions).toBeGreaterThanOrEqual(0);
+        expect(stats.systemRoles).toBeGreaterThanOrEqual(0);
+        expect(stats.customRoles).toBeGreaterThanOrEqual(0);
+        done();
+      });
+    });
+  });
+});

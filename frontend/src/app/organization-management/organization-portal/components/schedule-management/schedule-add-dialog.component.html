@@ -1,0 +1,223 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>{{ title }}</h2>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <div mat-dialog-content>
+    <mat-stepper [selectedIndex]="stepIndex" linear>
+      <!-- 步骤 1: 基本信息 -->
+      <mat-step label="基本信息">
+        <form>
+          <!-- 课程选择 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>选择课程 <span class="required">*</span></mat-label>
+            <mat-select [(ngModel)]="formData.courseId" name="courseId" required>
+              @for (course of courses; track course.id) {
+                <mat-option [value]="course.id">
+                  {{ course.name }} ({{ course.code }})
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- 教师选择 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>授课教师 <span class="required">*</span></mat-label>
+            <mat-select [(ngModel)]="formData.teacherId" name="teacherId" required>
+              @if (getSelectedCourse()) {
+                <mat-option [value]="getSelectedCourse()!.teacherId">
+                  {{ getSelectedCourse()!.teacherName }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- 教室选择 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>选择教室</mat-label>
+            <mat-select [(ngModel)]="formData.classroomId" name="classroomId">
+              @for (classroom of classrooms; track classroom.id) {
+                <mat-option [value]="classroom.id">
+                  {{ classroom.name }} (容量：{{ classroom.capacity }}人)
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- 备注 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>备注</mat-label>
+            <textarea matInput [(ngModel)]="formData.notes" name="notes" rows="3"></textarea>
+          </mat-form-field>
+        </form>
+
+        <div class="stepper-actions">
+          <button mat-button disabled>上一步</button>
+          <button mat-flat-button color="primary" (click)="nextStep()">下一步</button>
+        </div>
+      </mat-step>
+
+      <!-- 步骤 2: 时间安排 -->
+      <mat-step label="时间安排">
+        <form>
+          <!-- 星期选择 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>星期 <span class="required">*</span></mat-label>
+            <mat-select [(ngModel)]="formData.dayOfWeek" name="dayOfWeek" required>
+              @for (day of weekDays; track day.value) {
+                <mat-option [value]="day.value">{{ day.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <!-- 时间选择 -->
+          <div class="time-range-group">
+            <mat-form-field appearance="outline" class="time-field">
+              <mat-label>开始时间 <span class="required">*</span></mat-label>
+              <input matInput type="time" [(ngModel)]="formData.startTime" name="startTime" required />
+            </mat-form-field>
+
+            <mat-icon>trending_flat</mat-icon>
+
+            <mat-form-field appearance="outline" class="time-field">
+              <mat-label>结束时间 <span class="required">*</span></mat-label>
+              <input matInput type="time" [(ngModel)]="formData.endTime" name="endTime" required />
+            </mat-form-field>
+          </div>
+
+          <!-- 开始日期 -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>开始日期 <span class="required">*</span></mat-label>
+            <input matInput type="date" [(ngModel)]="formData.startDate" name="startDate" required />
+          </mat-form-field>
+
+          <!-- 重复设置 -->
+          <div class="repeat-section">
+            <h4>重复设置</h4>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>重复类型</mat-label>
+              <mat-select [(ngModel)]="formData.repeatType" name="repeatType">
+                @for (type of repeatTypes; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            @if (formData.repeatType !== 'none') {
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>重复周数</mat-label>
+                <input matInput type="number" [(ngModel)]="formData.repeatWeeks" name="repeatWeeks" min="1" max="52" />
+              </mat-form-field>
+            }
+          </div>
+        </form>
+
+        <div class="stepper-actions">
+          <button mat-button (click)="previousStep()">上一步</button>
+          <button mat-flat-button color="primary" (click)="nextStep()">下一步</button>
+        </div>
+      </mat-step>
+
+      <!-- 步骤 3: 学员选择 -->
+      <mat-step label="学员选择">
+        <div class="student-selection">
+          <p class="hint">选择参加该课程的学员（可多选）</p>
+
+          @if (getSelectedCourse() && getSelectedCourse()!.studentIds.length > 0) {
+            <div class="student-list">
+              @for (studentId of getSelectedCourse()!.studentIds; track studentId) {
+                <mat-checkbox
+                  [checked]="formData.studentIds.includes(studentId)"
+                  (change)="onStudentToggle(studentId, $event)">
+                  学生{{ studentId }}
+                </mat-checkbox>
+              }
+            </div>
+          } @else {
+            <p class="empty-text">该课程暂无学员</p>
+          }
+        </div>
+
+        <div class="stepper-actions">
+          <button mat-button (click)="previousStep()">上一步</button>
+          <button mat-flat-button color="primary" (click)="nextStep()">下一步</button>
+        </div>
+      </mat-step>
+
+      <!-- 步骤 4: 确认信息 -->
+      <mat-step label="确认信息">
+        <div class="confirm-section">
+          <h4>排课信息确认</h4>
+
+          <div class="info-grid">
+            <div class="info-item">
+              <span class="label">课程:</span>
+              <span class="value">{{ getSelectedCourse()?.name || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">教师:</span>
+              <span class="value">{{ getSelectedCourse()?.teacherName || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">教室:</span>
+              <span class="value">
+                {{ classrooms.find(c => c.id === formData.classroomId)?.name || '未选择' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">时间:</span>
+              <span class="value">
+                周{{ weekDays.find(d => d.value === formData.dayOfWeek)?.label }}
+                {{ formData.startTime }} - {{ formData.endTime }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">开始日期:</span>
+              <span class="value">{{ formData.startDate | date:'yyyy-MM-dd' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">重复:</span>
+              <span class="value">
+                {{ repeatTypes.find(r => r.value === formData.repeatType)?.label }}
+                @if (formData.repeatWeeks) {
+                  ({{ formData.repeatWeeks }}周)
+                }
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="label">学员:</span>
+              <span class="value">{{ formData.studentIds.length }}人</span>
+            </div>
+          </div>
+
+          <!-- 冲突提示 -->
+          @if (hasConflict) {
+            <div class="conflict-warning">
+              <mat-icon color="warn">warning</mat-icon>
+              <span>{{ conflictMessage }}</span>
+            </div>
+          } @else if (conflictMessage) {
+            <div class="conflict-success">
+              <mat-icon color="accent">check_circle</mat-icon>
+              <span>无时间冲突，可以排课</span>
+            </div>
+          }
+        </div>
+
+        <div class="stepper-actions">
+          <button mat-button (click)="previousStep()">上一步</button>
+          <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="hasConflict">
+            {{ isEditMode ? '保存修改' : '确认添加' }}
+          </button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">取消</button>
+  </div>
+</div>

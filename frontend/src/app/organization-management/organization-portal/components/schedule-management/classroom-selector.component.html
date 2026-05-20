@@ -1,0 +1,124 @@
+<div class="classroom-selector-container">
+  <h3 class="section-title">选择教室</h3>
+
+  @if (loading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <!-- 类型过滤器 -->
+  <div class="type-filters">
+    @for (type of ['普通教室', '多媒体教室', '计算机教室', '音乐教室', '美术教室']; track type) {
+      <button
+        mat-stroked-button
+        [color]="filterType === type ? 'primary' : undefined"
+        (click)="filterByType(type)">
+        {{ type }}
+      </button>
+    }
+    @if (filterType) {
+      <button mat-icon-button (click)="filterByType('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+
+  <!-- 教室列表 -->
+  <div class="classroom-list">
+    @for (classroom of filteredClassrooms; track classroom.id) {
+      <mat-card
+        class="classroom-card"
+        [class.selected]="selectedClassroomId === classroom.id"
+        [class.unavailable]="!classroom.isAvailable">
+        <mat-card-content>
+          <div class="card-header">
+            <div class="classroom-info">
+              <div class="classroom-name">
+                <mat-icon [style.color]="getClassroomTypeColor(classroom.type)">
+                  {{ getClassroomTypeIcon(classroom.type) }}
+                </mat-icon>
+                <span>{{ classroom.name }}</span>
+              </div>
+              <div class="classroom-type">{{ classroom.type }}</div>
+            </div>
+
+            <div class="card-actions">
+              @if (classroom.isAvailable) {
+                <button
+                  mat-icon-button
+                  [color]="selectedClassroomId === classroom.id ? 'primary' : undefined"
+                  (click)="onClassroomSelect(classroom.id)"
+                  [matTooltip]="'选择' + classroom.name">
+                  <mat-icon>{{ selectedClassroomId === classroom.id ? 'check_circle' : 'add_circle_outline' }}</mat-icon>
+                </button>
+              }
+
+              <button
+                mat-icon-button
+                (click)="onCheckFreeSlots(classroom.id)"
+                [matTooltip]="'查看' + classroom.name + '空闲时段'">
+                <mat-icon>schedule</mat-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="card-details">
+            <div class="detail-item">
+              <mat-icon>people</mat-icon>
+              <span>容量：{{ classroom.capacity }}人</span>
+            </div>
+
+            @if (classroom.location) {
+              <div class="detail-item">
+                <mat-icon>location_on</mat-icon>
+                <span>{{ classroom.location }}</span>
+              </div>
+            }
+
+            @if (classroom.equipment && classroom.equipment.length > 0) {
+              <div class="detail-item">
+                <mat-icon>build</mat-icon>
+                <div class="equipment-list">
+                  @for (item of classroom.equipment; track item) {
+                    <mat-chip>{{ item }}</mat-chip>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+
+          @if (!classroom.isAvailable) {
+            <div class="unavailable-badge">
+              <mat-icon>warning</mat-icon>
+              <span>暂时不可用</span>
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    }
+
+    @if (filteredClassrooms.length === 0) {
+      <div class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <p>暂无符合条件的教室</p>
+      </div>
+    }
+  </div>
+
+  <!-- 空闲时段展示 -->
+  @if (showFreeSlots && freeSlots.length > 0) {
+    <div class="free-slots-section">
+      <h4>空闲时段</h4>
+      <div class="free-slots-grid">
+        @for (slot of freeSlots; track slot) {
+          <div class="free-slot">
+            <div class="slot-day">{{ getDayLabel(slot.dayOfWeek) }}</div>
+            <div class="slot-time">{{ slot.startTime }} - {{ slot.endTime }}</div>
+            <button mat-flat-button color="primary" size="small">
+              选择此时段
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>
