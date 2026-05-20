@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,6 +10,19 @@ export interface TrainingMetrics {
   monthlyRevenue: string;
   courseCompletionRate: string;
   equipmentUsageRate: string;
+}
+
+export interface QuickActionItem {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+export interface ResourceItem {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
 }
 
 @Component({
@@ -117,6 +130,31 @@ export interface TrainingMetrics {
               <p class="subtitle">在线教室3间</p>
             </div>
             <mat-icon class="arrow">chevron_right</mat-icon>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- 快捷操作栏 -->
+      <div class="section-title">快捷操作</div>
+      <div class="quick-actions-bar">
+        <button *ngFor="let action of quickActions" mat-raised-button class="action-btn" (click)="onQuickAction(action)">
+          <mat-icon>{{ action.icon }}</mat-icon>
+          {{ action.label }}
+        </button>
+      </div>
+
+      <!-- 教学资源中心 -->
+      <div class="section-title">教学资源中心</div>
+      <div class="resource-grid">
+        <mat-card *ngFor="let resource of resources" class="resource-card" (click)="onResourceSelect(resource)">
+          <mat-card-content>
+            <div class="resource-icon">
+              <mat-icon>{{ resource.icon }}</mat-icon>
+            </div>
+            <div class="resource-info">
+              <h4>{{ resource.title }}</h4>
+              <p>{{ resource.description }}</p>
+            </div>
           </mat-card-content>
         </mat-card>
       </div>
@@ -274,9 +312,93 @@ export interface TrainingMetrics {
       color: #999;
     }
     
+    /* 快捷操作栏 */
+    .quick-actions-bar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 32px;
+    }
+    
+    .action-btn {
+      text-transform: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+    }
+    
+    .action-btn mat-icon {
+      margin-right: 8px;
+    }
+    
+    /* 教学资源中心 */
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+    
+    .resource-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .resource-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    
+    .resource-card mat-card-content {
+      display: flex;
+      align-items: center;
+      padding: 16px !important;
+    }
+    
+    .resource-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      color: #1976d2;
+    }
+    
+    .resource-icon mat-icon {
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
+    }
+    
+    .resource-info h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    
+    .resource-info p {
+      margin: 4px 0 0 0;
+      font-size: 13px;
+      color: #666;
+    }
+    
     /* 响应式设计 */
     @media (max-width: 1200px) {
       .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .resource-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
@@ -288,6 +410,15 @@ export interface TrainingMetrics {
       .modules-grid {
         grid-template-columns: 1fr;
       }
+      .resource-grid {
+        grid-template-columns: 1fr;
+      }
+      .quick-actions-bar {
+        flex-direction: column;
+      }
+      .action-btn {
+        width: 100%;
+      }
     }
   `]
 })
@@ -298,6 +429,24 @@ export class TrainingDashboardComponent implements OnInit {
     courseCompletionRate: '92%',
     equipmentUsageRate: '85%'
   };
+  
+  @Input() quickActions: QuickActionItem[] = [
+    { id: 'enroll', label: '快速报名', icon: 'how_to_reg' },
+    { id: 'leave', label: '请假处理', icon: 'event_busy' },
+    { id: 'homework', label: '作业批改', icon: 'assignment_turned_in' },
+    { id: 'checkin', label: '签到打卡', icon: 'check_circle' },
+    { id: 'renew', label: '续费提醒', icon: 'repeat' }
+  ];
+  
+  @Input() resources: ResourceItem[] = [
+    { id: 'courseware', title: '课件发布', description: '同步教学资源', icon: 'cloud_upload' },
+    { id: 'promotion', title: '活动推广', description: '朋友圈海报生成', icon: 'share' },
+    { id: 'report', title: '学情报告', description: '一键发送家长', icon: 'description' },
+    { id: 'material', title: '素材库', description: '教案与习题集', icon: 'library_books' }
+  ];
+  
+  @Output() quickActionClick = new EventEmitter<QuickActionItem>();
+  @Output() resourceSelect = new EventEmitter<ResourceItem>();
 
   constructor() {}
 
@@ -311,5 +460,15 @@ export class TrainingDashboardComponent implements OnInit {
   onModuleClick(module: string): void {
     console.log('Module clicked:', module);
     // TODO: Navigate to module page
+  }
+  
+  onQuickAction(action: QuickActionItem): void {
+    console.log('Quick action clicked:', action);
+    this.quickActionClick.emit(action);
+  }
+  
+  onResourceSelect(resource: ResourceItem): void {
+    console.log('Resource selected:', resource);
+    this.resourceSelect.emit(resource);
   }
 }
