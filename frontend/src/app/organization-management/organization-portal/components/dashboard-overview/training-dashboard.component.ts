@@ -158,6 +158,106 @@ export interface ResourceItem {
           </mat-card-content>
         </mat-card>
       </div>
+
+      <!-- STEM 特色功能区 -->
+      <div class="section-title">STEM 特色功能</div>
+      <div class="stem-features-grid">
+        <!-- 硬件设备管理 -->
+        <mat-card class="stem-feature-card" (click)="onStemFeatureClick('hardware')">
+          <mat-card-content>
+            <div class="feature-header">
+              <div class="feature-icon blue">
+                <mat-icon>devices</mat-icon>
+              </div>
+              <mat-icon class="status-icon success">check_circle</mat-icon>
+            </div>
+            <h4>硬件设备管理</h4>
+            <p class="feature-desc">Arduino/Raspberry Pi 租赁、维护、损耗追踪</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-value">156</span>
+                <span class="stat-label">设备总数</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value orange">23</span>
+                <span class="stat-label">借出中</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- 实验项目跟踪 -->
+        <mat-card class="stem-feature-card" (click)="onStemFeatureClick('projects')">
+          <mat-card-content>
+            <div class="feature-header">
+              <div class="feature-icon green">
+                <mat-icon>science</mat-icon>
+              </div>
+              <mat-icon class="status-icon warning">pending</mat-icon>
+            </div>
+            <h4>实验项目跟踪</h4>
+            <p class="feature-desc">机器人竞赛、创客作品、编程项目归档</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-value">42</span>
+                <span class="stat-label">进行中</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value green">18</span>
+                <span class="stat-label">已完成</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Token 余额监控 -->
+        <mat-card class="stem-feature-card" (click)="onStemFeatureClick('token')">
+          <mat-card-content>
+            <div class="feature-header">
+              <div class="feature-icon purple">
+                <mat-icon>token</mat-icon>
+              </div>
+              <mat-icon class="status-icon info">info</mat-icon>
+            </div>
+            <h4>Token 余额监控</h4>
+            <p class="feature-desc">AI 助教、智能评测、课程生成按需付费</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-value purple">1,250</span>
+                <span class="stat-label">剩余 Token</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value">¥500</span>
+                <span class="stat-label">充值入口</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- 创客空间预约 -->
+        <mat-card class="stem-feature-card" (click)="onStemFeatureClick('makerspace')">
+          <mat-card-content>
+            <div class="feature-header">
+              <div class="feature-icon orange">
+                <mat-icon>precision_manufacturing</mat-icon>
+              </div>
+              <mat-icon class="status-icon success">check_circle</mat-icon>
+            </div>
+            <h4>创客空间预约</h4>
+            <p class="feature-desc">实验室预约、设备共享、安全准入管理</p>
+            <div class="feature-stats">
+              <div class="stat-item">
+                <span class="stat-value">3</span>
+                <span class="stat-label">可用空间</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-value orange">8</span>
+                <span class="stat-label">今日预约</span>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   `,
   styles: [`
@@ -393,12 +493,123 @@ export interface ResourceItem {
       color: #666;
     }
     
+    /* STEM 特色功能区 */
+    .stem-features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 8px;
+    }
+    
+    .stem-feature-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+    
+    .stem-feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      border-color: #2196f3;
+    }
+    
+    .stem-feature-card mat-card-content {
+      padding: 20px !important;
+    }
+    
+    .feature-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    
+    .feature-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
+    .feature-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+    .feature-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+    .feature-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    
+    .feature-icon mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+    
+    .status-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .status-icon.success { color: #4caf50; }
+    .status-icon.warning { color: #ff9800; }
+    .status-icon.info { color: #2196f3; }
+    
+    .stem-feature-card h4 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    
+    .feature-desc {
+      margin: 0 0 16px 0;
+      font-size: 13px;
+      color: #666;
+      line-height: 1.5;
+    }
+    
+    .feature-stats {
+      display: flex;
+      gap: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #f0f0f0;
+    }
+    
+    .stat-item {
+      flex: 1;
+      text-align: center;
+    }
+    
+    .stat-value {
+      display: block;
+      font-size: 24px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    
+    .stat-value.orange { color: #ff9800; }
+    .stat-value.green { color: #4caf50; }
+    .stat-value.purple { color: #9c27b0; }
+    
+    .stat-label {
+      display: block;
+      font-size: 12px;
+      color: #999;
+    }
+    
     /* 响应式设计 */
     @media (max-width: 1200px) {
       .metrics-grid {
         grid-template-columns: repeat(2, 1fr);
       }
       .resource-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .stem-features-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
@@ -411,6 +622,9 @@ export interface ResourceItem {
         grid-template-columns: 1fr;
       }
       .resource-grid {
+        grid-template-columns: 1fr;
+      }
+      .stem-features-grid {
         grid-template-columns: 1fr;
       }
       .quick-actions-bar {
@@ -447,6 +661,7 @@ export class TrainingDashboardComponent implements OnInit {
   
   @Output() quickActionClick = new EventEmitter<QuickActionItem>();
   @Output() resourceSelect = new EventEmitter<ResourceItem>();
+  @Output() stemFeatureClick = new EventEmitter<string>();
 
   constructor() {}
 
@@ -470,5 +685,10 @@ export class TrainingDashboardComponent implements OnInit {
   onResourceSelect(resource: ResourceItem): void {
     console.log('Resource selected:', resource);
     this.resourceSelect.emit(resource);
+  }
+  
+  onStemFeatureClick(feature: string): void {
+    console.log('STEM feature clicked:', feature);
+    this.stemFeatureClick.emit(feature);
   }
 }
