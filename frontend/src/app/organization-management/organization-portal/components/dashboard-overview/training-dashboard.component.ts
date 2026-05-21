@@ -258,6 +258,56 @@ export interface ResourceItem {
           </mat-card-content>
         </mat-card>
       </div>
+
+      <!-- 数据趋势图表 -->
+      <div class="section-title">数据趋势</div>
+      <div class="charts-grid">
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>营收趋势（近6个月）</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-placeholder">
+              <div class="bar-chart">
+                <div *ngFor="let item of revenueData" class="bar-item">
+                  <div class="bar" [style.height.%]="item.value"></div>
+                  <div class="bar-label">{{ item.label }}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>学员增长趋势</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-placeholder">
+              <div class="line-chart">
+                <svg viewBox="0 0 400 200" class="chart-svg">
+                  <polyline 
+                    fill="none" 
+                    stroke="#2196f3" 
+                    stroke-width="3"
+                    points="0,150 67,120 134,100 201,80 268,60 335,40 400,30"
+                  />
+                  <circle cx="0" cy="150" r="4" fill="#2196f3"/>
+                  <circle cx="67" cy="120" r="4" fill="#2196f3"/>
+                  <circle cx="134" cy="100" r="4" fill="#2196f3"/>
+                  <circle cx="201" cy="80" r="4" fill="#2196f3"/>
+                  <circle cx="268" cy="60" r="4" fill="#2196f3"/>
+                  <circle cx="335" cy="40" r="4" fill="#2196f3"/>
+                  <circle cx="400" cy="30" r="4" fill="#2196f3"/>
+                </svg>
+                <div class="chart-labels">
+                  <span>1月</span><span>2月</span><span>3月</span><span>4月</span><span>5月</span><span>6月</span>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
     </div>
   `,
   styles: [`
@@ -601,6 +651,94 @@ export interface ResourceItem {
       color: #999;
     }
     
+    /* 数据趋势图表 */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 8px;
+    }
+    
+    .chart-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    
+    mat-card-header {
+      padding: 16px 20px 0 !important;
+    }
+    
+    mat-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    
+    .chart-placeholder {
+      padding: 20px;
+      height: 250px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    
+    /* 柱状图 */
+    .bar-chart {
+      display: flex;
+      align-items: flex-end;
+      gap: 16px;
+      height: 200px;
+      width: 100%;
+    }
+    
+    .bar-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .bar {
+      width: 100%;
+      background: linear-gradient(180deg, #2196f3, #1976d2);
+      border-radius: 4px 4px 0 0;
+      transition: all 0.3s ease;
+      min-height: 20px;
+    }
+    
+    .bar:hover {
+      opacity: 0.8;
+      transform: scaleY(1.05);
+    }
+    
+    .bar-label {
+      font-size: 12px;
+      color: #666;
+    }
+    
+    /* 折线图 */
+    .line-chart {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .chart-svg {
+      width: 100%;
+      height: 180px;
+    }
+    
+    .chart-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: #666;
+    }
+    
     /* 响应式设计 */
     @media (max-width: 1200px) {
       .metrics-grid {
@@ -662,6 +800,15 @@ export class TrainingDashboardComponent implements OnInit {
   @Output() quickActionClick = new EventEmitter<QuickActionItem>();
   @Output() resourceSelect = new EventEmitter<ResourceItem>();
   @Output() stemFeatureClick = new EventEmitter<string>();
+  
+  revenueData = [
+    { label: '1月', value: 60 },
+    { label: '2月', value: 75 },
+    { label: '3月', value: 80 },
+    { label: '4月', value: 85 },
+    { label: '5月', value: 90 },
+    { label: '6月', value: 95 }
+  ];
 
   constructor() {}
 
