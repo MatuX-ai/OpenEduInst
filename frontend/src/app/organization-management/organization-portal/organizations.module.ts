@@ -63,7 +63,6 @@ import { OrganizationRoutingModule } from './organization-routing.module';
     ClassroomDashboardComponent,
     BatchOperationsToolbarComponent,
     WechatCustomerServiceComponent,
-    OrganizationSideNavComponent,
   ],
 })
 export class OrganizationsModule {}

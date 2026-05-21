@@ -10,6 +10,8 @@ import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-me
 
 @Component({
   selector: 'app-organization-side-nav',
+  standalone: true,
+  imports: [MatListModule, MatIconModule, MatDividerModule, RouterModule],
   template: `
     <mat-nav-list>
       <ng-container *ngFor="let item of menuItems">
@@ -44,7 +46,6 @@ import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-me
       }
     `,
   ],
-  imports: [MatListModule, MatIconModule, MatDividerModule, RouterModule],
 })
 export class OrganizationSideNavComponent implements OnInit, OnDestroy {
   orgId!: number;
