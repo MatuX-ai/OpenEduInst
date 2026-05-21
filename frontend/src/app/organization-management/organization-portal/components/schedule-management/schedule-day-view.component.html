@@ -76,7 +76,7 @@
             <div class="course-name">{{ schedule.courseName }}</div>
             <div class="teacher-name">{{ schedule.teacherName }}</div>
             @if (schedule.classroomName) {
-              <div class="classroom">@{{ schedule.classroomName }}</div>
+              <div class="classroom">{{ schedule.classroomName }}</div>
             }
             <div class="time-range">
               {{ schedule.startTime }} - {{ schedule.endTime }}

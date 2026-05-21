@@ -73,7 +73,7 @@
 /* 课程内容区域 */
 .day-content {
   position: relative;
-  min-height: calc((endHour - startHour) * hourHeight);
+  min-height: calc((21 - 8) * 80px); /* endHour=21, startHour=8, hourHeight=80 */
 }
 
 .hour-grid-line {
