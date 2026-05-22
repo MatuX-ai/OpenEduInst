@@ -16,6 +16,11 @@ import CompetitionsPage from "./sections/competitions";
 import ResourcesPage from "./sections/resources";
 import ProjectsPage from "./sections/projects";
 import BillingPage from "./sections/billing";
+import MarketingPage from "./sections/marketing";
+import TeacherPerformance from "./sections/teacher-performance";
+import ParentPortal from "./sections/parent-portal";
+import MultiCampus from "./sections/multi-campus";
+import NotificationsPage from "./sections/notifications";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -43,8 +48,18 @@ function renderSection(menuId: string) {
       return <CompetitionsPage />;
     case "tokens":
       return <RevenueTokens />;
+    case "marketing":
+      return <MarketingPage />;
     case "billing":
       return <BillingPage />;
+    case "teachers":
+      return <TeacherPerformance />;
+    case "parents":
+      return <ParentPortal />;
+    case "campus":
+      return <MultiCampus />;
+    case "notifications":
+      return <NotificationsPage />;
     case "reports":
       return <DashboardKpi />;
     case "settings":
