@@ -360,6 +360,12 @@ export default function DemoK12Static() {
   const [activeMenu, setActiveMenu] = useState("dashboard");
   const [currentTime, setCurrentTime] = useState("");
 
+  const scrollToSection = (id: string) => {
+    setActiveMenu(id);
+    const el = document.getElementById(`section-${id}`);
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  };
+
   useEffect(() => {
     const updateTime = () => {
       const now = new Date();
@@ -436,7 +442,7 @@ export default function DemoK12Static() {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveMenu(item.id)}
+              onClick={() => scrollToSection(item.id)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all group ${
                 activeMenu === item.id
                   ? "bg-emerald-600/20 text-emerald-400 font-medium"
@@ -514,7 +520,7 @@ export default function DemoK12Static() {
         {/* 页面内容 */}
         <main className="flex-1 p-6 overflow-y-auto space-y-5">
           {/* ====== 行1：核心KPI ====== */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div id="section-dashboard" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: "社团成员", value: mockData.stats.totalStudents, unit: "人", icon: Users, color: "blue", trend: "+12%", trendUp: true, sub: "来自3个社团" },
               { label: "指导教师", value: mockData.stats.totalTeachers, unit: "人", icon: UserCheck, color: "purple", trend: null, trendUp: null, sub: "专职2人+兼职4人" },
@@ -553,7 +559,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行2：图表 ====== */}
-          <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
+          <div id="section-reports" className="grid grid-cols-1 lg:grid-cols-7 gap-4">
             {/* 设备使用趋势 */}
             <div className="lg:col-span-4 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between">
@@ -590,7 +596,7 @@ export default function DemoK12Static() {
                 </div>
                 <div className="p-5 flex items-center gap-4">
                   <div className="w-[120px] h-[120px]">
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={120}>
                       <PieChart>
                         <Pie data={mockData.deviceTypes} cx="50%" cy="50%" innerRadius={30} outerRadius={50} paddingAngle={4} dataKey="value">
                           {mockData.deviceTypes.map((entry, index) => (
@@ -654,7 +660,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行3：STEM特色功能模块 + 快捷操作 ====== */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div id="section-clubs" className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* 功能模块卡片 */}
             <div className="lg:col-span-3 grid grid-cols-2 gap-3">
               {[
@@ -758,7 +764,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行4：设备清单 + 今日课表 ====== */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div id="section-devices" className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* 设备库存清单 */}
             <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between">
@@ -849,7 +855,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行5：教师团队 + 近期动态 ====== */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div id="section-teachers" className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* 指导教师团队 */}
             <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200">
@@ -929,7 +935,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行6：在读项目 + 赛事倒计时 ====== */}
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+          <div id="section-projects" className="grid grid-cols-1 lg:grid-cols-5 gap-4">
             {/* 社团在读项目 */}
             <div className="lg:col-span-3 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between">
@@ -1007,7 +1013,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行7：社团作品社区 —— 学生展示&交流 ====== */}
-          <div className="space-y-4">
+          <div id="section-community" className="space-y-4">
             {/* 社区标题栏 */}
             <div className="flex items-center justify-between">
               <div>
@@ -1129,7 +1135,7 @@ export default function DemoK12Static() {
           </div>
 
           {/* ====== 行8：教具管理 —— 元器件·耗材·工具的领用与申购 ====== */}
-          <div className="space-y-4">
+          <div id="section-aids" className="space-y-4">
             {/* 标题栏 */}
             <div className="flex items-center justify-between">
               <div>
