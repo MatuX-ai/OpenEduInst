@@ -14,6 +14,8 @@ export const mockData = {
     monthlyRevenue: 125000,
     courseCompletion: 92,
     deviceUsage: 78,
+    renewalRate: 78,
+    leadsConversion: 42,
   },
   revenueTrend: [
     { month: "9月", revenue: 98000 },

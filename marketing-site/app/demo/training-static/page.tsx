@@ -10,6 +10,12 @@ import FeatureActions from "./sections/feature-actions";
 import DeviceSchedule from "./sections/device-schedule";
 import TeachersActivities from "./sections/teachers-activities";
 import SettingsPage from "./sections/settings";
+import StudentsPage from "./sections/students";
+import LeadsPage from "./sections/leads";
+import CompetitionsPage from "./sections/competitions";
+import ResourcesPage from "./sections/resources";
+import ProjectsPage from "./sections/projects";
+import BillingPage from "./sections/billing";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -19,19 +25,28 @@ function renderSection(menuId: string) {
           <DashboardKpi />
           <RevenueTokens />
           <FeatureActions />
+          <TeachersActivities />
         </>
       );
+    case "students":
+      return <StudentsPage />;
     case "leads":
-    case "billing":
-      return <DashboardKpi />;
+      return <LeadsPage />;
     case "schedule":
     case "devices":
       return <DeviceSchedule />;
     case "projects":
-      return <FeatureActions />;
+      return <ProjectsPage />;
+    case "resources":
+      return <ResourcesPage />;
+    case "competitions":
+      return <CompetitionsPage />;
     case "tokens":
-    case "reports":
       return <RevenueTokens />;
+    case "billing":
+      return <BillingPage />;
+    case "reports":
+      return <DashboardKpi />;
     case "settings":
       return <SettingsPage />;
     default:
