@@ -22,7 +22,8 @@ export default function Header() {
     <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-          <Image src="/logo-w.png" alt="OpenMT Logo" width={80} height={21} priority />
+          <Image src="/logo-w.png" alt="OpenMT Logo" width={24} height={24} priority />
+          <span className="text-xl font-bold text-slate-100">OpenMT</span>
         </Link>
 
         {/* Desktop Nav */}
