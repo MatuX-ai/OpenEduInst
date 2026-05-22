@@ -25,7 +25,7 @@ export default function Competitions() {
                     {comp.status}
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 mb-2 line-clamp-2">{comp.desc || comp.name}</p>
+                <p className="text-[10px] text-slate-400 mb-2">{comp.level} · {comp.students}人参赛 · {comp.date}</p>
                 <div className="flex items-center justify-between text-[10px]">
                   <span className="text-slate-500">📅 {comp.date}</span>
                   <span className="text-slate-500">👥 {comp.students}人</span>
