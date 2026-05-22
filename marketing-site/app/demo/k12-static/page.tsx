@@ -16,6 +16,7 @@ import TeachingAids from "./sections/teaching-aids";
 import SettingsPage from "./sections/settings";
 import InterestClasses from "./sections/interest-classes";
 import StemAcademic from "./sections/stem-academic";
+import ClubManagement from "./sections/club-management";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -30,26 +31,20 @@ function renderSection(menuId: string) {
     case "community":
       return <StudentCommunity />;
     case "clubs":
-      return <FeatureModules />;
+      return <ClubManagement />;
     case "devices":
     case "schedule":
       return <DeviceSchedule />;
     case "aids":
       return <TeachingAids />;
-    case "projects":
-      return <Projects />;
     case "competitions":
       return <Competitions />;
-    case "teachers":
-      return <TeachersActivities />;
-    case "reports":
-      return <ReportsCharts />;
-    case "students":
-      return <DashboardKpi />;
     case "interest-classes":
       return <InterestClasses />;
     case "stem-academic":
       return <StemAcademic />;
+    case "reports":
+      return <ReportsCharts />;
     case "settings":
       return <SettingsPage />;
     default:
