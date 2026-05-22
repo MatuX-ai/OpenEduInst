@@ -14,15 +14,40 @@ import CooperationIncubator from "./sections/cooperation-incubator";
 import Consumables from "./sections/consumables";
 import CompetitionsEmploymentAcademic from "./sections/competitions-employment-academic";
 
+function renderSection(menuId: string) {
+  switch (menuId) {
+    case "dashboard":
+      return (
+        <>
+          <DashboardKpi />
+          <AnalyticsCharts />
+          <FeatureCards />
+        </>
+      );
+    case "equipment":
+      return <EquipmentSchedule />;
+    case "consumables":
+      return <Consumables />;
+    case "cooperation":
+    case "incubator":
+      return <CooperationIncubator />;
+    case "competitions":
+    case "employment":
+    case "academic":
+      return <CompetitionsEmploymentAcademic />;
+    case "teachers":
+      return <TeachersActivities />;
+    case "analytics":
+      return <AnalyticsCharts />;
+    case "students":
+    default:
+      return <DashboardKpi />;
+  }
+}
+
 export default function DemoVocationalStatic() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
-
-  const scrollToSection = (id: string) => {
-    setActiveMenu(id);
-    const el = document.getElementById(`section-${id}`);
-    if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
-  };
 
   useEffect(() => { const t = setTimeout(() => setIsLoading(false), 600); return () => clearTimeout(t); }, []);
 
@@ -30,18 +55,11 @@ export default function DemoVocationalStatic() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <Sidebar activeMenu={activeMenu} onMenuClick={scrollToSection} />
+      <Sidebar activeMenu={activeMenu} onMenuClick={setActiveMenu} />
       <div className="flex-1 flex flex-col min-w-0">
         <HeaderBar />
         <main className="flex-1 p-6 overflow-y-auto space-y-6">
-          <DashboardKpi />
-          <AnalyticsCharts />
-          <FeatureCards />
-          <EquipmentSchedule />
-          <TeachersActivities />
-          <CooperationIncubator />
-          <Consumables />
-          <CompetitionsEmploymentAcademic />
+          {renderSection(activeMenu)}
         </main>
         <FloatingInfo />
       </div>

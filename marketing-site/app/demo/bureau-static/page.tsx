@@ -14,17 +14,46 @@ import SharingRequests from "./sections/sharing-requests";
 import CompetitionsBudget from "./sections/competitions-budget";
 import Curriculum from "./sections/curriculum";
 
+function renderSection(menuId: string) {
+  switch (menuId) {
+    case "dashboard":
+      return (
+        <>
+          <DashboardKpi />
+          <CoverageReport />
+        </>
+      );
+    case "schools":
+      return <SchoolRanking />;
+    case "equipment":
+      return (
+        <>
+          <EquipmentTraining />
+          <SharingRequests />
+        </>
+      );
+    case "training":
+      return <EquipmentTraining />;
+    case "competitions":
+    case "budget":
+      return <CompetitionsBudget />;
+    case "curriculum":
+      return <Curriculum />;
+    case "reports":
+      return <CoverageReport />;
+    default:
+      return (
+        <>
+          <DashboardKpi />
+          <CoverageReport />
+        </>
+      );
+  }
+}
+
 export default function DemoBureauStatic() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
-
-  const scrollToSection = (id: string) => {
-    setActiveMenu(id);
-    const el = document.getElementById(`section-${id}`);
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
 
   useEffect(() => {
     const t = setTimeout(() => setIsLoading(false), 600);
@@ -35,20 +64,13 @@ export default function DemoBureauStatic() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex">
-      <Sidebar activeMenu={activeMenu} onMenuClick={scrollToSection} />
+      <Sidebar activeMenu={activeMenu} onMenuClick={setActiveMenu} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <HeaderBar />
 
         <main className="flex-1 p-6 overflow-y-auto space-y-6">
-          <DashboardKpi />
-          <CoverageReport />
-          <FeatureCards />
-          <SchoolRanking />
-          <EquipmentTraining />
-          <SharingRequests />
-          <CompetitionsBudget />
-          <Curriculum />
+          {renderSection(activeMenu)}
         </main>
 
         <FloatingInfo />
