@@ -30,6 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 dist/
 .cache/
+.angular/
 
 # IDE
 .vscode/
