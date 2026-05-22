@@ -14,6 +14,8 @@ import Competitions from "./sections/competitions";
 import StudentCommunity from "./sections/student-community";
 import TeachingAids from "./sections/teaching-aids";
 import SettingsPage from "./sections/settings";
+import InterestClasses from "./sections/interest-classes";
+import StemAcademic from "./sections/stem-academic";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -44,6 +46,10 @@ function renderSection(menuId: string) {
       return <ReportsCharts />;
     case "students":
       return <DashboardKpi />;
+    case "interest-classes":
+      return <InterestClasses />;
+    case "stem-academic":
+      return <StemAcademic />;
     case "settings":
       return <SettingsPage />;
     default:
