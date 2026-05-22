@@ -837,5 +837,24 @@ export class TrainingDashboardComponent implements OnInit {
   onStemFeatureClick(feature: string): void {
     console.log('STEM feature clicked:', feature);
     this.stemFeatureClick.emit(feature);
+    // Navigate to the corresponding STEM feature page
+    switch(feature) {
+      case 'hardware':
+        // Navigate to hardware management
+        console.log('Navigate to hardware management');
+        break;
+      case 'projects':
+        // Navigate to project management
+        console.log('Navigate to project management');
+        break;
+      case 'token':
+        // Navigate to token management
+        console.log('Navigate to token management');
+        break;
+      case 'makerspace':
+        // Navigate to space scheduling
+        console.log('Navigate to space scheduling');
+        break;
+    }
   }
 }

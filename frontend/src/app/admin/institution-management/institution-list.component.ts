@@ -10,10 +10,17 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
-import {
-  type InstitutionData,
-  InstitutionEditDialogComponent,
-} from '../../shared/admin-components/institution-edit-dialog.component';
+// TODO: 暂时注释，文件不存在
+// import {
+//   type InstitutionData,
+//   InstitutionEditDialogComponent,
+// } from '../../shared/admin-components/institution-edit-dialog.component';
+
+interface InstitutionData {
+  id: number;
+  name: string;
+  [key: string]: any;
+}
 
 import {
   Institution,

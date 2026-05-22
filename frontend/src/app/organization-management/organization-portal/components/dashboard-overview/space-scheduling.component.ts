@@ -1,0 +1,1146 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatBadgeModule } from '@angular/material/badge';
+import { MatExpansionModule } from '@angular/material/expansion';
+
+export interface SpaceRoom {
+  id: string;
+  name: string;
+  type: string;
+  capacity: number;
+  status: 'available' | 'occupied' | 'maintenance' | 'reserved';
+  currentActivity?: string;
+  nextBooking?: string;
+  equipment: string[];
+  image?: string;
+}
+
+export interface Booking {
+  id: string;
+  roomId: string;
+  roomName: string;
+  user: string;
+  purpose: string;
+  startTime: string;
+  endTime: string;
+  date: string;
+  status: 'confirmed' | 'pending' | 'cancelled';
+  participants: number;
+}
+
+export interface SpaceCategory {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+  available: number;
+  color: string;
+}
+
+@Component({
+  selector: 'app-space-scheduling',
+  standalone: true,
+  imports: [
+    CommonModule, 
+    MatCardModule, 
+    MatIconModule, 
+    MatButtonModule,
+    MatTabsModule,
+    MatTableModule,
+    MatChipsModule,
+    MatProgressBarModule,
+    MatBadgeModule,
+    MatExpansionModule
+  ],
+  template: `
+    <div class="space-scheduling">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div>
+          <h1>创客空间预约</h1>
+          <p class="subtitle">实验室预约、设备共享、安全准入管理</p>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="onBookSpace()">
+            <mat-icon>add</mat-icon>
+            预约空间
+          </button>
+          <button mat-stroked-button (click)="onViewCalendar()">
+            <mat-icon>calendar_today</mat-icon>
+            查看日历
+          </button>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-header">
+              <div class="stat-icon blue">
+                <mat-icon>meeting_room</mat-icon>
+              </div>
+              <span class="stat-trend stable">→ 稳定</span>
+            </div>
+            <div class="stat-value">{{ totalSpaces }}</div>
+            <div class="stat-label">空间总数</div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-header">
+              <div class="stat-icon green">
+                <mat-icon>check_circle</mat-icon>
+              </div>
+              <span class="stat-trend up">↑ 15%</span>
+            </div>
+            <div class="stat-value">{{ availableSpaces }}</div>
+            <div class="stat-label">当前可用</div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-header">
+              <div class="stat-icon orange">
+                <mat-icon>event</mat-icon>
+              </div>
+              <span class="stat-trend up">↑ 8%</span>
+            </div>
+            <div class="stat-value">{{ todayBookings }}</div>
+            <div class="stat-label">今日预约</div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="stat-card">
+          <mat-card-content>
+            <div class="stat-header">
+              <div class="stat-icon purple">
+                <mat-icon>people</mat-icon>
+              </div>
+              <span class="stat-trend up">↑ 12%</span>
+            </div>
+            <div class="stat-value">{{ utilizationRate }}%</div>
+            <div class="stat-label">使用率</div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Space Categories -->
+      <div class="section-title">空间分类</div>
+      <div class="categories-grid">
+        <mat-card *ngFor="let category of spaceCategories" class="category-card" (click)="onCategorySelect(category)">
+          <mat-card-content>
+            <div class="category-icon" [style.background]="category.color">
+              <mat-icon>{{ category.icon }}</mat-icon>
+            </div>
+            <div class="category-info">
+              <h4>{{ category.name }}</h4>
+              <p class="category-count">{{ category.count }}个空间</p>
+              <div class="availability-info">
+                <span class="available-count">{{ category.available }}个可用</span>
+                <mat-progress-bar 
+                  mode="determinate" 
+                  [value]="(category.available / category.count) * 100"
+                  [color]="getAvailabilityColor(category.available, category.count)">
+                </mat-progress-bar>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Space Rooms Grid -->
+      <div class="section-title">空间列表</div>
+      <div class="spaces-grid">
+        <mat-card *ngFor="let room of spaceRooms" class="space-card" [class.available]="room.status === 'available'">
+          <mat-card-content>
+            <div class="space-header">
+              <div class="space-type-icon" [style.background]="getSpaceTypeColor(room.type)">
+                <mat-icon>{{ getSpaceTypeIcon(room.type) }}</mat-icon>
+              </div>
+              <mat-chip [class]="'status-chip ' + room.status">
+                {{ getStatusText(room.status) }}
+              </mat-chip>
+            </div>
+            
+            <h3>{{ room.name }}</h3>
+            <p class="space-capacity">
+              <mat-icon>people</mat-icon>
+              容量: {{ room.capacity }}人
+            </p>
+
+            <div class="space-equipment">
+              <mat-chip *ngFor="let equip of room.equipment.slice(0, 3)" class="equipment-chip">
+                {{ equip }}
+              </mat-chip>
+              <span *ngIf="room.equipment.length > 3" class="more-equipment">+{{ room.equipment.length - 3 }}更多</span>
+            </div>
+
+            <div class="space-booking-info" *ngIf="room.currentActivity || room.nextBooking">
+              <div *ngIf="room.currentActivity" class="current-activity">
+                <mat-icon>play_circle</mat-icon>
+                <span>进行中: {{ room.currentActivity }}</span>
+              </div>
+              <div *ngIf="room.nextBooking" class="next-booking">
+                <mat-icon>schedule</mat-icon>
+                <span>下一场: {{ room.nextBooking }}</span>
+              </div>
+            </div>
+
+            <div class="space-actions">
+              <button mat-stroked-button (click)="onViewRoomDetails(room)" [disabled]="room.status !== 'available'">
+                查看详情
+              </button>
+              <button mat-raised-button color="primary" (click)="onBookRoom(room)" [disabled]="room.status !== 'available'">
+                立即预约
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <!-- Today's Bookings -->
+      <mat-card class="bookings-card">
+        <mat-tab-group [(selectedIndex)]="selectedTabIndex">
+          <mat-tab label="今日预约">
+            <ng-template matTabContent>
+              <div class="tab-content">
+                <div class="table-controls">
+                  <div class="search-box">
+                    <mat-icon>search</mat-icon>
+                    <input type="text" placeholder="搜索预约人、用途..." [(ngModel)]="searchTerm" />
+                  </div>
+                  <div class="filter-controls">
+                    <select [(ngModel)]="statusFilter">
+                      <option value="">全部状态</option>
+                      <option value="confirmed">已确认</option>
+                      <option value="pending">待确认</option>
+                      <option value="cancelled">已取消</option>
+                    </select>
+                  </div>
+                </div>
+
+                <table mat-table [dataSource]="filteredBookings" class="booking-table">
+                  <!-- ID Column -->
+                  <ng-container matColumnDef="id">
+                    <th mat-header-cell *matHeaderCellDef>预约编号</th>
+                    <td mat-cell *matCellDef="let booking">{{ booking.id }}</td>
+                  </ng-container>
+
+                  <!-- Room Column -->
+                  <ng-container matColumnDef="roomName">
+                    <th mat-header-cell *matHeaderCellDef>空间</th>
+                    <td mat-cell *matCellDef="let booking">{{ booking.roomName }}</td>
+                  </ng-container>
+
+                  <!-- User Column -->
+                  <ng-container matColumnDef="user">
+                    <th mat-header-cell *matHeaderCellDef>预约人</th>
+                    <td mat-cell *matCellDef="let booking">{{ booking.user }}</td>
+                  </ng-container>
+
+                  <!-- Purpose Column -->
+                  <ng-container matColumnDef="purpose">
+                    <th mat-header-cell *matHeaderCellDef>用途</th>
+                    <td mat-cell *matCellDef="let booking">{{ booking.purpose }}</td>
+                  </ng-container>
+
+                  <!-- Time Column -->
+                  <ng-container matColumnDef="time">
+                    <th mat-header-cell *matHeaderCellDef>时间</th>
+                    <td mat-cell *matCellDef="let booking">
+                      {{ booking.startTime }} - {{ booking.endTime }}
+                    </td>
+                  </ng-container>
+
+                  <!-- Participants Column -->
+                  <ng-container matColumnDef="participants">
+                    <th mat-header-cell *matHeaderCellDef>人数</th>
+                    <td mat-cell *matCellDef="let booking">{{ booking.participants }}人</td>
+                  </ng-container>
+
+                  <!-- Status Column -->
+                  <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>状态</th>
+                    <td mat-cell *matCellDef="let booking">
+                      <mat-chip [class]="'status-chip ' + booking.status">
+                        {{ getBookingStatusText(booking.status) }}
+                      </mat-chip>
+                    </td>
+                  </ng-container>
+
+                  <!-- Actions Column -->
+                  <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef>操作</th>
+                    <td mat-cell *matCellDef="let booking">
+                      <div class="action-buttons">
+                        <button mat-icon-button (click)="onViewBooking(booking)" title="查看详情">
+                          <mat-icon>visibility</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="onEditBooking(booking)" title="编辑">
+                          <mat-icon>edit</mat-icon>
+                        </button>
+                        <button mat-icon-button (click)="onCancelBooking(booking)" title="取消" *ngIf="booking.status !== 'cancelled'">
+                          <mat-icon>cancel</mat-icon>
+                        </button>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                </table>
+              </div>
+            </ng-template>
+          </mat-tab>
+
+          <mat-tab label="我的预约">
+            <ng-template matTabContent>
+              <div class="tab-content">
+                <p>显示我的预约记录...</p>
+              </div>
+            </ng-template>
+          </mat-tab>
+
+          <mat-tab label="历史预约">
+            <ng-template matTabContent>
+              <div class="tab-content">
+                <p>显示历史预约记录...</p>
+              </div>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card>
+
+      <!-- Quick Booking Form -->
+      <mat-card class="quick-booking-card">
+        <mat-card-header>
+          <mat-card-title>快速预约</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="booking-form">
+            <div class="form-row">
+              <div class="form-group">
+                <label>选择空间</label>
+                <select [(ngModel)]="quickBooking.roomId">
+                  <option value="">请选择空间</option>
+                  <option *ngFor="let room of availableRooms" [value]="room.id">
+                    {{ room.name }} (容量: {{ room.capacity }}人)
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>预约日期</label>
+                <input type="date" [(ngModel)]="quickBooking.date" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>开始时间</label>
+                <input type="time" [(ngModel)]="quickBooking.startTime" />
+              </div>
+              <div class="form-group">
+                <label>结束时间</label>
+                <input type="time" [(ngModel)]="quickBooking.endTime" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group full-width">
+                <label>预约用途</label>
+                <input type="text" placeholder="请输入预约用途" [(ngModel)]="quickBooking.purpose" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>参与人数</label>
+                <input type="number" min="1" [(ngModel)]="quickBooking.participants" />
+              </div>
+              <div class="form-group">
+                <label>联系电话</label>
+                <input type="tel" placeholder="请输入联系电话" [(ngModel)]="quickBooking.phone" />
+              </div>
+            </div>
+            <div class="form-actions">
+              <button mat-stroked-button (click)="onClearForm()">清空表单</button>
+              <button mat-raised-button color="primary" (click)="onSubmitQuickBooking()">提交预约</button>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  `,
+  styles: [`
+    .space-scheduling {
+      padding: 24px;
+      background: #f5f7fa;
+      min-height: 100%;
+    }
+
+    /* Page Header */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .subtitle {
+      margin: 8px 0 0 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .header-actions button mat-icon {
+      margin-right: 8px;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .stat-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+    mat-card-content {
+      padding: 20px !important;
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stat-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .stat-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
+    .stat-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
+    .stat-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .stat-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+
+    .stat-trend {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 12px;
+    }
+
+    .stat-trend.up { color: #4caf50; background: #e8f5e9; }
+    .stat-trend.down { color: #f44336; background: #ffebee; }
+    .stat-trend.stable { color: #ff9800; background: #fff3e0; }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 8px 0;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    /* Section Title */
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+      padding-left: 4px;
+    }
+
+    /* Categories Grid */
+    .categories-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .category-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .category-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .category-card mat-card-content {
+      display: flex;
+      align-items: center;
+      padding: 16px !important;
+    }
+
+    .category-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      color: white;
+    }
+
+    .category-icon mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .category-info {
+      flex: 1;
+    }
+
+    .category-info h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .category-count {
+      margin: 4px 0 8px 0;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .availability-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .available-count {
+      font-size: 12px;
+      color: #4caf50;
+      font-weight: 500;
+    }
+
+    /* Spaces Grid */
+    .spaces-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .space-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .space-card.available {
+      border-color: #4caf50;
+    }
+
+    .space-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    .space-card mat-card-content {
+      padding: 20px !important;
+    }
+
+    .space-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .space-type-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .space-type-icon mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    .status-chip {
+      font-size: 12px;
+    }
+
+    .status-chip.available {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .status-chip.occupied {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .status-chip.maintenance {
+      background: #fce4ec;
+      color: #c2185b;
+    }
+
+    .status-chip.reserved {
+      background: #e3f2fd;
+      color: #1976d2;
+    }
+
+    .space-card h3 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+
+    .space-capacity {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin: 0 0 12px 0;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .space-capacity mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+
+    .space-equipment {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .equipment-chip {
+      font-size: 11px;
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    .more-equipment {
+      font-size: 11px;
+      color: #999;
+    }
+
+    .space-booking-info {
+      margin-bottom: 16px;
+    }
+
+    .current-activity, .next-booking {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 4px;
+    }
+
+    .current-activity mat-icon, .next-booking mat-icon {
+      font-size: 14px;
+      width: 14px;
+      height: 14px;
+    }
+
+    .space-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .space-actions button {
+      flex: 1;
+    }
+
+    /* Bookings Card */
+    .bookings-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 32px;
+    }
+
+    .tab-content {
+      padding: 20px;
+    }
+
+    .table-controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      position: relative;
+      width: 300px;
+    }
+
+    .search-box mat-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 10px 10px 10px 40px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .filter-controls {
+      display: flex;
+      gap: 12px;
+    }
+
+    .filter-controls select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    /* Table Styles */
+    .booking-table {
+      width: 100%;
+    }
+
+    .status-chip.confirmed {
+      background: #e8f5e9;
+      color: #388e3c;
+    }
+
+    .status-chip.pending {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+
+    .status-chip.cancelled {
+      background: #ffebee;
+      color: #d32f2f;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 4px;
+    }
+
+    /* Quick Booking Card */
+    .quick-booking-card {
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .booking-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a1a;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 8px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .categories-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .spaces-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      .categories-grid {
+        grid-template-columns: 1fr;
+      }
+      .spaces-grid {
+        grid-template-columns: 1fr;
+      }
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+      }
+      .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+      .search-box {
+        width: 100%;
+      }
+      .filter-controls {
+        justify-content: stretch;
+      }
+      .filter-controls select {
+        flex: 1;
+      }
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  `]
+})
+export class SpaceSchedulingComponent implements OnInit {
+  // Stats data
+  totalSpaces = 12;
+  availableSpaces = 8;
+  todayBookings = 15;
+  utilizationRate = 78;
+
+  // Space categories
+  spaceCategories: SpaceCategory[] = [
+    { id: 'lab', name: '实验室', icon: 'science', count: 5, available: 3, color: 'linear-gradient(135deg, #2196f3, #1976d2)' },
+    { id: 'makerspace', name: '创客空间', icon: 'precision_manufacturing', count: 4, available: 3, color: 'linear-gradient(135deg, #4caf50, #388e3c)' },
+    { id: 'classroom', name: '教室', icon: 'school', count: 2, available: 1, color: 'linear-gradient(135deg, #ff9800, #f57c00)' },
+    { id: 'workshop', name: '工作坊', icon: 'handyman', count: 1, available: 1, color: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }
+  ];
+
+  // Space rooms
+  spaceRooms: SpaceRoom[] = [
+    { 
+      id: 'ROOM-001', 
+      name: 'Arduino实验室A', 
+      type: 'lab', 
+      capacity: 30, 
+      status: 'available', 
+      equipment: ['Arduino套件', '示波器', '焊接工具'],
+      currentActivity: '智能小车项目'
+    },
+    { 
+      id: 'ROOM-002', 
+      name: '机器人工作室', 
+      type: 'makerspace', 
+      capacity: 20, 
+      status: 'occupied', 
+      equipment: ['3D打印机', '激光切割机', '机器人底盘'],
+      currentActivity: 'VEX机器人训练',
+      nextBooking: '14:00-16:00'
+    },
+    { 
+      id: 'ROOM-003', 
+      name: '物联网实验室', 
+      type: 'lab', 
+      capacity: 25, 
+      status: 'available', 
+      equipment: ['传感器模块', 'ESP32开发板', '云平台']
+    },
+    { 
+      id: 'ROOM-004', 
+      name: 'AI编程教室', 
+      type: 'classroom', 
+      capacity: 40, 
+      status: 'reserved', 
+      equipment: ['高性能电脑', '投影仪', '音响系统'],
+      nextBooking: '09:00-11:00'
+    },
+    { 
+      id: 'ROOM-005', 
+      name: '电子制作工坊', 
+      type: 'workshop', 
+      capacity: 15, 
+      status: 'available', 
+      equipment: ['电烙铁', '万用表', '元件库']
+    },
+    { 
+      id: 'ROOM-006', 
+      name: '创客空间B', 
+      type: 'makerspace', 
+      capacity: 25, 
+      status: 'maintenance', 
+      equipment: ['3D打印机', 'CNC机床', '激光切割机']
+    }
+  ];
+
+  // Available rooms for quick booking
+  get availableRooms(): SpaceRoom[] {
+    return this.spaceRooms.filter(room => room.status === 'available');
+  }
+
+  // Today's bookings
+  bookings: Booking[] = [
+    { 
+      id: 'BK-001', 
+      roomId: 'ROOM-001', 
+      roomName: 'Arduino实验室A', 
+      user: '张老师', 
+      purpose: '智能温室控制系统项目', 
+      startTime: '09:00', 
+      endTime: '11:00', 
+      date: '2024-01-20', 
+      status: 'confirmed', 
+      participants: 18 
+    },
+    { 
+      id: 'BK-002', 
+      roomId: 'ROOM-002', 
+      roomName: '机器人工作室', 
+      user: '李老师', 
+      purpose: 'VEX机器人竞赛训练', 
+      startTime: '14:00', 
+      endTime: '16:00', 
+      date: '2024-01-20', 
+      status: 'confirmed', 
+      participants: 12 
+    },
+    { 
+      id: 'BK-003', 
+      roomId: 'ROOM-003', 
+      roomName: '物联网实验室', 
+      user: '王老师', 
+      purpose: '环境监测项目调试', 
+      startTime: '10:00', 
+      endTime: '12:00', 
+      date: '2024-01-20', 
+      status: 'pending', 
+      participants: 15 
+    },
+    { 
+      id: 'BK-004', 
+      roomId: 'ROOM-005', 
+      roomName: '电子制作工坊', 
+      user: '陈老师', 
+      purpose: '电路板焊接实践', 
+      startTime: '15:00', 
+      endTime: '17:00', 
+      date: '2024-01-20', 
+      status: 'confirmed', 
+      participants: 10 
+    }
+  ];
+
+  // Quick booking form
+  quickBooking = {
+    roomId: '',
+    date: '',
+    startTime: '',
+    endTime: '',
+    purpose: '',
+    participants: 1,
+    phone: ''
+  };
+
+  // Table configuration
+  displayedColumns: string[] = ['id', 'roomName', 'user', 'purpose', 'time', 'participants', 'status', 'actions'];
+  selectedTabIndex = 0;
+  
+  // Filter variables
+  searchTerm = '';
+  statusFilter = '';
+
+  constructor() {}
+
+  ngOnInit(): void {}
+
+  // Helper methods
+  getFilteredBookings(): Booking[] {
+    return this.bookings.filter(booking => {
+      const matchesSearch = !this.searchTerm || 
+        booking.user.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        booking.purpose.toLowerCase().includes(this.searchTerm.toLowerCase());
+      
+      const matchesStatus = !this.statusFilter || booking.status === this.statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+  }
+
+  get filteredBookings() {
+    return this.getFilteredBookings();
+  }
+
+  getSpaceTypeIcon(type: string): string {
+    switch(type) {
+      case 'lab': return 'science';
+      case 'makerspace': return 'precision_manufacturing';
+      case 'classroom': return 'school';
+      case 'workshop': return 'handyman';
+      default: return 'meeting_room';
+    }
+  }
+
+  getSpaceTypeColor(type: string): string {
+    switch(type) {
+      case 'lab': return 'linear-gradient(135deg, #2196f3, #1976d2)';
+      case 'makerspace': return 'linear-gradient(135deg, #4caf50, #388e3c)';
+      case 'classroom': return 'linear-gradient(135deg, #ff9800, #f57c00)';
+      case 'workshop': return 'linear-gradient(135deg, #9c27b0, #7b1fa2)';
+      default: return 'linear-gradient(135deg, #607d8b, #455a64)';
+    }
+  }
+
+  getStatusText(status: string): string {
+    switch(status) {
+      case 'available': return '可用';
+      case 'occupied': return '使用中';
+      case 'maintenance': return '维护中';
+      case 'reserved': return '已预约';
+      default: return status;
+    }
+  }
+
+  getBookingStatusText(status: string): string {
+    switch(status) {
+      case 'confirmed': return '已确认';
+      case 'pending': return '待确认';
+      case 'cancelled': return '已取消';
+      default: return status;
+    }
+  }
+
+  getAvailabilityColor(available: number, total: number): string {
+    const percentage = (available / total) * 100;
+    if (percentage >= 80) return 'primary';
+    if (percentage >= 60) return 'accent';
+    return 'warn';
+  }
+
+  // Event handlers
+  onBookSpace(): void {
+    console.log('Book new space');
+  }
+
+  onViewCalendar(): void {
+    console.log('View calendar');
+  }
+
+  onCategorySelect(category: SpaceCategory): void {
+    console.log('Category selected:', category);
+  }
+
+  onViewRoomDetails(room: SpaceRoom): void {
+    console.log('View room details:', room);
+  }
+
+  onBookRoom(room: SpaceRoom): void {
+    console.log('Book room:', room);
+  }
+
+  onViewBooking(booking: Booking): void {
+    console.log('View booking:', booking);
+  }
+
+  onEditBooking(booking: Booking): void {
+    console.log('Edit booking:', booking);
+  }
+
+  onCancelBooking(booking: Booking): void {
+    console.log('Cancel booking:', booking);
+  }
+
+  onClearForm(): void {
+    this.quickBooking = {
+      roomId: '',
+      date: '',
+      startTime: '',
+      endTime: '',
+      purpose: '',
+      participants: 1,
+      phone: ''
+    };
+  }
+
+  onSubmitQuickBooking(): void {
+    console.log('Submit quick booking:', this.quickBooking);
+  }
+}
