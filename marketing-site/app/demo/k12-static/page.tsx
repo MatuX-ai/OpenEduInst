@@ -10,7 +10,8 @@ import ReportsCharts from "./sections/reports-charts";
 import FeatureModules from "./sections/feature-modules";
 import DeviceSchedule from "./sections/device-schedule";
 import TeachersActivities from "./sections/teachers-activities";
-import ProjectsCompetitions from "./sections/projects-competitions";
+import Projects from "./sections/projects";
+import Competitions from "./sections/competitions";
 import StudentCommunity from "./sections/student-community";
 import TeachingAids from "./sections/teaching-aids";
 import SettingsPage from "./sections/settings";
@@ -35,8 +36,9 @@ function renderSection(menuId: string) {
     case "aids":
       return <TeachingAids />;
     case "projects":
+      return <Projects />;
     case "competitions":
-      return <ProjectsCompetitions />;
+      return <Competitions />;
     case "teachers":
       return <TeachersActivities />;
     case "reports":
