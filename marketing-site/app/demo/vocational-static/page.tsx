@@ -13,6 +13,7 @@ import TeachersActivities from "./sections/teachers-activities";
 import CooperationIncubator from "./sections/cooperation-incubator";
 import Consumables from "./sections/consumables";
 import CompetitionsEmploymentAcademic from "./sections/competitions-employment-academic";
+import SettingsPage from "./sections/settings";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -40,6 +41,9 @@ function renderSection(menuId: string) {
     case "analytics":
       return <AnalyticsCharts />;
     case "students":
+      return <DashboardKpi />;
+    case "settings":
+      return <SettingsPage />;
     default:
       return <DashboardKpi />;
   }

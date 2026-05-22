@@ -13,6 +13,7 @@ import EquipmentTraining from "./sections/equipment-training";
 import SharingRequests from "./sections/sharing-requests";
 import CompetitionsBudget from "./sections/competitions-budget";
 import Curriculum from "./sections/curriculum";
+import SettingsPage from "./sections/settings";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -41,6 +42,8 @@ function renderSection(menuId: string) {
       return <Curriculum />;
     case "reports":
       return <CoverageReport />;
+    case "settings":
+      return <SettingsPage />;
     default:
       return (
         <>

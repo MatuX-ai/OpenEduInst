@@ -13,8 +13,8 @@ import TeachersActivities from "./sections/teachers-activities";
 import ProjectsCompetitions from "./sections/projects-competitions";
 import StudentCommunity from "./sections/student-community";
 import TeachingAids from "./sections/teaching-aids";
+import SettingsPage from "./sections/settings";
 
-/** 侧边栏菜单 -> 内容区域的映射 */
 function renderSection(menuId: string) {
   switch (menuId) {
     case "dashboard":
@@ -43,6 +43,8 @@ function renderSection(menuId: string) {
       return <ReportsCharts />;
     case "students":
       return <DashboardKpi />;
+    case "settings":
+      return <SettingsPage />;
     default:
       return <DashboardKpi />;
   }

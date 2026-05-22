@@ -10,6 +10,7 @@ import RevenueTokens from "./sections/revenue-tokens";
 import FeatureActions from "./sections/feature-actions";
 import DeviceSchedule from "./sections/device-schedule";
 import TeachersActivities from "./sections/teachers-activities";
+import SettingsPage from "./sections/settings";
 
 function renderSection(menuId: string) {
   switch (menuId) {
@@ -32,6 +33,8 @@ function renderSection(menuId: string) {
     case "tokens":
     case "reports":
       return <RevenueTokens />;
+    case "settings":
+      return <SettingsPage />;
     default:
       return (
         <>
