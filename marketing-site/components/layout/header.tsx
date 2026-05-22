@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
@@ -20,8 +21,8 @@ export default function Header() {
   return (
     <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-slate-100 hover:text-blue-400 transition-colors">
-          OpenMT
+        <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+          <Image src="/logo-w.png" alt="OpenMT Logo" width={120} height={32} priority />
         </Link>
 
         {/* Desktop Nav */}

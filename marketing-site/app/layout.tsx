@@ -22,6 +22,10 @@ export const metadata: Metadata = {
   authors: [{ name: "MatuX Team", url: "https://github.com/MatuX-ai" }],
   creator: "MatuX Team",
   publisher: "MatuX",
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   formatDetection: {
     email: false,
     address: false,
