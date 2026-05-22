@@ -11,37 +11,41 @@ const organizations = [
     id: "k12",
     type: "k12",
     icon: Bot,
-    title: "K12科创中心",
+    title: "K12 STEM科创中心",
     description: "管理 Arduino/Raspberry Pi 设备、学生创客作品、机器人竞赛培训",
-    features: ["设备租赁管理", "学生作品归档", "竞赛报名追踪"],
-    color: "green",
+    features: ["硬件设备管理", "学生作品归档", "竞赛报名追踪"],
+    iconBg: "bg-green-500/10",
+    iconColor: "text-green-500",
   },
   {
     id: "vocational",
     type: "vocational",
     icon: Factory,
-    title: "职业学校实训",
+    title: "职业学校STEM实训",
     description: "PLC 控制系统、CNC 机床、工业机器人等实训设备管理",
-    features: ["实训设备调度", "认证课程管理", "校企合作跟踪"],
-    color: "purple",
+    features: ["实训设备调度", "校企合作跟踪", "技能认证管理"],
+    iconBg: "bg-purple-500/10",
+    iconColor: "text-purple-500",
   },
   {
     id: "training",
     type: "training",
     icon: Code2,
-    title: "编程培训机构",
-    description: "Python/C++ 课程、物联网应用开发、AI 教学辅助",
-    features: ["Token AI 功能", "课程资源库", "学员进度追踪"],
-    color: "blue",
+    title: "STEM培训机构",
+    description: "Python/C++ 课程、物联网应用开发、AI 教学辅助、硬件设备管理",
+    features: ["Token AI 功能", "硬件设备管理", "创客项目追踪"],
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-500",
   },
   {
     id: "bureau",
     type: "bureau",
     icon: Building2,
-    title: "教育局监管",
+    title: "教育局STEM监管",
     description: "区内学校 STEM 教育数据统计、设备资源调配、师资培训",
-    features: ["区域数据看板", "跨校资源共享", "师资培训管理"],
-    color: "orange",
+    features: ["区域数据看板", "跨校资源共享", "STEM师资培训"],
+    iconBg: "bg-orange-500/10",
+    iconColor: "text-orange-500",
   },
 ];
 
@@ -99,9 +103,9 @@ function DemoEntryContent() {
             >
               <div className="flex items-start gap-4">
                 <div
-                  className={`w-16 h-16 rounded-lg bg-${org.color}-500/10 flex items-center justify-center flex-shrink-0`}
+                  className={`w-16 h-16 rounded-lg flex items-center justify-center flex-shrink-0 ${org.iconBg}`}
                 >
-                  <org.icon className={`w-8 h-8 text-${org.color}-500`} />
+                  <org.icon className={`w-8 h-8 ${org.iconColor}`} />
                 </div>
 
                 <div className="flex-1">

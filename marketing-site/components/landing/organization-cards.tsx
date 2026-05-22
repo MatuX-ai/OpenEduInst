@@ -9,28 +9,32 @@ const organizations = [
     icon: Bot,
     title: "K12科创中心",
     description: "管理 Arduino/Raspberry Pi 设备、学生创客作品、机器人竞赛培训",
-    color: "blue",
+    iconBg: "bg-blue-500/10 group-hover:bg-blue-500/20",
+    iconColor: "text-blue-500",
     link: "/demo/k12",
   },
   {
     icon: Factory,
     title: "职业学校实训",
     description: "PLC 控制系统、CNC 机床、工业机器人等实训设备管理",
-    color: "green",
+    iconBg: "bg-green-500/10 group-hover:bg-green-500/20",
+    iconColor: "text-green-500",
     link: "/demo/vocational",
   },
   {
     icon: Code2,
     title: "STEM培训机构",
     description: "Python/C++ 课程、物联网应用开发、AI 教学辅助",
-    color: "purple",
+    iconBg: "bg-purple-500/10 group-hover:bg-purple-500/20",
+    iconColor: "text-purple-500",
     link: "/demo/training",
   },
   {
     icon: Building2,
     title: "教育局监管",
     description: "区内学校 STEM 教育数据统计、设备资源调配、师资培训",
-    color: "orange",
+    iconBg: "bg-orange-500/10 group-hover:bg-orange-500/20",
+    iconColor: "text-orange-500",
     link: "/demo/bureau",
   },
 ];
@@ -65,8 +69,8 @@ export default function OrganizationCards() {
               whileHover={{ y: -4, scale: 1.02 }}
               className="group p-6 rounded-xl bg-slate-800/50 border border-slate-700 hover:border-blue-500/50 hover:bg-slate-800 transition-all duration-300 cursor-pointer"
             >
-              <div className={`w-14 h-14 rounded-lg bg-${org.color}-500/10 flex items-center justify-center mb-4 group-hover:bg-${org.color}-500/20 transition-colors`}>
-                <org.icon className={`w-7 h-7 text-${org.color}-500`} />
+              <div className={`w-14 h-14 rounded-lg flex items-center justify-center mb-4 transition-colors ${org.iconBg}`}>
+                <org.icon className={`w-7 h-7 ${org.iconColor}`} />
               </div>
               
               <h3 className="text-xl font-semibold mb-2 text-slate-100">
