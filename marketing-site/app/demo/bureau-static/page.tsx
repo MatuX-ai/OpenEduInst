@@ -164,6 +164,13 @@ const menuItems = [
 export default function DemoBureauStatic() {
   const [isLoading, setIsLoading] = useState(true);
   const [activeMenu, setActiveMenu] = useState("dashboard");
+
+  const scrollToSection = (id: string) => {
+    setActiveMenu(id);
+    const el = document.getElementById(`section-${id}`);
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "start" }); }
+  };
+
   useEffect(() => { const t = setTimeout(() => setIsLoading(false), 600); return () => clearTimeout(t); }, []);
   if (isLoading) return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -196,7 +203,7 @@ export default function DemoBureauStatic() {
         </div>
         <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
           {menuItems.map(item => (
-            <button key={item.id} onClick={() => setActiveMenu(item.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${activeMenu === item.id ? "bg-amber-50 text-amber-700 font-medium shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
+            <button key={item.id} onClick={() => scrollToSection(item.id)} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all ${activeMenu === item.id ? "bg-amber-50 text-amber-700 font-medium shadow-sm" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}>
               <item.icon className="w-4.5 h-4.5 flex-shrink-0" /><span className="flex-1 text-left">{item.label}</span>
               {item.badge && <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${item.badge.includes("待处理") || item.badge.includes("46") ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-500"}`}>{item.badge}</span>}
             </button>
@@ -223,7 +230,7 @@ export default function DemoBureauStatic() {
 
         <main className="flex-1 p-6 overflow-y-auto space-y-6">
           {/* Row1: KPI */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div id="section-dashboard" className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {[
               { icon: School, bg: "bg-blue-100", ic: "text-blue-600", v: mockData.stats.totalSchools, c: `+${mockData.stats.schoolChange}`, l: "管辖学校", b: "" },
               { icon: GraduationCap, bg: "bg-purple-100", ic: "text-purple-600", v: mockData.stats.stemStudents.toLocaleString(), c: `+${mockData.stats.studentChange}%`, l: "STEM学生数", b: "" },
@@ -240,7 +247,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row2: Coverage Trend + School Types + Weak Schools */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div id="section-reports" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between">
                 <div><h3 className="text-base font-semibold text-slate-800">STEM 教育覆盖率趋势</h3><p className="text-xs text-slate-500 mt-0.5">近6个月全县中小学校STEM课程开设率</p></div>
@@ -275,7 +282,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row3: Feature Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div id="section-equipment" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { icon: Wrench, bg: "from-orange-500 to-red-600", label: "设备调配", sub: `${mockData.equipmentPool.crossSchoolShare.thisMonth}次跨校共享`, desc: "全县设备统一采购 → 按需配发 → 跨校流转", highlight: `${mockData.equipmentPool.pendingRequests.length}所学校待配发`, color: "orange" },
               { icon: UserCheck, bg: "from-blue-500 to-blue-700", label: "师资培训", sub: `已完成${mockData.teacherTraining.completionRate}%`, desc: "县城集训 + 线上课程 + 送教下乡", highlight: `${mockData.teacherTraining.sessions.length}场培训进行中`, color: "blue" },
@@ -291,7 +298,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row4: School Ranking + Today Activities */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div id="section-schools" className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between"><h3 className="text-base font-semibold text-slate-800 flex items-center gap-2"><School className="w-4.5 h-4.5 text-blue-500" />学校 STEM 教育质量评估</h3><div className="flex gap-2 text-xs">{["全部","优秀","良好","待提升","薄弱"].map(t => <button key={t} className="px-2 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-amber-100 hover:text-amber-700">{t}</button>)}</div></div>
               <div className="overflow-x-auto">
@@ -323,7 +330,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row5: Equipment Allocation + Teacher Training */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div id="section-training" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* STEM设备配发 */}
             <div className="bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between">
@@ -373,7 +380,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row7: Competitions + Budget */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div id="section-competitions" className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="bg-white rounded-xl shadow-sm border border-slate-200">
               <div className="p-5 border-b border-slate-200 flex items-center justify-between"><h3 className="text-base font-semibold text-slate-800 flex items-center gap-2"><Award className="w-4.5 h-4.5 text-red-500" />竞赛组织与管理</h3><div className="flex gap-2 text-xs">{["全部","县级","市级","省级","国家级"].map(t => <button key={t} className="px-2 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-red-100 hover:text-red-600">{t}</button>)}</div></div>
               <div className="p-5">
@@ -384,7 +391,7 @@ export default function DemoBureauStatic() {
                 <div className="space-y-2">{mockData.competitions.recentResults.map(r => <div key={r.id} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 border border-slate-100"><div className="min-w-0 flex-1"><p className="text-sm font-medium text-slate-800">{r.event}</p><p className="text-xs text-slate-400">{r.school}</p></div><div className="flex items-center gap-2 flex-shrink-0"><span className="text-xs px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-600 font-medium">{r.level}</span><span className="text-sm font-bold text-red-600">{r.award}</span></div></div>)}</div>
               </div>
             </div>
-            <div className="space-y-6">
+            <div id="section-budget" className="space-y-6">
               <div className="bg-white rounded-xl shadow-sm border border-slate-200">
                 <div className="p-5 border-b border-slate-200"><h3 className="text-base font-semibold text-slate-800 flex items-center gap-2"><DollarSign className="w-4.5 h-4.5 text-amber-500" />STEM 经费管理</h3></div>
                 <div className="p-5">
@@ -401,7 +408,7 @@ export default function DemoBureauStatic() {
           </div>
 
           {/* Row8: Curriculum Resources */}
-          <div className="bg-white rounded-xl shadow-sm border border-slate-200">
+          <div id="section-curriculum" className="bg-white rounded-xl shadow-sm border border-slate-200">
             <div className="p-5 border-b border-slate-200 flex items-center justify-between"><h3 className="text-base font-semibold text-slate-800 flex items-center gap-2"><BookOpen className="w-4.5 h-4.5 text-green-500" />STEM 课程资源共享池</h3><span className="text-xs text-green-600 font-medium">{mockData.curriculum.totalCourses}门课程 · {mockData.curriculum.sharedSchools}所学校在共享</span></div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
               <div className="lg:col-span-2 p-5 border-r border-slate-100">
