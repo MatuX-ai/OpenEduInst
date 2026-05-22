@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Loading from "./_loading";
 import Sidebar from "./_sidebar";
 import HeaderBar from "./_header";
-import FloatingInfo from "./_floating-info";
 import DashboardKpi from "./sections/dashboard-kpi";
 import AnalyticsCharts from "./sections/analytics-charts";
 import FeatureCards from "./sections/feature-cards";
@@ -65,7 +64,6 @@ export default function DemoVocationalStatic() {
         <main className="flex-1 p-6 overflow-y-auto space-y-6">
           {renderSection(activeMenu)}
         </main>
-        <FloatingInfo />
       </div>
     </div>
   );

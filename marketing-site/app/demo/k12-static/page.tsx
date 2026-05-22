@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import LoadingScreen from "./_loading";
 import Sidebar from "./_sidebar";
 import HeaderBar from "./_header";
-import FloatingInfo from "./_floating-info";
 import DashboardKpi from "./sections/dashboard-kpi";
 import ReportsCharts from "./sections/reports-charts";
 import FeatureModules from "./sections/feature-modules";
@@ -73,8 +72,6 @@ export default function DemoK12Static() {
         <main className="flex-1 p-6 overflow-y-auto space-y-5">
           {renderSection(activeMenu)}
         </main>
-
-        <FloatingInfo />
       </div>
     </div>
   );
