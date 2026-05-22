@@ -8,8 +8,9 @@ import DashboardKpi from "./sections/dashboard-kpi";
 import CoverageReport from "./sections/coverage-report";
 import FeatureCards from "./sections/feature-cards";
 import SchoolRanking from "./sections/school-ranking";
-import EquipmentTraining from "./sections/equipment-training";
+import Equipment from "./sections/equipment";
 import SharingRequests from "./sections/sharing-requests";
+import Training from "./sections/training";
 import CompetitionsBudget from "./sections/competitions-budget";
 import Curriculum from "./sections/curriculum";
 import SettingsPage from "./sections/settings";
@@ -28,12 +29,12 @@ function renderSection(menuId: string) {
     case "equipment":
       return (
         <>
-          <EquipmentTraining />
+          <Equipment />
           <SharingRequests />
         </>
       );
     case "training":
-      return <EquipmentTraining />;
+      return <Training />;
     case "competitions":
     case "budget":
       return <CompetitionsBudget />;
