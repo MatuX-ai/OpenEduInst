@@ -8,8 +8,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { Observable } from 'rxjs';
 
 import { CourseInfo } from '@app/core/services/org-admin.service';
-import { UnifiedCourse } from '@app/models/unified-course.models';
-import { UnifiedCourseCardComponent } from '@app/shared/components/unified-course-card/unified-course-card.component';
+import { UnifiedCourse } from '../../../../models/unified-course.models';
+import { UnifiedCourseCardComponent } from '../../../../shared/components/unified-course-card/unified-course-card.component';
 
 @Component({
   selector: 'app-course-management-panel',

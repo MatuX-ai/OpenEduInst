@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -11,7 +12,7 @@ import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-me
 @Component({
   selector: 'app-organization-side-nav',
   standalone: true,
-  imports: [MatListModule, MatIconModule, MatDividerModule, RouterModule],
+  imports: [CommonModule, MatListModule, MatIconModule, MatDividerModule, RouterModule],
   template: `
     <mat-nav-list>
       <ng-container *ngFor="let item of menuItems">
@@ -23,17 +24,17 @@ import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-me
 
       <mat-divider></mat-divider>
 
-      <a mat-list-item routerLink="/management/licenses">
+      <a mat-list-item [routerLink]="getNavLink('licenses')">
         <mat-icon matListItemIcon>vpn_key</mat-icon>
         <span matListItemTitle>许可证管理</span>
       </a>
 
-      <a mat-list-item routerLink="/management/token-packages">
+      <a mat-list-item [routerLink]="getNavLink('purchase-tokens')">
         <mat-icon matListItemIcon>shopping_cart</mat-icon>
         <span matListItemTitle>购买 Token</span>
       </a>
 
-      <a mat-list-item routerLink="/management/users">
+      <a mat-list-item [routerLink]="getNavLink('users')">
         <mat-icon matListItemIcon>people</mat-icon>
         <span matListItemTitle>用户管理</span>
       </a>
@@ -89,7 +90,7 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
       console.warn('[SideNav] orgId 无效,返回空数组');
       return [];
     }
-    return ['/management/organization', String(this.orgId), page];
+    return ['/organization', String(this.orgId), page];
   }
 
   /**

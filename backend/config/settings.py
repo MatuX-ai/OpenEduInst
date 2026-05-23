@@ -15,5 +15,6 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"  # 忽略 .env 文件中未定义的字段
 
 settings = Settings()

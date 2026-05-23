@@ -27,8 +27,36 @@ import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Subject, Subscription } from 'rxjs';
 
-import { Grade, Student, StudentFilter, StudentStats, StudentStatus } from '../../models/student.models';
-import { StudentManagementService } from '../../services/student-management.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { OrganizationContextService } from '../../../../core/services/organization-context.service';
+import { Student, AttendanceRecord, Enrollment } from '../../../../models/education-management.models';
+
+// 本地类型定义以适配现有 UI
+interface Grade {
+  id: number;
+  name: string;
+  studentCount: number;
+}
+
+interface StudentStats {
+  totalStudents: number;
+  activeStudents: number;
+  graduatedStudents: number;
+  averageProgress: number;
+  averageAttendanceRate: number;
+  totalEnrolledCourses: number;
+  totalPayment: number;
+}
+
+interface StudentFilter {
+  keyword?: string;
+  status?: string;
+  grade?: string;
+  page: number;
+  pageSize: number;
+}
+
+type StudentStatus = 'active' | 'inactive' | 'graduated' | 'dropped_out' | 'suspended' | 'transferred';
 
 import { StudentDetailDialogComponent } from './student-detail-dialog.component';
 import { StudentEditDialogComponent } from './student-edit-dialog.component';
@@ -128,7 +156,8 @@ export class StudentListComponent implements OnInit, OnDestroy {
   ];
 
   constructor(
-    private studentService: StudentManagementService,
+    private studentService: StudentService,
+    private orgContext: OrganizationContextService,
     private dialog: MatDialog,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef
@@ -136,9 +165,8 @@ export class StudentListComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     console.log('[StudentList] 开始初始化...');
-    this.loadGrades();
-    this.loadStats();
     this.loadStudents();
+    this.loadStats();
   }
 
   ngOnDestroy(): void {
@@ -151,16 +179,18 @@ export class StudentListComponent implements OnInit, OnDestroy {
    * 加载学员列表
    */
   loadStudents(): void {
+    const orgId = this.orgContext.currentContext?.id;
+    if (!orgId) return;
+
     console.log('[StudentList] 开始加载学员列表...');
     this.loading = true;
     const subscription = this.studentService
-      .getStudentList(this.filter)
+      .getStudents(orgId, this.pageIndex + 1, this.pageSize, this.filter.keyword)
       .subscribe({
         next: (response) => {
-          console.log('[StudentList] 加载成功，数据条数:', response.data.length);
-          this.students = response.data;
-          this.total = response.total;
-          this.pageSize = response.pageSize;
+          console.log('[StudentList] 加载成功，数据条数:', response.data?.length);
+          this.students = response.data || [];
+          this.total = response.pagination?.total || 0;
           this.loading = false;
           this.cdr.detectChanges();
         },
@@ -177,14 +207,27 @@ export class StudentListComponent implements OnInit, OnDestroy {
    * 加载统计数据
    */
   loadStats(): void {
+    const orgId = this.orgContext.currentContext?.id;
+    if (!orgId) return;
+
     console.log('[StudentList] 开始加载统计数据...');
     this.statsLoading = true;
     const subscription = this.studentService
-      .getStudentStats()
+      .getStatsSummary(orgId)
       .subscribe({
-        next: (stats) => {
-          console.log('[StudentList] 统计数据加载成功:', stats);
-          this.stats = stats;
+        next: (response) => {
+          console.log('[StudentList] 统计数据加载成功:', response.data);
+          if (response.data) {
+            this.stats = {
+              totalStudents: response.data.total_students || 0,
+              activeStudents: response.data.active_students || 0,
+              graduatedStudents: response.data.graduated_students || 0,
+              averageProgress: response.data.average_progress || 0,
+              averageAttendanceRate: response.data.average_attendance_rate || 0,
+              totalEnrolledCourses: response.data.total_enrollments || 0,
+              totalPayment: response.data.total_revenue || 0,
+            };
+          }
           this.statsLoading = false;
           this.cdr.detectChanges();
         },
@@ -197,23 +240,16 @@ export class StudentListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 加载年级列表
+   * 加载年级列表 (目前使用模拟数据，待后端实现)
    */
   loadGrades(): void {
     console.log('[StudentList] 开始加载年级列表...');
-    const subscription = this.studentService
-      .getGrades()
-      .subscribe({
-        next: (grades) => {
-          console.log('[StudentList] 年级列表加载成功:', grades.length);
-          this.grades = grades;
-          this.cdr.detectChanges();
-        },
-        error: (error) => {
-          console.error('[StudentList] 年级列表加载失败:', error);
-        },
-      });
-    this.subscriptions.push(subscription);
+    // TODO: 调用真实 API
+    this.grades = [
+      { id: 1, name: '一年级', studentCount: 30 },
+      { id: 2, name: '二年级', studentCount: 25 },
+    ];
+    this.cdr.detectChanges();
   }
 
   /**
@@ -345,7 +381,7 @@ export class StudentListComponent implements OnInit, OnDestroy {
    * 删除学员
    */
   onDeleteStudent(student: Student): void {
-    if (confirm(`确定要删除学员"${student.name}"吗？此操作将保留学员记录。`)) {
+    if (confirm(`确定要删除学员"${student.name}"吗？`)) {
       this.studentService
         .deleteStudent(student.id)
         .subscribe({
@@ -362,42 +398,28 @@ export class StudentListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 批量更新状态
+   * 批量更新状态 (目前仅前端模拟，待后端实现)
    */
-  onBatchUpdateStatus(status: 'active' | 'inactive' | 'graduated' | 'suspended'): void {
+  onBatchUpdateStatus(status: StudentStatus): void {
     if (this.selectedStudents.size === 0) {
       return;
     }
 
     const statusLabel = this.statusOptions.find((o) => o.value === status)?.label ?? '';
     if (confirm(`确定要将选中的 ${this.selectedStudents.size} 位学员设置为"${statusLabel}"吗？`)) {
-      this.studentService
-        .batchUpdateStatus(Array.from(this.selectedStudents), status)
-        .subscribe({
-          next: () => {
-            this.clearSelection();
-            this.loadStudents();
-            this.loadStats();
-            this.showSnackbar(`已将 ${this.selectedStudents.size} 位学员设为"${statusLabel}"`, 'success');
-          },
-          error: () => {
-            this.showSnackbar('批量更新状态失败', 'error');
-          },
-        });
+      // TODO: 调用真实 API
+      this.clearSelection();
+      this.loadStudents();
+      this.showSnackbar(`已将学员设为"${statusLabel}"（模拟）`, 'success');
     }
   }
 
   /**
-   * 导出 Excel
+   * 导出 Excel (目前仅前端模拟)
    */
   onExportExcel(): void {
-    this.studentService
-      .exportToExcel(this.students)
-      .subscribe({
-        next: () => {
-          this.showSnackbar('导出成功！', 'success');
-        },
-      });
+    // TODO: 实现真实的 Excel 导出逻辑
+    this.showSnackbar('导出功能开发中...', 'success');
   }
 
   /**

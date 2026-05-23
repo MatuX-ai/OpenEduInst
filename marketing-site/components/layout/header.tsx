@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/features/projects", label: "实验项目" },
   { href: "/features/token", label: "Token计费" },
   { href: "/features/makerspace", label: "创客空间" },
+  { href: "/features/cloud-hosting", label: "云托管版" },
   { href: "/demo", label: "Demo" },
   { href: "/download", label: "下载" },
   { href: "/docs", label: "文档" },

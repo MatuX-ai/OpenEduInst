@@ -12,7 +12,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from config.settings import settings
-from models.user import User
+from models.base_models import User
 from utils.database import get_db
 
 # OAuth2 scheme
@@ -25,16 +25,6 @@ def get_current_user_sync(
     """
     同步版本的获取当前用户函数
     供多租户中间件等同步场景使用
-
-    Args:
-        token: JWT token
-        db: 数据库会话
-
-    Returns:
-        User: 当前用户对象
-
-    Raises:
-        HTTPException: 认证失败时抛出
     """
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -76,6 +66,26 @@ def get_current_user_sync(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"用户查询失败: {str(e)}",
         )
+
+
+def get_current_org_id(token: str = Depends(oauth2_scheme)) -> int:
+    """
+    从 JWT Token 中提取当前组织 ID
+    用于多租户数据隔离校验
+    """
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="无法验证凭据或组织信息缺失",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        org_id = payload.get("org_id")
+        if org_id is None:
+            raise credentials_exception
+        return org_id
+    except JWTError:
+        raise credentials_exception
 
 
 def create_access_token_sync(

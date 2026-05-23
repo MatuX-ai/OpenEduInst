@@ -15,6 +15,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Observable, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { environment } from '../../../environments/environment';
+
 import {
   Activity,
   Alert,
@@ -47,6 +49,7 @@ import {
   Organization,
   OrganizationDashboardService,
 } from './organization-dashboard.service';
+import { getMockDashboardData } from './mock-dashboard-data';
 import { OrganizationEditDialogComponent } from './organization-edit-dialog.component';
 
 @Component({
@@ -64,29 +67,23 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         <!-- 根据组织类型动态渲染驾驶舱 -->
         <app-training-dashboard 
           *ngIf="orgContext.isType('training_institution')"
-          [metrics]="matuxMetrics">
+          [metrics]="{ activeStudents: matuxMetrics.activeStudents, monthlyRevenue: matuxMetrics.monthlyRevenue, courseCompletionRate: matuxMetrics.courseCompletionRate, equipmentUsageRate: '85%' }">
         </app-training-dashboard>
 
         <app-k12-dashboard 
           *ngIf="orgContext.isType('k12_school')"
-          [metrics]="{ totalStudents: matuxMetrics.activeStudents, attendanceRate: '98%', activeClasses: 12 }">
+          [metrics]="{ totalStudents: matuxMetrics.activeStudents, courseCompletionRate: '98%', activeClasses: 12 }">
         </app-k12-dashboard>
 
         <app-vocational-dashboard 
           *ngIf="orgContext.isType('vocational_school')"
-          [metrics]="{ equipmentUsage: '85%', employmentRate: '96%', coopProjects: 24 }">
+          [metrics]="{ totalStudents: matuxMetrics.activeStudents, equipmentUsageRate: '85%', employmentRate: '96%', coopProjects: 24 }">
         </app-vocational-dashboard>
 
         <app-bureau-dashboard 
           *ngIf="orgContext.isType('education_bureau')"
-          [metrics]="{ schoolCount: 45, teacherTotal: 3200, budgetExec: '78%' }">
+          [metrics]="{ schoolCount: 45, teacherTrainingRate: '78%', studentParticipationRate: '85%', budgetExec: '78%' }">
         </app-bureau-dashboard>
-
-        <!-- 默认显示通用指标（兼容其他类型） -->
-        <app-matux-core-metrics 
-          *ngIf="!orgContext.isType('training_institution') && !orgContext.isType('k12_school') && !orgContext.isType('vocational_school') && !orgContext.isType('education_bureau')"
-          [metrics]="matuxMetrics">
-        </app-matux-core-metrics>
 
         <!-- 常用功能矩阵 (仅培训机构显示) -->
         <app-matux-common-functions 
@@ -181,13 +178,13 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       .organization-dashboard {
         height: 100%;
         overflow-y: auto;
-        padding: tokens.$spacing-lg; // 24px
+        padding: tokens.$spacing-lg; 
         max-width: 1600px;
         margin: 0 auto;
       }
 
       .dashboard-header {
-        margin-bottom: tokens.$spacing-xl; // 32px
+        margin-bottom: tokens.$spacing-xl; 
       }
 
       .header-content {
@@ -195,21 +192,21 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: tokens.$spacing-md; // 16px
+        gap: tokens.$spacing-md; 
       }
 
       .header-content h1 {
         margin: 0;
         display: flex;
         align-items: center;
-        gap: tokens.$spacing-md; // 12px
-        color: tokens.$color-neutral-900; // #333
-        font-size: tokens.$font-size-4xl; // 36px ≈ 2rem
+        gap: tokens.$spacing-md; 
+        color: tokens.$color-neutral-900; 
+        font-size: tokens.$font-size-4xl; 
       }
 
       .header-actions {
         display: flex;
-        gap: tokens.$spacing-md; // 12px
+        gap: tokens.$spacing-md; 
       }
 
       .loading-container,
@@ -219,22 +216,22 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: tokens.$spacing-xxl tokens.$spacing-lg; // 48px 24px
+        padding: tokens.$spacing-xxl tokens.$spacing-lg; 
         text-align: center;
       }
 
       .education-loading {
-        padding: tokens.$spacing-xl tokens.$spacing-lg; // 32px 24px
-        margin: tokens.$spacing-xl 0; // 32px
-        border-radius: tokens.$radius-lg; // 12px
-        background-color: tokens.$color-neutral-50; // #f8f9fa
-        border: 1px solid tokens.$color-neutral-200; // #e9ecef
+        padding: tokens.$spacing-xl tokens.$spacing-lg; 
+        margin: tokens.$spacing-xl 0; 
+        border-radius: tokens.$radius-lg; 
+        background-color: tokens.$color-neutral-50; 
+        border: 1px solid tokens.$color-neutral-200; 
       }
 
       .education-loading p {
-        margin-top: tokens.$spacing-md; // 16px
-        color: tokens.$color-neutral-700; // #666
-        font-size: tokens.$font-size-sm; // 14px ≈ 0.95rem
+        margin-top: tokens.$spacing-md; 
+        color: tokens.$color-neutral-700; 
+        font-size: tokens.$font-size-sm; 
       }
 
       .education-error {
@@ -242,32 +239,32 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: tokens.$spacing-xl tokens.$spacing-lg; // 32px 24px
-        margin: tokens.$spacing-xl 0; // 32px
-        border-radius: tokens.$radius-lg; // 12px
+        padding: tokens.$spacing-xl tokens.$spacing-lg; 
+        margin: tokens.$spacing-xl 0; 
+        border-radius: tokens.$radius-lg; 
         background-color: #fff3cd;
         border: 1px solid #ffeaa7;
         color: #856404;
       }
 
       .education-error mat-icon {
-        font-size: tokens.$font-size-2xl * 2; // 48px
-        width: tokens.$font-size-2xl * 2; // 48px
-        height: tokens.$font-size-2xl * 2; // 48px
-        margin-bottom: tokens.$spacing-lg; // 16px
-        color: tokens.$color-warning; // #ff9800
+        font-size: tokens.$font-size-2xl * 2; 
+        width: tokens.$font-size-2xl * 2; 
+        height: tokens.$font-size-2xl * 2; 
+        margin-bottom: tokens.$spacing-lg; 
+        color: tokens.$color-warning; 
       }
 
       .education-error button {
-        margin-top: tokens.$spacing-lg; // 16px
+        margin-top: tokens.$spacing-lg; 
       }
 
       .error-container .error-icon {
-        font-size: tokens.$font-size-2xl * 2; // 48px
-        width: tokens.$font-size-2xl * 2; // 48px
-        height: tokens.$font-size-2xl * 2; // 48px
-        color: tokens.$color-error; // #f44336
-        margin-bottom: tokens.$spacing-lg; // 16px
+        font-size: tokens.$font-size-2xl * 2; 
+        width: tokens.$font-size-2xl * 2; 
+        height: tokens.$font-size-2xl * 2; 
+        color: tokens.$color-error; 
+        margin-bottom: tokens.$spacing-lg; 
       }
 
       .stats-grid {
@@ -474,12 +471,12 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
 
       .activity-item.warning,
       .alert-item.medium {
-        background-color: tokens.$color-warning-light; // #fff3e0
+        background-color: tokens.$color-warning-light; 
       }
 
       .activity-item.error,
       .alert-item.high {
-        background-color: tokens.$color-error-light; // #ffebee
+        background-color: tokens.$color-error-light; 
       }
 
       .activity-icon,
@@ -699,7 +696,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
     console.log('Selected function:', item);
     // TODO: 根据 ID 导航到对应页面
     if (item.id === 'schedule') {
-      void this.router.navigate(['/management/organization', this.orgId, 'schedules']);
+      void this.router.navigate(['/organization', this.orgId, 'schedules']);
     }
   }
 
@@ -727,31 +724,34 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private orgAdminService: OrgAdminService,
     private unifiedCourseService: UnifiedCourseService,
-    private orgContext: OrganizationContextService,
+    public orgContext: OrganizationContextService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
-    this.subscriptions.push(
-      this.route.params.subscribe((params) => {
-        const id = +params['id'];
-        // 严格校验 ID 有效性
-        if (!id || isNaN(id)) {
-          console.error('[Dashboard] 无效的机构ID:', params['id']);
-          this.snackBar.open('无效的机构ID,请重新选择', '关闭', {
-            duration: 3000,
-            panelClass: ['error-snackbar'],
-          });
-          return;
-        }
+    const parentRoute = this.route.parent;
+    if (parentRoute) {
+      this.subscriptions.push(
+        parentRoute.paramMap.subscribe((params) => {
+          const id = +(params.get('id') ?? '');
+          // 严格校验 ID 有效性
+          if (!id || isNaN(id)) {
+            console.error('[Dashboard] 无效的机构ID:', params.get('id'));
+            this.snackBar.open('无效的机构ID,请重新选择', '关闭', {
+              duration: 3000,
+              panelClass: ['error-snackbar'],
+            });
+            return;
+          }
 
-        this.orgId = id;
-        console.log('[Dashboard] 获取到机构ID:', this.orgId);
-        this.dashboardService.setCurrentOrgId(this.orgId);
-        this.loadData();
-        this.loadPopularCourses();
-      })
-    );
+          this.orgId = id;
+          console.log('[Dashboard] 获取到机构ID:', this.orgId);
+          this.dashboardService.setCurrentOrgId(this.orgId);
+          this.loadData();
+          this.loadPopularCourses();
+        })
+      );
+    }
   }
 
   ngOnDestroy(): void {
@@ -792,7 +792,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('机构ID不存在');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'finance']);
+    void this.router.navigate(['/organization', this.orgId, 'finance']);
   }
 
   /**
@@ -803,7 +803,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('机构ID不存在');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'classrooms']);
+    void this.router.navigate(['/organization', this.orgId, 'classrooms']);
   }
 
   /**
@@ -814,12 +814,29 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('机构ID不存在');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'wechat-cs']);
+    void this.router.navigate(['/organization', this.orgId, 'wechat-cs']);
   }
 
   loadData(): void {
     this.loading = true;
     this.error = null;
+
+    // Mock 模式下直接使用 Mock 数据，不调用 API
+    if (environment.useMockData) {
+      const mockData = getMockDashboardData(this.orgId);
+      this.dashboardData = mockData;
+      this.organization = mockData.organization;
+      // Mock 模式下使用默认指标
+      this.matuxMetrics = {
+        activeStudents: 328,
+        monthlyRevenue: '¥12.5W',
+        courseCompletionRate: '92%',
+      };
+      this.setupCharts();
+      this.loading = false;
+      this.cdr.detectChanges();
+      return;
+    }
 
     // 设置超时处理，避免无限等待
     const timeoutId = setTimeout(() => {
@@ -1119,7 +1136,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('[Dashboard] 机构ID无效,无法添加课程');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'courses'], {
+    void this.router.navigate(['/organization', this.orgId, 'courses'], {
       queryParams: { action: 'add' },
     });
   }
@@ -1148,7 +1165,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('[Dashboard] 机构ID无效,无法添加教师');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'teachers'], {
+    void this.router.navigate(['/organization', this.orgId, 'teachers'], {
       queryParams: { action: 'add' },
     });
   }
@@ -1168,7 +1185,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       console.error('[Dashboard] 机构ID无效,无法添加学生');
       return;
     }
-    void this.router.navigate(['/management/organization', this.orgId, 'students'], {
+    void this.router.navigate(['/organization', this.orgId, 'students'], {
       queryParams: { action: 'add' },
     });
   }

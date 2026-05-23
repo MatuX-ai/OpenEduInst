@@ -3,8 +3,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# 数据库配置
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/openmt_edu_inst")
+# 数据库配置 - 从 settings 加载
+from config.settings import settings
+
+DATABASE_URL = settings.DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

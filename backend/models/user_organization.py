@@ -23,8 +23,8 @@ from sqlalchemy.orm import relationship
 
 from utils.database import Base
 
-# 导入学习来源类型枚举（复用）
-from models.learning_source import LearningSourceType
+# 学习来源类型（暂时注释，因为模块不存在）
+# from models.learning_source import LearningSourceType
 
 
 class UserOrganizationRole(str, enum.Enum):
@@ -65,8 +65,9 @@ class UserOrganization(Base):
     # 组织ID（自学时为null，表示不隶属于任何组织）
     org_id = Column(Integer, ForeignKey("organizations.id", use_alter=True), nullable=True, index=True)
     
-    # 关联的学习来源类型
-    learning_source_type = Column(Enum(LearningSourceType), nullable=True, index=True)
+    # 关联的学习来源类型（暂时注释，因为模块不存在）
+    # learning_source_type = Column(Enum(LearningSourceType), nullable=True, index=True)
+    learning_source_type = Column(String(50), nullable=True, index=True)
     
     # 用户在组织中的角色
     role = Column(Enum(UserOrganizationRole), default=UserOrganizationRole.STUDENT, index=True)
@@ -100,21 +101,21 @@ class UserOrganization(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # 关联关系
-    user = relationship("User", back_populates="user_organizations")
+    # user = relationship("User", back_populates="user_organizations")  # 暂时注释
     organization = relationship("Organization", back_populates="user_organizations")
 
     def __repr__(self):
         return f"<UserOrganization(id={self.id}, user_id={self.user_id}, org_id={self.org_id}, role='{self.role.value}')>"
 
 
-# 在User模型中添加反向关系
-from models.user import User
-
-User.user_organizations = relationship(
-    "UserOrganization",
-    back_populates="user",
-    cascade="all, delete-orphan"
-)
+# 在User模型中添加反向关系（暂时注释，因为User模型不存在）
+# from models.user import User
+#
+# User.user_organizations = relationship(
+#     "UserOrganization",
+#     back_populates="user",
+#     cascade="all, delete-orphan"
+# )
 
 
 # 在Organization模型中添加反向关系
@@ -137,7 +138,7 @@ class UserOrganizationCreate(BaseModel):
     
     user_id: int = Field(..., description="用户ID")
     org_id: Optional[int] = Field(None, description="组织ID（自学时为null）")
-    learning_source_type: Optional[LearningSourceType] = Field(None, description="学习来源类型")
+    learning_source_type: Optional[str] = Field(None, max_length=50, description="学习来源类型")
     role: UserOrganizationRole = Field(default=UserOrganizationRole.STUDENT, description="用户角色")
     is_primary: bool = Field(default=False, description="是否为主组织")
     member_id: Optional[str] = Field(None, max_length=100, description="成员ID（如学号）")
@@ -153,7 +154,7 @@ class UserOrganizationUpdate(BaseModel):
     """更新用户-组织关联的请求模型"""
     
     org_id: Optional[int] = Field(None, description="组织ID")
-    learning_source_type: Optional[LearningSourceType] = Field(None, description="学习来源类型")
+    learning_source_type: Optional[str] = Field(None, max_length=50, description="学习来源类型")
     role: Optional[UserOrganizationRole] = Field(None, description="用户角色")
     is_primary: Optional[bool] = Field(None, description="是否为主组织")
     status: Optional[UserOrganizationStatus] = Field(None, description="关联状态")
@@ -173,7 +174,7 @@ class UserOrganizationResponse(BaseModel):
     id: int
     user_id: int
     org_id: Optional[int]
-    learning_source_type: Optional[LearningSourceType]
+    learning_source_type: Optional[str]
     role: UserOrganizationRole
     is_primary: bool
     status: UserOrganizationStatus

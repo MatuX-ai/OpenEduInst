@@ -775,7 +775,7 @@ export interface ResourceItem {
   `]
 })
 export class TrainingDashboardComponent implements OnInit {
-  @Input() metrics: TrainingMetrics = {
+  @Input() metrics: any = {
     activeStudents: 328,
     monthlyRevenue: '¥12.5W',
     courseCompletionRate: '92%',

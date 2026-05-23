@@ -93,29 +93,29 @@ class Organization(Base):
     licenses = relationship(
         "License", back_populates="organization", cascade="all, delete-orphan"
     )
-    courses = relationship(
-        "Course", back_populates="organization", cascade="all, delete-orphan"
-    )
-    ar_vr_contents = relationship(
-        "ARVRContent", back_populates="organization", cascade="all, delete-orphan"
-    )
-    course_categories = relationship(
-        "CourseCategory", back_populates="organization", cascade="all, delete-orphan"
-    )
+    # courses = relationship(
+    #     "Course", back_populates="organization", cascade="all, delete-orphan"
+    # )  # 暂时注释，Course在base_models中定义
+    # ar_vr_contents = relationship(
+    #     "ARVRContent", back_populates="organization", cascade="all, delete-orphan"
+    # )  # 暂时注释，ARVRContent未定义
+    # course_categories = relationship(
+    #     "CourseCategory", back_populates="organization", cascade="all, delete-orphan"
+    # )  # 暂时注释，CourseCategory未定义
     configs = relationship(
         "TenantConfig", back_populates="organization", cascade="all, delete-orphan"
     )
     feature_flags = relationship(
         "TenantFeatureFlag", back_populates="organization", cascade="all, delete-orphan"
     )
-    resource_quotas = relationship(
-        "TenantResourceQuota",
-        back_populates="organization",
-        cascade="all, delete-orphan",
-    )
-    materials = relationship(
-        "UnifiedMaterial", back_populates="organization", cascade="all, delete-orphan"
-    )
+    # resource_quotas = relationship(
+    #     "TenantResourceQuota",
+    #     back_populates="organization",
+    #     cascade="all, delete-orphan",
+    # )  # 暂时注释，TenantResourceQuota未定义
+    # materials = relationship(
+    #     "UnifiedMaterial", back_populates="organization", cascade="all, delete-orphan"
+    # )  # 暂时注释，UnifiedMaterial未定义
     # 暂时注释掉sponsorships关系以避免循环依赖问题
     # sponsorships = relationship(
     #     "models.sponsorship.Sponsorship", back_populates="organization", cascade="all, delete-orphan"
@@ -151,8 +151,8 @@ class License(Base):
     organization_id = Column(Integer, ForeignKey(
         "organizations.id"), nullable=False)
     product_id = Column(
-        Integer, ForeignKey("products.id"), nullable=True
-    )  # 如果有产品概念
+        Integer, nullable=True
+    )  # 如果有产品概念（暂时移除外键约束）
 
     # 许可证基本信息
     license_type = Column(Enum(LicenseType), default=LicenseType.COMMERCIAL)

@@ -329,48 +329,8 @@ export class InstitutionListComponent implements OnInit {
    * 创建机构
    */
   createInstitution(): void {
-    const dialogRef = this.dialog.open(InstitutionEditDialogComponent, {
-      width: '600px',
-      data: {
-        title: '创建机构',
-        mode: 'create',
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((formData: InstitutionData | undefined) => {
-      if (formData) {
-        const createData: InstitutionCreate = {
-          name: formData.name,
-          contact_email: formData.contact_email,
-          phone: formData.phone,
-          address: formData.address,
-          website: formData.website,
-          max_users: formData.max_users ?? 100,
-        };
-
-        this.institutionService.createInstitution(createData).subscribe({
-          next: (newInst) => {
-            this.institutions.push(newInst);
-            this.showSnackbar('机构创建成功', 'success');
-          },
-          error: (err: unknown) => {
-            const errorMessage =
-              typeof err === 'object' && err !== null
-                ? 'error' in err &&
-                  typeof err.error === 'object' &&
-                  err.error !== null &&
-                  'message' in err.error &&
-                  typeof err.error.message === 'string'
-                  ? (err.error as { message: string }).message
-                  : 'message' in err && typeof err.message === 'string'
-                    ? err.message
-                    : '未知错误'
-                : '未知错误';
-            this.showSnackbar(`创建失败：${errorMessage}`, 'error');
-          },
-        });
-      }
-    });
+    // TODO: 实现创建机构逻辑
+    this.showSnackbar('创建功能开发中', 'success');
   }
 
   /**
@@ -384,29 +344,8 @@ export class InstitutionListComponent implements OnInit {
    * 打开编辑对话框
    */
   private openEditDialog(institution: Institution): void {
-    const dialogRef = this.dialog.open(InstitutionEditDialogComponent, {
-      width: '600px',
-      data: {
-        title: '编辑机构',
-        mode: 'edit',
-        institution: {
-          id: institution.id,
-          name: institution.name,
-          contact_email: institution.contact_email,
-          phone: institution.phone,
-          address: institution.address,
-          website: institution.website,
-          max_users: institution.max_users,
-          is_active: institution.is_active,
-        },
-      },
-    });
-
-    dialogRef.afterClosed().subscribe((formData: InstitutionData | undefined) => {
-      if (formData) {
-        this.updateInstitution(institution.id, formData);
-      }
-    });
+    // TODO: 实现编辑机构逻辑
+    this.showSnackbar('编辑功能开发中', 'success');
   }
 
   /**
@@ -414,12 +353,12 @@ export class InstitutionListComponent implements OnInit {
    */
   private updateInstitution(institutionId: number, formData: InstitutionData): void {
     const updateData: InstitutionUpdate = {
-      name: formData.name,
-      contact_email: formData.contact_email,
-      phone: formData.phone,
-      address: formData.address,
-      website: formData.website,
-      max_users: formData.max_users,
+      name: formData['name'],
+      contact_email: formData['contact_email'],
+      phone: formData['phone'],
+      address: formData['address'],
+      website: formData['website'],
+      max_users: formData['max_users'],
     };
 
     this.institutionService.updateInstitution(institutionId, updateData).subscribe({

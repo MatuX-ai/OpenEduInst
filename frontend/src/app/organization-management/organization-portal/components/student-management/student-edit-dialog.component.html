@@ -28,7 +28,7 @@
       <!-- 年级 -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>年级 <span class="required">*</span></mat-label>
-        <mat-select [(ngModel)]="formData.grade" name="grade" required>
+        <mat-select [(ngModel)]="formData.grade_level" name="grade_level" required>
           @for (grade of gradeOptions; track grade) {
             <mat-option [value]="grade">{{ grade }}</mat-option>
           }
@@ -38,7 +38,7 @@
       <!-- 报名日期 -->
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>报名日期</mat-label>
-        <input matInput [(ngModel)]="formData.enrollmentDate" name="enrollmentDate" type="date" />
+        <input matInput [(ngModel)]="formData.enrollment_date" name="enrollment_date" type="date" />
       </mat-form-field>
 
       <!-- 状态（仅编辑模式） -->
@@ -46,9 +46,11 @@
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>状态</mat-label>
           <mat-select [(ngModel)]="formData.status" name="status">
-            @for (option of statusOptions; track option) {
-              <mat-option [value]="option.value">{{ option.label }}</mat-option>
-            }
+            <mat-option value="active">在读</mat-option>
+            <mat-option value="inactive">休学</mat-option>
+            <mat-option value="graduated">已毕业</mat-option>
+            <mat-option value="suspended">暂停</mat-option>
+            <mat-option value="transferred">已转学</mat-option>
           </mat-select>
         </mat-form-field>
       }
@@ -57,7 +59,7 @@
       <div class="parent-info-section">
         <div class="section-header">
           <h3>家长信息</h3>
-          @if (!formData.parentInfo) {
+          @if (!formData.guardian_name) {
             <button mat-stroked-button color="primary" type="button" (click)="onAddParentInfo()">
               <mat-icon>add</mat-icon>
               添加家长信息
@@ -70,30 +72,25 @@
           }
         </div>
 
-        @if (formData.parentInfo) {
+        @if (formData.guardian_name !== undefined) {
           <div class="parent-info-form">
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>家长姓名</mat-label>
-              <input matInput [(ngModel)]="formData.parentInfo.name" name="parentName" />
+              <mat-label>监护人姓名</mat-label>
+              <input matInput [(ngModel)]="formData.guardian_name" name="guardian_name" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
-              <mat-label>电话号码</mat-label>
-              <input matInput [(ngModel)]="formData.parentInfo.phone" name="parentPhone" />
+              <mat-label>监护人电话</mat-label>
+              <input matInput [(ngModel)]="formData.guardian_phone" name="guardian_phone" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>关系</mat-label>
-              <mat-select [(ngModel)]="formData.parentInfo.relationship" name="relationship">
+              <mat-select [(ngModel)]="formData.guardian_relationship" name="relationship">
                 @for (rel of relationshipOptions; track rel) {
                   <mat-option [value]="rel">{{ rel }}</mat-option>
                 }
               </mat-select>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>邮箱</mat-label>
-              <input matInput [(ngModel)]="formData.parentInfo.email" name="parentEmail" type="email" />
             </mat-form-field>
           </div>
         }

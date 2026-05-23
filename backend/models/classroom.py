@@ -90,8 +90,8 @@ class ClassSchedule(Base):
     # 关系
     organization = relationship("Organization")
     classroom = relationship("Classroom", back_populates="schedules")
-    course = relationship("Course")
-    teacher = relationship("Teacher", back_populates="class_schedules")
+    # course = relationship("Course")  # 暂时注释
+    # teacher = relationship("Teacher", back_populates="class_schedules")  # 暂时注释
 
 
 # 在Organization模型中添加反向关系
@@ -101,10 +101,10 @@ Organization.classrooms = relationship(
     "Classroom", back_populates="organization", cascade="all, delete-orphan"
 )
 
-# 在Teacher模型中添加反向关系
-from models.teacher import Teacher
-
-Teacher.class_schedules = relationship("ClassSchedule", back_populates="teacher")
+# 在Teacher模型中添加反向关系（暂时注释，因为Teacher模型不存在）
+# from models.teacher import Teacher
+#
+# Teacher.class_schedules = relationship("ClassSchedule", back_populates="teacher")
 
 from datetime import date, datetime
 from typing import List, Optional

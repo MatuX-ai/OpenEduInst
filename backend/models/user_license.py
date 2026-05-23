@@ -40,8 +40,7 @@ class UserLicense(Base):
     __tablename__ = "user_licenses"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"),
-                     nullable=False, index=True)
+    user_id = Column(Integer, nullable=False, index=True)  # 暂时移除外键
     license_id = Column(Integer, ForeignKey(
         "licenses.id"), nullable=False, index=True)
 
@@ -58,7 +57,7 @@ class UserLicense(Base):
     can_use = Column(Boolean, default=True)  # 是否可以使用此许可证功能
 
     # 元数据
-    assigned_by = Column(Integer, ForeignKey("users.id"))  # 分配者ID
+    assigned_by = Column(Integer)  # 分配者ID（暂时移除外键）
     assigned_at = Column(DateTime, default=func.now())
     expires_at = Column(DateTime, nullable=True)  # 特定用户的过期时间
 
@@ -67,15 +66,15 @@ class UserLicense(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # 关系
-    user = relationship("User", foreign_keys=[user_id])
+    # user = relationship("User", foreign_keys=[user_id])  # 暂时注释
     license = relationship("License")
-    assigner = relationship("User", foreign_keys=[assigned_by])
+    # assigner = relationship("User", foreign_keys=[assigned_by])  # 暂时注释
     # 硬件租赁关系
-    hardware_rentals = relationship(
-        "ModuleRentalRecord",
-        back_populates="user_license",
-        cascade="all, delete-orphan",
-    )
+    # hardware_rentals = relationship(
+    #     "ModuleRentalRecord",
+    #     back_populates="user_license",
+    #     cascade="all, delete-orphan",
+    # )  # 暂时注释，ModuleRentalRecord未定义
 
     def __repr__(self):
         return f"<UserLicense(user_id={self.user_id}, license_id={self.license_id}, role='{self.role}')>"
@@ -246,8 +245,7 @@ class UserTokenBalance(Base):
     __tablename__ = "user_token_balances"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"),
-                     nullable=False, unique=True)
+    user_id = Column(Integer, nullable=False, unique=True)  # 暂时移除外键
 
     # Token 余额
     total_tokens = Column(Integer, default=0)  # 累计购买的 Token
@@ -263,7 +261,7 @@ class UserTokenBalance(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     # 关系
-    user = relationship("User")
+    # user = relationship("User")  # 暂时注释
     recharge_records = relationship(
         "TokenRechargeRecord",
         back_populates="user_balance",
@@ -314,7 +312,7 @@ class TokenRechargeRecord(Base):
     # 关系
     user_balance = relationship(
         "UserTokenBalance", back_populates="recharge_records")
-    package = relationship("TokenPackage")
+    # package = relationship("TokenPackage")  # 暂时注释，避免与stem_token_packages冲突
 
     def __repr__(self):
         return f"<TokenRechargeRecord(order_no='{self.order_no}', tokens={self.token_amount})>"

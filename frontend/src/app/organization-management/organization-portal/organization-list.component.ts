@@ -10,6 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
+import { environment } from '../../../environments/environment';
+import { mockOrganizations } from './mock-dashboard-data';
 import { OrganizationEditDialogComponent } from './organization-edit-dialog.component';
 import {
   Organization,
@@ -131,25 +133,25 @@ import {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      /* @use '../../../styles/design-tokens' as tokens; - COMMENTED OUT FOR ISOLATION FIX */
       .organization-list {
-        padding: tokens.$spacing-lg; // 24px
+        padding: 24px;
       }
 
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: tokens.$spacing-lg; // 24px
+        margin-bottom: 24px;
       }
 
       .header h1 {
         display: flex;
         align-items: center;
-        gap: tokens.$spacing-md; // 12px
+        gap: 12px;
         margin: 0;
-        font-size: tokens.$font-size-3xl; // 30px ≈ 1.75rem
-        color: tokens.$color-neutral-900; // #333
+        font-size: 1.75rem;
+        color: #333;
       }
 
       .loading-container,
@@ -159,41 +161,41 @@ import {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: tokens.$spacing-3xl tokens.$spacing-lg; // 64px 24px
+        padding: 64px 24px;
         text-align: center;
       }
 
       .error-container mat-icon.error-icon {
-        font-size: tokens.$font-size-2xl * 2; // 48px
-        width: tokens.$font-size-2xl * 2; // 48px
-        height: tokens.$font-size-2xl * 2; // 48px
-        color: tokens.$color-error; // #f44336
-        margin-bottom: tokens.$spacing-lg; // 16px
+        font-size: 48px;
+        width: 48px;
+        height: 48px;
+        color: #f44336;
+        margin-bottom: 16px;
       }
 
       .empty-state {
-        background: tokens.$color-neutral-100; // #f5f5f5
-        border-radius: tokens.$radius-md; // 8px
+        background: #f5f5f5;
+        border-radius: 8px;
       }
 
       .empty-state mat-icon {
-        font-size: tokens.$font-size-2xl * 2; // 64px
-        width: tokens.$font-size-2xl * 2; // 64px
-        height: tokens.$font-size-2xl * 2; // 64px
-        color: tokens.$color-neutral-500; // #999
-        margin-bottom: tokens.$spacing-lg; // 16px
+        font-size: 64px;
+        width: 64px;
+        height: 64px;
+        color: #999;
+        margin-bottom: 16px;
       }
 
       .organization-table {
         width: 100%;
-        border-radius: tokens.$radius-md; // 8px
+        border-radius: 8px;
         overflow: hidden;
       }
 
       table th {
-        background: tokens.$color-neutral-100; // #f5f5f5
-        font-weight: tokens.$font-weight-semibold; // 600
-        color: tokens.$color-neutral-900; // #333
+        background: #f5f5f5;
+        font-weight: 600;
+        color: #333;
       }
     `,
   ],
@@ -244,6 +246,15 @@ export class OrganizationListComponent implements OnInit {
   loadOrganizations(): void {
     this.loading = true;
     this.error = null;
+
+    // 如果使用 mock 数据
+    if (environment.useMockData) {
+      setTimeout(() => {
+        this.organizations = mockOrganizations as any;
+        this.loading = false;
+      }, environment.mockDataDelay);
+      return;
+    }
 
     this.organizationService.getOrganizations().subscribe({
       next: (data) => {

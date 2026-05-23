@@ -5,8 +5,10 @@
 
 from typing import Dict, Any
 from sqlalchemy.orm import Session
+from datetime import datetime, timedelta
+import uuid
 
-from models.license import OrganizationType
+from models.license import OrganizationType, License, LicenseType, LicenseStatus
 from models.tenant import TenantConfig, TenantFeatureFlag
 
 
@@ -38,26 +40,31 @@ class TenantInitService:
         OrganizationType.TRAINING: {
             'currency': 'CNY',
             'default_class_capacity': 20,
-            'renewal_reminder_days': 7
+            'renewal_reminder_days': 7,
+            'cloud_backup_enabled': True,  # 云托管专属：开启自动备份
+            'ai_assistant_level': 'advanced' # 云托管专属：高级 AI 助教
         },
         OrganizationType.K12: {
             'semester_start_month': 9,
             'max_class_size': 50,
-            'grading_system': 'percentage'
+            'grading_system': 'percentage',
+            'parent_portal_access': True
         },
         OrganizationType.VOCATIONAL: {
             'internship_duration_months': 6,
-            'certification_required': True
+            'certification_required': True,
+            'enterprise_sync': True
         },
         OrganizationType.BUREAU: {
             'reporting_frequency': 'monthly',
-            'supervision_level': 'city'
+            'supervision_level': 'city',
+            'data_visualization_dashboard': True
         }
     }
 
     @staticmethod
     def initialize_tenant(db: Session, org_id: int, org_type: OrganizationType) -> None:
-        """初始化租户配置和功能开关"""
+        """初始化租户配置、功能开关及云托管许可证"""
         
         # 1. 初始化功能开关
         features = TenantInitService.DEFAULT_FEATURES.get(org_type, [])
@@ -77,4 +84,20 @@ class TenantInitService:
         )
         db.add(config)
 
+        # 3. 自动发放初始云托管许可证 (有效期1年)
+        license_key = f"CLOUD-{uuid.uuid4().hex[:12].upper()}"
+        initial_license = License(
+            license_key=license_key,
+            organization_id=org_id,
+            license_type=LicenseType.CLOUD_HOSTED,
+            status=LicenseStatus.ACTIVE,
+            issued_at=datetime.utcnow(),
+            expires_at=datetime.utcnow() + timedelta(days=365),
+            activated_at=datetime.utcnow(),
+            max_users=100,
+            max_devices=50,
+            features=["stem_management", "hardware_tracking", "token_billing", "ai_assistant", "auto_backup"]
+        )
+        db.add(initial_license)
+        
         db.commit()

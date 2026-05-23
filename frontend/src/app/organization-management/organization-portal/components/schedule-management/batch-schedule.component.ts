@@ -270,9 +270,17 @@ export class BatchScheduleComponent implements OnInit {
   }
 
   /**
+   * 获取课程名称
+   */
+  getCourseName(courseId: number): string {
+    const course = this.courses.find(c => c.id === courseId);
+    return course ? course.name : '未知课程';
+  }
+
+  /**
    * 返回课表页面
    */
   goBack(): void {
-    window.location.href = '/management/organization/1/schedule';
+    window.location.href = '/organization/1/schedule';
   }
 }

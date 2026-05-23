@@ -207,7 +207,7 @@ export class ScheduleMainComponent implements OnInit {
    */
   openBatchSchedule(): void {
     // TODO: 打开批量排课对话框或导航到批量排课页面
-    window.location.href = '/management/organization/1/schedule/batch';
+    window.location.href = '/organization/1/schedule/batch';
   }
 
   /**

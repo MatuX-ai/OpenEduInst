@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 
 export interface Organization {
   id: number;
@@ -52,7 +52,7 @@ export class OrganizationService {
   constructor(private http: HttpClient) {}
 
   /**
-   * 获取所有组织列�?
+   * 获取所有组织列�?
    */
   getOrganizations(
     skip: number = 0,
@@ -81,7 +81,7 @@ export class OrganizationService {
   }
 
   /**
-   * 创建新组�?
+   * 创建新组�?
    */
   createOrganization(data: OrganizationCreate): Observable<Organization> {
     const url = `${this.baseUrl}/organizations`;

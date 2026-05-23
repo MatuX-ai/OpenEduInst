@@ -4,8 +4,15 @@ import { RouterModule, Routes } from '@angular/router';
 import { OrgAdminGuard } from '../../guards/organization.guard';
 
 import { OrganizationLayoutComponent } from './organization-layout.component';
+import { OrganizationListComponent } from './organization-list.component';
 
 const routes: Routes = [
+  // 机构列表页面（默认页面）
+  {
+    path: '',
+    component: OrganizationListComponent,
+  },
+  // 机构详情页面（需要ID）
   {
     path: ':id',
     component: OrganizationLayoutComponent,
@@ -92,6 +99,30 @@ const routes: Routes = [
         loadComponent: () =>
           import('./components/data-analytics/data-analytics-dashboard.component').then(
             (m) => m.DataAnalyticsDashboardComponent
+          ),
+      },
+      // 许可证管理
+      {
+        path: 'licenses',
+        loadComponent: () =>
+          import('./components/license-management/license-management.component').then(
+            (m) => m.LicenseManagementComponent
+          ),
+      },
+      // 购买 Token
+      {
+        path: 'purchase-tokens',
+        loadComponent: () =>
+          import('./components/token-purchase/token-purchase.component').then(
+            (m) => m.TokenPurchaseComponent
+          ),
+      },
+      // 用户管理
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./components/user-management/user-management.component').then(
+            (m) => m.UserManagementComponent
           ),
       },
       {

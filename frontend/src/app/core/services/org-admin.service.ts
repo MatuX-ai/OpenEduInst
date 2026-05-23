@@ -13,7 +13,6 @@ import { environment } from '../../../environments/environment';
 // 导入教育管理模型
 import { ApiResponse, PaginatedResponse } from '../../models/education-management.models';
 
-import { MultiSourceLearningService } from './multi-source-learning.service';
 
 // 扩展接口定义（与后端API对齐）
 export interface OrgOverview {
@@ -141,10 +140,7 @@ export class OrgAdminService {
   // 模拟数据标记（开发阶段使用）
   private useMockData = environment.production === false; // 开发环境使用模拟数据
 
-  constructor(
-    private http: HttpClient,
-    private multiSourceService: MultiSourceLearningService
-  ) {}
+  constructor(private http: HttpClient) {}
 
   /**
    * 获取机构概览数据
@@ -498,33 +494,18 @@ export class OrgAdminService {
     };
     learning_sources: unknown[];
   }> {
-    return this.multiSourceService.getUserUnifiedProgress(teacherId).pipe(
-      map((response) => ({
-        teacher_id: teacherId,
-        organizations: [],
-        unified_progress: {
-          total_students: 0,
-          average_progress_across_orgs: response.average_score ?? 0,
-          active_courses_count: response.in_progress_courses ?? 0,
-          pending_assignments_count: 0,
-        },
-        learning_sources: [],
-      })),
-      catchError((err) => {
-        console.error('获取多源教师数据失败:', err);
-        return of({
-          teacher_id: teacherId,
-          organizations: [],
-          unified_progress: {
-            total_students: 0,
-            average_progress_across_orgs: 0,
-            active_courses_count: 0,
-            pending_assignments_count: 0,
-          },
-          learning_sources: [],
-        });
-      })
-    );
+    // TODO: 实现多源学习服务调用
+    return of({
+      teacher_id: teacherId,
+      organizations: [],
+      unified_progress: {
+        total_students: 0,
+        average_progress_across_orgs: 0,
+        active_courses_count: 0,
+        pending_assignments_count: 0,
+      },
+      learning_sources: [],
+    });
   }
 
   private getAuthHeaders(): HttpHeaders {

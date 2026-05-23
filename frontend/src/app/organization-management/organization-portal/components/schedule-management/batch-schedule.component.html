@@ -177,7 +177,7 @@
                 @for (courseId of selectedCourseIds.slice(0, 5); track courseId) {
                   <div class="preview-item">
                     <mat-icon>check_circle</mat-icon>
-                    <span>{{ courses.find(c => c.id === courseId)?.name }}</span>
+                    <span>{{ getCourseName(courseId) }}</span>
                   </div>
                 }
                 @if (selectedCourseIds.length > 5) {

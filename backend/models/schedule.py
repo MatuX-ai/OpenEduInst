@@ -32,9 +32,9 @@ class Schedule(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relationships
-    course = relationship("Course")
-    teacher = relationship("Teacher")
-    classroom = relationship("Classroom")
+    # course = relationship("Course")  # 暂时注释
+    # teacher = relationship("Teacher")  # 暂时注释
+    # classroom = relationship("Classroom")  # 暂时注释
 
 class LeadStatus(enum.Enum):
     NEW = "new"
@@ -78,5 +78,5 @@ class Settlement(Base):
     settlement_date = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    schedule = relationship("Schedule")
-    teacher = relationship("Teacher")
+    # schedule = relationship("Schedule")  # 暂时注释
+    # teacher = relationship("Teacher")  # 暂时注释

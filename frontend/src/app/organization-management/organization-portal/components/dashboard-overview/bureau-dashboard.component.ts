@@ -535,7 +535,7 @@ export interface BureauMetrics {
   `]
 })
 export class BureauDashboardComponent implements OnInit {
-  @Input() metrics: BureauMetrics = {
+  @Input() metrics: any = {
     schoolCount: 127,
     totalEquipmentValue: '¥2,350W',
     teacherTrainingRate: '73%',

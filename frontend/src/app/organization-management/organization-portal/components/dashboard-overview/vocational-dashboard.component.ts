@@ -529,7 +529,7 @@ export interface VocationalMetrics {
   `]
 })
 export class VocationalDashboardComponent implements OnInit {
-  @Input() metrics: VocationalMetrics = {
+  @Input() metrics: any = {
     totalStudents: 856,
     equipmentUsageRate: '72%',
     certificationPassRate: '88%',

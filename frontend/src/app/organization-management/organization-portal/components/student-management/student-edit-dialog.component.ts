@@ -18,13 +18,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
-import {
-  CreateStudentRequest,
-  Student,
-  StudentStatus,
-  UpdateStudentRequest,
-} from '../../models/student.models';
-import { StudentManagementService } from '../../services/student-management.service';
+import { StudentService } from '../../../../core/services/student.service';
+import { OrganizationContextService } from '../../../../core/services/organization-context.service';
+import { Student } from '../../../../models/education-management.models';
+
+type StudentStatus = 'active' | 'inactive' | 'graduated' | 'dropped_out' | 'suspended' | 'transferred';
 
 export interface StudentEditDialogData {
   mode: 'create' | 'edit';
@@ -52,13 +50,15 @@ export interface StudentEditDialogData {
 export class StudentEditDialogComponent {
   loading = false;
 
-  formData: CreateStudentRequest & { status?: StudentStatus } = {
+  formData: Partial<Student> = {
     name: '',
     email: '',
     phone: '',
-    grade: '',
-    parentInfo: undefined,
-    enrollmentDate: '',
+    grade_level: '',
+    guardian_name: '',
+    guardian_phone: '',
+    guardian_relationship: '',
+    enrollment_date: new Date().toISOString(),
     status: 'active',
   };
 
@@ -78,58 +78,37 @@ export class StudentEditDialogComponent {
   // 年级选项
   gradeOptions: string[] = ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级'];
 
-  // 状态选项
-  statusOptions: { value: StudentStatus; label: string }[] = [
-    { value: 'active', label: '在读' },
-    { value: 'inactive', label: '休学' },
-    { value: 'graduated', label: '已毕业' },
-    { value: 'suspended', label: '暂停' },
-    { value: 'transferred', label: '已转学' },
-  ];
-
   constructor(
     private dialogRef: MatDialogRef<StudentEditDialogComponent>,
-    private studentService: StudentManagementService,
+    private studentService: StudentService,
+    private orgContext: OrganizationContextService,
     @Inject(MAT_DIALOG_DATA) public data: StudentEditDialogData
   ) {
     if (data.mode === 'edit' && data.student) {
-      this.formData = {
-        name: data.student.name,
-        email: data.student.email,
-        phone: data.student.phone ?? '',
-        grade: data.student.grade,
-        parentInfo: data.student.parentInfo,
-        enrollmentDate: data.student.enrollmentDate ?? '',
-        status: data.student.status,
-      };
+      this.formData = { ...data.student };
     }
   }
 
   onSubmit(): void {
-    if (!this.formData.name || !this.formData.email || !this.formData.grade) {
+    if (!this.formData.name || !this.formData.grade_level) {
       alert('请填写必填项');
       return;
     }
 
     this.loading = true;
-
-    const request: CreateStudentRequest | UpdateStudentRequest = {
-      name: this.formData.name,
-      email: this.formData.email,
-      phone: this.formData.phone ?? undefined,
-      grade: this.formData.grade,
-      parentInfo: this.formData.parentInfo,
-      enrollmentDate: this.formData.enrollmentDate ?? undefined,
-    };
+    const orgId = this.orgContext.currentContext?.id;
+    if (!orgId) {
+      alert('未找到机构信息');
+      this.loading = false;
+      return;
+    }
 
     if (this.data.mode === 'edit' && this.data.student) {
-      (request as UpdateStudentRequest).status = this.formData.status;
-
       this.studentService
-        .updateStudent(this.data.student.id, request as UpdateStudentRequest)
+        .updateStudent(this.data.student.id, this.formData)
         .subscribe({
-          next: (_updatedStudent) => {
-            this.dialogRef.close(request);
+          next: () => {
+            this.dialogRef.close(true);
           },
           error: (error) => {
             console.error('更新失败:', error);
@@ -138,9 +117,9 @@ export class StudentEditDialogComponent {
           },
         });
     } else {
-      this.studentService.createStudent(request as CreateStudentRequest).subscribe({
-        next: (_newStudent) => {
-          this.dialogRef.close(request);
+      this.studentService.createStudent(orgId, this.formData).subscribe({
+        next: () => {
+          this.dialogRef.close(true);
         },
         error: (error) => {
           console.error('创建失败:', error);
@@ -164,22 +143,22 @@ export class StudentEditDialogComponent {
   }
 
   /**
-   * 添加家长信息
+   * 添加监护人信息
    */
   onAddParentInfo(): void {
-    if (!this.formData.parentInfo) {
-      this.formData.parentInfo = {
-        name: '',
-        phone: '',
-        relationship: '父子',
-      };
+    if (!this.formData.guardian_name) {
+      this.formData.guardian_name = '';
+      this.formData.guardian_phone = '';
+      this.formData.guardian_relationship = '父子';
     }
   }
 
   /**
-   * 移除家长信息
+   * 移除监护人信息
    */
   onRemoveParentInfo(): void {
-    this.formData.parentInfo = undefined;
+    this.formData.guardian_name = undefined;
+    this.formData.guardian_phone = undefined;
+    this.formData.guardian_relationship = undefined;
   }
 }

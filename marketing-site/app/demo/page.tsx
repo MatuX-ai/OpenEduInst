@@ -135,6 +135,12 @@ function DemoEntryContent() {
                     进入 Demo
                     <ArrowRight className="w-4 h-4" />
                   </Link>
+                  <Link
+                    href="/demo/create-org"
+                    className="inline-flex items-center gap-2 px-4 py-2 ml-2 border border-blue-500 text-blue-400 hover:bg-blue-500/10 text-sm font-semibold rounded-lg transition-colors"
+                  >
+                    云托管创建
+                  </Link>
                 </div>
               </div>
             </motion.div>

@@ -633,7 +633,7 @@ export interface K12Metrics {
   `]
 })
 export class K12DashboardComponent implements OnInit {
-  @Input() metrics: K12Metrics = {
+  @Input() metrics: any = {
     totalStudents: 1250,
     courseCompletionRate: '78%',
     equipmentIntactRate: '96%',

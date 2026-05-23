@@ -10,11 +10,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
 
-// Import all STEM feature components
-import { HardwareManagementComponent } from './hardware-management.component';
-import { TokenManagementComponent } from './token-management.component';
-import { ProjectManagementComponent } from './project-management.component';
-import { SpaceSchedulingComponent } from './space-scheduling.component';
+// Import all STEM feature components from the new modular directory
+import { HardwareManagementComponent } from '../../../../features/stem-cloud/hardware-management.component';
+import { TokenManagementComponent } from '../../../../features/stem-cloud/token-management.component';
+import { ProjectManagementComponent } from '../../../../features/stem-cloud/project-management.component';
+import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-scheduling.component';
 
 @Component({
   selector: 'app-stem-features-container',

@@ -4,8 +4,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
+import { environment } from '../../../environments/environment';
 import { OrganizationSideNavComponent } from './components/organization-side-nav/organization-side-nav.component';
 import { OrganizationDashboardService } from './organization-dashboard.service';
+import { mockOrganizations } from './mock-dashboard-data';
 
 @Component({
   selector: 'app-organization-layout',
@@ -130,6 +132,16 @@ export class OrganizationLayoutComponent implements OnInit {
   }
 
   private loadOrganizationInfo(orgId: number): void {
+    // Mock 模式下直接使用 Mock 数据
+    if (environment.useMockData) {
+      const mockOrg = mockOrganizations.find(o => o.id === orgId);
+      if (mockOrg) {
+        this.organizationName = mockOrg.name;
+      }
+      return;
+    }
+
+    // 真实 API 模式
     this.orgService.getOrganizationOverview(orgId).subscribe({
       next: (org) => {
         if (org && org.name) {
@@ -144,7 +156,7 @@ export class OrganizationLayoutComponent implements OnInit {
   }
 
   goBack(): void {
-    void this.router.navigate(['/management']);
+    void this.router.navigate(['/organization']);
   }
 
   refreshPage(): void {

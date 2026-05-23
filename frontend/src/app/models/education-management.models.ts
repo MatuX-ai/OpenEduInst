@@ -107,6 +107,67 @@ export interface StudentProfile {
   updated_at: string;
 }
 
+/** 学员基本信息 (对应后端 Student 模型) */
+export interface Student {
+  id: number;
+  org_id: number;
+  student_number: string;
+  name: string;
+  gender?: 'male' | 'female' | 'other';
+  id_card?: string;
+  birth_date?: string;
+  age?: number;
+  phone?: string;
+  email?: string;
+  address?: string;
+  guardian_name?: string;
+  guardian_phone?: string;
+  guardian_relationship?: string;
+  enrollment_date: string;
+  status: 'active' | 'inactive' | 'graduated' | 'dropped_out';
+  grade_level?: string;
+  class_name?: string;
+  emergency_contact_name?: string;
+  emergency_contact_phone?: string;
+  notes?: string;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** 学员报名记录 */
+export interface Enrollment {
+  id: number;
+  org_id: number;
+  student_id: number;
+  course_id: number;
+  enrollment_date: string;
+  start_date?: string;
+  end_date?: string;
+  status: 'active' | 'completed' | 'cancelled';
+  fee_amount?: number;
+  payment_status: 'pending' | 'paid' | 'refunded';
+  progress_percentage: number;
+  last_attendance_date?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+/** 学员出勤记录 */
+export interface AttendanceRecord {
+  id: number;
+  org_id: number;
+  student_id: number;
+  schedule_id?: number;
+  attendance_date: string;
+  status: 'present' | 'absent' | 'late' | 'early_leave';
+  check_in_time?: string;
+  check_out_time?: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 /** 学生课程关联 */
 export interface StudentCourseEnrollment {
   id: number;
@@ -266,7 +327,7 @@ export interface AttendanceRecord {
   course_id: number;
   lesson_id?: number;
   date: string;
-  status: 'present' | 'absent' | 'late' | 'excused' | 'half_day';
+  status: 'present' | 'absent' | 'late' | 'early_leave';
   check_in_time?: string;
   check_out_time?: string;
   notes?: string;
