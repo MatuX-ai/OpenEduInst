@@ -76,43 +76,65 @@ import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-
   styles: [`
     .stem-features-container {
       padding: 24px;
-      background: #f5f7fa;
+      background: #0f172a; /* Dark Slate Background */
+      color: #e2e8f0;
       min-height: 100%;
     }
 
     /* Page Header */
     .page-header {
-      margin-bottom: 24px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 16px;
     }
 
     .page-header h1 {
       margin: 0;
-      font-size: 28px;
-      font-weight: 600;
-      color: #1a1a1a;
+      font-size: 32px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
       margin: 8px 0 0 0;
-      color: #666;
-      font-size: 14px;
+      color: #94a3b8;
+      font-size: 15px;
     }
 
-    /* Tab Group Styling */
+    /* Tab Group Styling - Dark Mode */
     ::ng-deep .mat-mdc-tab-group {
       background: transparent;
     }
 
     ::ng-deep .mat-mdc-tab-header {
-      background: white;
-      border-radius: 12px 12px 0 0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(10px);
+      border-radius: 16px 16px 0 0;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-bottom: none;
+    }
+
+    ::ng-deep .mat-mdc-tab-label {
+      color: #94a3b8 !important;
+      font-weight: 600;
+    }
+
+    ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-active {
+      color: #38bdf8 !important; /* Sky Blue */
+    }
+
+    ::ng-deep .mat-mdc-ink-bar {
+      background-color: #38bdf8 !important;
+      height: 3px;
     }
 
     ::ng-deep .mat-mdc-tab-body-wrapper {
-      background: white;
-      border-radius: 0 0 12px 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: #1e293b;
+      border-radius: 0 0 16px 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-top: none;
     }
   `]
 })

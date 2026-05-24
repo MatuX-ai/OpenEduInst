@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +9,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
+import { StemCloudService } from '../../services/stem-cloud.service';
 
 export interface HardwareDevice {
   id: string;
@@ -33,7 +35,8 @@ export interface DeviceCategory {
   selector: 'app-hardware-management',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule, 
     MatCardModule, 
     MatIconModule, 
     MatButtonModule,
@@ -319,8 +322,9 @@ export interface DeviceCategory {
   styles: [`
     .hardware-management {
       padding: 24px;
-      background: #f5f7fa;
+      background: transparent;
       min-height: 100%;
+      color: #e2e8f0;
     }
 
     /* Page Header */
@@ -328,19 +332,19 @@ export interface DeviceCategory {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
 
     .page-header h1 {
       margin: 0;
       font-size: 28px;
-      font-weight: 600;
-      color: #1a1a1a;
+      font-weight: 700;
+      color: #ffffff;
     }
 
     .subtitle {
       margin: 8px 0 0 0;
-      color: #666;
+      color: #94a3b8;
       font-size: 14px;
     }
 
@@ -353,7 +357,7 @@ export interface DeviceCategory {
       margin-right: 8px;
     }
 
-    /* Stats Grid */
+    /* Stats Grid - Dark Glassmorphism */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -362,62 +366,69 @@ export interface DeviceCategory {
     }
 
     .stat-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      transform: translateY(-4px);
+      border-color: rgba(56, 189, 248, 0.3);
+      box-shadow: 0 8px 30px rgba(56, 189, 248, 0.1);
     }
 
     mat-card-content {
-      padding: 20px !important;
+      padding: 24px !important;
     }
 
     .stat-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    .stat-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .stat-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .stat-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
-    .stat-icon.red { background: linear-gradient(135deg, #f44336, #d32f2f); }
+    .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+    .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
+    .stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
 
     .stat-trend {
       font-size: 12px;
       font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 12px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(0,0,0,0.2);
     }
 
-    .stat-trend.up { color: #4caf50; background: #e8f5e9; }
-    .stat-trend.down { color: #f44336; background: #ffebee; }
-    .stat-trend.stable { color: #ff9800; background: #fff3e0; }
+    .stat-trend.up { color: #4ade80; }
+    .stat-trend.down { color: #f87171; }
+    .stat-trend.stable { color: #fbbf24; }
 
     .stat-value {
-      font-size: 32px;
-      font-weight: 700;
-      color: #1a1a1a;
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
       margin: 8px 0;
+      letter-spacing: -1px;
     }
 
     .stat-label {
-      color: #666;
+      color: #94a3b8;
       font-size: 14px;
       font-weight: 500;
     }
@@ -504,9 +515,13 @@ export interface DeviceCategory {
 
     /* Device List Card */
     .device-list-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 16px;
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
       margin-bottom: 32px;
+      color: #e2e8f0;
     }
 
     .tab-content {
@@ -530,15 +545,21 @@ export interface DeviceCategory {
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #999;
+      color: #64748b;
     }
 
     .search-box input {
       width: 100%;
       padding: 10px 10px 10px 40px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       font-size: 14px;
+      color: #ffffff;
+    }
+
+    .search-box input::placeholder {
+      color: #64748b;
     }
 
     .filter-controls {
@@ -548,9 +569,11 @@ export interface DeviceCategory {
 
     .filter-controls select {
       padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
       font-size: 14px;
+      color: #ffffff;
     }
 
     /* Table Styles */
@@ -732,36 +755,19 @@ export interface DeviceCategory {
   `]
 })
 export class HardwareManagementComponent implements OnInit {
-  // Stats data
-  totalDevices = 156;
-  availableDevices = 123;
-  maintenanceDevices = 23;
-  damagedDevices = 10;
+  // Stats data with animation support
+  totalDevices = 0;
+  availableDevices = 0;
+  maintenanceDevices = 0;
+  damagedDevices = 0;
 
   // Device categories
-  deviceCategories: DeviceCategory[] = [
-    { id: 'arduino', name: 'Arduino套件', icon: 'memory', count: 65, available: 52, color: 'linear-gradient(135deg, #2196f3, #1976d2)' },
-    { id: 'raspberry', name: 'Raspberry Pi', icon: 'developer_board', count: 42, available: 35, color: 'linear-gradient(135deg, #4caf50, #388e3c)' },
-    { id: 'sensors', name: '传感器模块', icon: 'sensors', count: 58, available: 45, color: 'linear-gradient(135deg, #ff9800, #f57c00)' },
-    { id: 'robots', name: '机器人底盘', icon: 'android', count: 21, available: 18, color: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }
-  ];
+  deviceCategories: DeviceCategory[] = [];
 
-  // Device types for filter
-  deviceTypes = ['Arduino套件', 'Raspberry Pi', '传感器模块', '机器人底盘', '3D打印机', '激光切割机'];
+  // Sample devices data (will be replaced by API)
+  devices: HardwareDevice[] = [];
 
-  // Sample devices data
-  devices: HardwareDevice[] = [
-    { id: 'ARD-001', name: 'Arduino Uno R3', type: 'Arduino套件', status: 'available', location: '实验室A-01', lastUsed: '2024-01-15', condition: 95 },
-    { id: 'ARD-002', name: 'Arduino Mega 2560', type: 'Arduino套件', status: 'in_use', location: '教室B-03', lastUsed: '2024-01-20', condition: 88, assignedTo: '张老师' },
-    { id: 'RAS-001', name: 'Raspberry Pi 4B', type: 'Raspberry Pi', status: 'available', location: '实验室A-02', lastUsed: '2024-01-18', condition: 92 },
-    { id: 'SEN-001', name: '温湿度传感器', type: '传感器模块', status: 'maintenance', location: '维修间', lastUsed: '2024-01-10', condition: 65 },
-    { id: 'ROB-001', name: '智能小车底盘', type: '机器人底盘', status: 'damaged', location: '维修间', lastUsed: '2024-01-05', condition: 30 },
-    { id: 'ARD-003', name: 'Arduino Nano', type: 'Arduino套件', status: 'available', location: '实验室A-01', lastUsed: '2024-01-19', condition: 90 },
-    { id: 'SEN-002', name: '超声波传感器', type: '传感器模块', status: 'in_use', location: '教室C-01', lastUsed: '2024-01-21', condition: 85, assignedTo: '李老师' },
-    { id: 'RAS-002', name: 'Raspberry Pi Zero', type: 'Raspberry Pi', status: 'available', location: '实验室A-02', lastUsed: '2024-01-17', condition: 88 }
-  ];
-
-  // Maintenance records
+  // Maintenance records (Mock for now, can be moved to API later)
   maintenanceRecords = [
     { 
       id: 'MNT-001', 
@@ -771,33 +777,6 @@ export class HardwareManagementComponent implements OnInit {
       technician: '王技术员', 
       status: 'completed',
       type: 'repair'
-    },
-    { 
-      id: 'MNT-002', 
-      deviceName: '温湿度传感器 (SEN-001)', 
-      description: '校准传感器读数，更新固件', 
-      date: '2024-01-19', 
-      technician: '李技术员', 
-      status: 'completed',
-      type: 'calibration'
-    },
-    { 
-      id: 'MNT-003', 
-      deviceName: '智能小车底盘 (ROB-001)', 
-      description: '电机故障检测，等待配件更换', 
-      date: '2024-01-18', 
-      technician: '张技术员', 
-      status: 'in_progress',
-      type: 'repair'
-    },
-    { 
-      id: 'MNT-004', 
-      deviceName: 'Raspberry Pi 4B (RAS-001)', 
-      description: '定期清洁和系统更新', 
-      date: '2024-01-25', 
-      technician: '王技术员', 
-      status: 'scheduled',
-      type: 'maintenance'
     }
   ];
 
@@ -810,9 +789,52 @@ export class HardwareManagementComponent implements OnInit {
   statusFilter = '';
   typeFilter = '';
 
-  constructor() {}
+  constructor(private stemService: StemCloudService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadHardwareData();
+  }
+
+  loadHardwareData(): void {
+    this.stemService.getDevices().subscribe({
+      next: (data) => {
+        this.devices = data;
+        this.updateStats();
+      },
+      error: (err) => {
+        console.error('Failed to load hardware data', err);
+        // Fallback to mock data if API fails during development
+        this.loadMockData();
+      }
+    });
+  }
+
+  updateStats(): void {
+    this.totalDevices = this.devices.length;
+    this.availableDevices = this.devices.filter(d => d.status === 'available').length;
+    this.maintenanceDevices = this.devices.filter(d => d.status === 'maintenance').length;
+    this.damagedDevices = this.devices.filter(d => d.status === 'damaged').length;
+  }
+
+  loadMockData(): void {
+    // Keep existing mock data logic here for fallback
+    this.devices = [
+      { id: 'ARD-001', name: 'Arduino Uno R3', type: 'Arduino套件', status: 'available', location: '实验室A-01', lastUsed: '2024-01-15', condition: 95 },
+      { id: 'ARD-002', name: 'Arduino Mega 2560', type: 'Arduino套件', status: 'in_use', location: '教室B-03', lastUsed: '2024-01-20', condition: 88, assignedTo: '张老师' },
+      { id: 'RAS-001', name: 'Raspberry Pi 4B', type: 'Raspberry Pi', status: 'available', location: '实验室A-02', lastUsed: '2024-01-18', condition: 92 },
+      { id: 'SEN-001', name: '温湿度传感器', type: '传感器模块', status: 'maintenance', location: '维修间', lastUsed: '2024-01-10', condition: 65 },
+      { id: 'ROB-001', name: '智能小车底盘', type: '机器人底盘', status: 'damaged', location: '维修间', lastUsed: '2024-01-05', condition: 30 }
+    ];
+    
+    this.deviceCategories = [
+      { id: 'arduino', name: 'Arduino套件', icon: 'memory', count: 65, available: 52, color: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+      { id: 'raspberry', name: 'Raspberry Pi', icon: 'developer_board', count: 42, available: 35, color: 'linear-gradient(135deg, #10b981, #059669)' },
+      { id: 'sensors', name: '传感器模块', icon: 'sensors', count: 58, available: 45, color: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+      { id: 'robots', name: '机器人底盘', icon: 'precision_manufacturing', count: 21, available: 18, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }
+    ];
+
+    this.updateStats();
+  }
 
   // Helper methods
   getFilteredDevices(): HardwareDevice[] {

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { StemCloudService } from '../../services/stem-cloud.service';
 
 export interface STEMProject {
   id: string;
@@ -37,7 +39,8 @@ export interface ProjectCategory {
   selector: 'app-project-management',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule,
     MatCardModule, 
     MatIconModule, 
     MatButtonModule,
@@ -62,7 +65,7 @@ export interface ProjectCategory {
             创建项目
           </button>
           <button mat-stroked-button (click)="onViewShowcase()">
-            <mat-icon>display_settings</mat-icon>
+            <mat-icon>emoji_events</mat-icon>
             作品展示
           </button>
         </div>
@@ -74,7 +77,7 @@ export interface ProjectCategory {
           <mat-card-content>
             <div class="stat-header">
               <div class="stat-icon blue">
-                <mat-icon>science</mat-icon>
+                <mat-icon>engineering</mat-icon>
               </div>
               <span class="stat-trend up">↑ 8%</span>
             </div>
@@ -240,7 +243,7 @@ export interface ProjectCategory {
                           <mat-icon>edit</mat-icon>
                         </button>
                         <button mat-icon-button (click)="onViewShowcaseItem(project)" title="作品展示" *ngIf="project.showcase">
-                          <mat-icon>display_settings</mat-icon>
+                          <mat-icon>star</mat-icon>
                         </button>
                       </div>
                     </td>
@@ -788,102 +791,23 @@ export interface ProjectCategory {
   `]
 })
 export class ProjectManagementComponent implements OnInit {
-  // Stats data
-  totalProjects = 42;
-  completedProjects = 18;
-  inProgressProjects = 20;
-  showcaseProjects = 8;
+  // Stats data with animation support
+  totalProjects = 0;
+  completedProjects = 0;
+  inProgressProjects = 0;
+  showcaseProjects = 0;
 
-  // Project categories
+  // Project categories (Mock for now)
   projectCategories: ProjectCategory[] = [
-    { id: 'robotics', name: '机器人', icon: 'android', count: 15, color: 'linear-gradient(135deg, #2196f3, #1976d2)' },
-    { id: 'programming', name: '编程项目', icon: 'code', count: 12, color: 'linear-gradient(135deg, #4caf50, #388e3c)' },
-    { id: 'iot', name: '物联网', icon: 'wifi', count: 8, color: 'linear-gradient(135deg, #ff9800, #f57c00)' },
-    { id: 'ai', name: '人工智能', icon: 'smart_toy', count: 7, color: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }
+    { id: 'robotics', name: '机器人', icon: 'precision_manufacturing', count: 15, color: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+    { id: 'programming', name: '编程项目', icon: 'code', count: 12, color: 'linear-gradient(135deg, #10b981, #059669)' },
+    { id: 'iot', name: '物联网', icon: 'devices', count: 8, color: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+    { id: 'ai', name: '人工智能', icon: 'neurology', count: 7, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }
   ];
 
   // Sample projects data
-  projects: STEMProject[] = [
-    { 
-      id: 'PROJ-001', 
-      name: '智能温室控制系统', 
-      category: 'iot', 
-      status: 'in_progress', 
-      progress: 75, 
-      students: 18, 
-      mentor: '张老师', 
-      startDate: '2024-01-10', 
-      description: '基于Arduino的温湿度自动控制系统',
-      technologies: ['Arduino', '传感器', 'Python']
-    },
-    { 
-      id: 'PROJ-002', 
-      name: 'AI视觉识别小车', 
-      category: 'robotics', 
-      status: 'completed', 
-      progress: 100, 
-      students: 15, 
-      mentor: '李老师', 
-      startDate: '2023-12-01', 
-      endDate: '2024-01-15',
-      description: '使用树莓派和摄像头实现物体识别和追踪',
-      technologies: ['Raspberry Pi', 'Python', 'OpenCV'],
-      showcase: true
-    },
-    { 
-      id: 'PROJ-003', 
-      name: '物联网环境监测', 
-      category: 'iot', 
-      status: 'in_progress', 
-      progress: 60, 
-      students: 22, 
-      mentor: '王老师', 
-      startDate: '2024-01-05', 
-      description: '多节点环境数据采集与云平台展示',
-      technologies: ['ESP32', 'MQTT', '云平台']
-    },
-    { 
-      id: 'PROJ-004', 
-      name: '语音助手开发', 
-      category: 'ai', 
-      status: 'in_progress', 
-      progress: 45, 
-      students: 12, 
-      mentor: '陈老师', 
-      startDate: '2024-01-12', 
-      description: '基于自然语言处理的智能语音交互系统',
-      technologies: ['Python', 'NLP', '语音识别']
-    },
-    { 
-      id: 'PROJ-005', 
-      name: '无人机编程控制', 
-      category: 'robotics', 
-      status: 'planning', 
-      progress: 20, 
-      students: 9, 
-      mentor: '赵老师', 
-      startDate: '2024-01-20', 
-      description: 'Scratch图形化编程控制无人机飞行',
-      technologies: ['Scratch', '无人机', '图形化编程']
-    },
-    { 
-      id: 'PROJ-006', 
-      name: '智能家居控制系统', 
-      category: 'iot', 
-      status: 'completed', 
-      progress: 100, 
-      students: 16, 
-      mentor: '刘老师', 
-      startDate: '2023-11-15', 
-      endDate: '2024-01-10',
-      description: '手机APP控制家居设备的IoT系统',
-      technologies: ['Arduino', 'WiFi模块', 'Android'],
-      showcase: true
-    }
-  ];
-
-  // Recent projects for grid display
-  recentProjects = this.projects.slice(0, 6);
+  projects: STEMProject[] = [];
+  recentProjects: STEMProject[] = [];
 
   // Table configuration
   displayedColumns: string[] = ['id', 'name', 'category', 'status', 'progress', 'students', 'mentor', 'actions'];
@@ -894,9 +818,41 @@ export class ProjectManagementComponent implements OnInit {
   statusFilter = '';
   categoryFilter = '';
 
-  constructor() {}
+  constructor(private stemService: StemCloudService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadProjectData();
+  }
+
+  loadProjectData(): void {
+    this.stemService.getProjects().subscribe({
+      next: (data) => {
+        this.projects = data;
+        this.recentProjects = data.slice(0, 6);
+        this.updateStats();
+      },
+      error: (err) => {
+        console.error('Failed to load projects', err);
+        this.loadMockProjects();
+      }
+    });
+  }
+
+  updateStats(): void {
+    this.totalProjects = this.projects.length;
+    this.completedProjects = this.projects.filter(p => p.status === 'completed').length;
+    this.inProgressProjects = this.projects.filter(p => p.status === 'in_progress').length;
+    this.showcaseProjects = this.projects.filter(p => p.showcase).length;
+  }
+
+  loadMockProjects(): void {
+    this.projects = [
+      { id: 'PROJ-001', name: '智能温室控制系统', category: 'iot', status: 'in_progress', progress: 75, students: 18, mentor: '张老师', startDate: '2024-01-10', description: '基于Arduino的温湿度自动控制系统', technologies: ['Arduino', '传感器', 'Python'] },
+      { id: 'PROJ-002', name: 'AI视觉识别小车', category: 'robotics', status: 'completed', progress: 100, students: 15, mentor: '李老师', startDate: '2023-12-01', endDate: '2024-01-15', description: '使用树莓派和摄像头实现物体识别和追踪', technologies: ['Raspberry Pi', 'Python', 'OpenCV'], showcase: true }
+    ];
+    this.recentProjects = this.projects;
+    this.updateStats();
+  }
 
   // Helper methods
   getFilteredProjects(): STEMProject[] {

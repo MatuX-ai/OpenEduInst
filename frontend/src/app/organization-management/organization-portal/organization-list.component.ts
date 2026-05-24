@@ -9,6 +9,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
 import { mockOrganizations } from './mock-dashboard-data';
@@ -99,6 +100,16 @@ import {
           <ng-container matColumnDef="actions">
             <th mat-header-cell *matHeaderCellDef>操作</th>
             <td mat-cell *matCellDef="let org">
+              <button
+                mat-raised-button
+                color="accent"
+                (click)="navigateToDashboard(org.id)"
+                matTooltip="进入机构驾驶舱"
+                style="margin-right: 8px;"
+              >
+                <mat-icon>dashboard</mat-icon>
+                进入管理后台
+              </button>
               <button
                 mat-icon-button
                 color="primary"
@@ -233,7 +244,8 @@ export class OrganizationListComponent implements OnInit {
   constructor(
     private organizationService: OrganizationService,
     private snackBar: MatSnackBar,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -391,5 +403,12 @@ export class OrganizationListComponent implements OnInit {
       duration: 3000,
       panelClass,
     });
+  }
+
+  /**
+   * 导航到机构驾驶舱（STEM 云托管版）
+   */
+  navigateToDashboard(orgId: number): void {
+    void this.router.navigate(['/organization-management', orgId, 'dashboard']);
   }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { StemCloudService } from '../../services/stem-cloud.service';
 
 export interface SpaceRoom {
   id: string;
@@ -48,7 +50,8 @@ export interface SpaceCategory {
   selector: 'app-space-scheduling',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule,
     MatCardModule, 
     MatIconModule, 
     MatButtonModule,
@@ -85,7 +88,7 @@ export interface SpaceCategory {
           <mat-card-content>
             <div class="stat-header">
               <div class="stat-icon blue">
-                <mat-icon>meeting_room</mat-icon>
+                <mat-icon>domain</mat-icon>
               </div>
               <span class="stat-trend stable">→ 稳定</span>
             </div>
@@ -111,7 +114,7 @@ export interface SpaceCategory {
           <mat-card-content>
             <div class="stat-header">
               <div class="stat-icon orange">
-                <mat-icon>event</mat-icon>
+                <mat-icon>calendar_month</mat-icon>
               </div>
               <span class="stat-trend up">↑ 8%</span>
             </div>
@@ -882,132 +885,25 @@ export interface SpaceCategory {
   `]
 })
 export class SpaceSchedulingComponent implements OnInit {
-  // Stats data
-  totalSpaces = 12;
-  availableSpaces = 8;
-  todayBookings = 15;
-  utilizationRate = 78;
+  // Stats data with animation support
+  totalSpaces = 0;
+  availableSpaces = 0;
+  todayBookings = 0;
+  utilizationRate = 0;
 
-  // Space categories
+  // Space categories (Mock for now)
   spaceCategories: SpaceCategory[] = [
-    { id: 'lab', name: '实验室', icon: 'science', count: 5, available: 3, color: 'linear-gradient(135deg, #2196f3, #1976d2)' },
-    { id: 'makerspace', name: '创客空间', icon: 'precision_manufacturing', count: 4, available: 3, color: 'linear-gradient(135deg, #4caf50, #388e3c)' },
-    { id: 'classroom', name: '教室', icon: 'school', count: 2, available: 1, color: 'linear-gradient(135deg, #ff9800, #f57c00)' },
-    { id: 'workshop', name: '工作坊', icon: 'handyman', count: 1, available: 1, color: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' }
+    { id: 'lab', name: '实验室', icon: 'biotech', count: 5, available: 3, color: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+    { id: 'makerspace', name: '创客空间', icon: 'hardware', count: 4, available: 3, color: 'linear-gradient(135deg, #10b981, #059669)' },
+    { id: 'classroom', name: '教室', icon: 'smart_display', count: 2, available: 1, color: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+    { id: 'workshop', name: '工作坊', icon: 'engineering', count: 1, available: 1, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }
   ];
 
   // Space rooms
-  spaceRooms: SpaceRoom[] = [
-    { 
-      id: 'ROOM-001', 
-      name: 'Arduino实验室A', 
-      type: 'lab', 
-      capacity: 30, 
-      status: 'available', 
-      equipment: ['Arduino套件', '示波器', '焊接工具'],
-      currentActivity: '智能小车项目'
-    },
-    { 
-      id: 'ROOM-002', 
-      name: '机器人工作室', 
-      type: 'makerspace', 
-      capacity: 20, 
-      status: 'occupied', 
-      equipment: ['3D打印机', '激光切割机', '机器人底盘'],
-      currentActivity: 'VEX机器人训练',
-      nextBooking: '14:00-16:00'
-    },
-    { 
-      id: 'ROOM-003', 
-      name: '物联网实验室', 
-      type: 'lab', 
-      capacity: 25, 
-      status: 'available', 
-      equipment: ['传感器模块', 'ESP32开发板', '云平台']
-    },
-    { 
-      id: 'ROOM-004', 
-      name: 'AI编程教室', 
-      type: 'classroom', 
-      capacity: 40, 
-      status: 'reserved', 
-      equipment: ['高性能电脑', '投影仪', '音响系统'],
-      nextBooking: '09:00-11:00'
-    },
-    { 
-      id: 'ROOM-005', 
-      name: '电子制作工坊', 
-      type: 'workshop', 
-      capacity: 15, 
-      status: 'available', 
-      equipment: ['电烙铁', '万用表', '元件库']
-    },
-    { 
-      id: 'ROOM-006', 
-      name: '创客空间B', 
-      type: 'makerspace', 
-      capacity: 25, 
-      status: 'maintenance', 
-      equipment: ['3D打印机', 'CNC机床', '激光切割机']
-    }
-  ];
-
-  // Available rooms for quick booking
-  get availableRooms(): SpaceRoom[] {
-    return this.spaceRooms.filter(room => room.status === 'available');
-  }
+  spaceRooms: SpaceRoom[] = [];
 
   // Today's bookings
-  bookings: Booking[] = [
-    { 
-      id: 'BK-001', 
-      roomId: 'ROOM-001', 
-      roomName: 'Arduino实验室A', 
-      user: '张老师', 
-      purpose: '智能温室控制系统项目', 
-      startTime: '09:00', 
-      endTime: '11:00', 
-      date: '2024-01-20', 
-      status: 'confirmed', 
-      participants: 18 
-    },
-    { 
-      id: 'BK-002', 
-      roomId: 'ROOM-002', 
-      roomName: '机器人工作室', 
-      user: '李老师', 
-      purpose: 'VEX机器人竞赛训练', 
-      startTime: '14:00', 
-      endTime: '16:00', 
-      date: '2024-01-20', 
-      status: 'confirmed', 
-      participants: 12 
-    },
-    { 
-      id: 'BK-003', 
-      roomId: 'ROOM-003', 
-      roomName: '物联网实验室', 
-      user: '王老师', 
-      purpose: '环境监测项目调试', 
-      startTime: '10:00', 
-      endTime: '12:00', 
-      date: '2024-01-20', 
-      status: 'pending', 
-      participants: 15 
-    },
-    { 
-      id: 'BK-004', 
-      roomId: 'ROOM-005', 
-      roomName: '电子制作工坊', 
-      user: '陈老师', 
-      purpose: '电路板焊接实践', 
-      startTime: '15:00', 
-      endTime: '17:00', 
-      date: '2024-01-20', 
-      status: 'confirmed', 
-      participants: 10 
-    }
-  ];
+  bookings: Booking[] = [];
 
   // Quick booking form
   quickBooking = {
@@ -1028,9 +924,42 @@ export class SpaceSchedulingComponent implements OnInit {
   searchTerm = '';
   statusFilter = '';
 
-  constructor() {}
+  constructor(private stemService: StemCloudService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadSpaceData();
+  }
+
+  loadSpaceData(): void {
+    this.stemService.getSpaces().subscribe({
+      next: (data) => {
+        this.spaceRooms = data;
+        this.updateStats();
+      },
+      error: (err) => {
+        console.error('Failed to load spaces', err);
+        this.loadMockSpaces();
+      }
+    });
+  }
+
+  updateStats(): void {
+    this.totalSpaces = this.spaceRooms.length;
+    this.availableSpaces = this.spaceRooms.filter(r => r.status === 'available').length;
+    this.utilizationRate = this.totalSpaces > 0 ? Math.round(((this.totalSpaces - this.availableSpaces) / this.totalSpaces) * 100) : 0;
+  }
+
+  loadMockSpaces(): void {
+    this.spaceRooms = [
+      { id: 'ROOM-001', name: 'Arduino实验室A', type: 'lab', capacity: 30, status: 'available', equipment: ['Arduino套件', '示波器', '焊接工具'], currentActivity: '智能小车项目' },
+      { id: 'ROOM-002', name: '机器人工作室', type: 'makerspace', capacity: 20, status: 'occupied', equipment: ['3D打印机', '激光切割机', '机器人底盘'], currentActivity: 'VEX机器人训练', nextBooking: '14:00-16:00' }
+    ];
+    this.bookings = [
+      { id: 'BK-001', roomId: 'ROOM-001', roomName: 'Arduino实验室A', user: '张老师', purpose: '智能温室控制系统项目', startTime: '09:00', endTime: '11:00', date: '2024-01-20', status: 'confirmed', participants: 18 }
+    ];
+    this.todayBookings = this.bookings.length;
+    this.updateStats();
+  }
 
   // Helper methods
   getFilteredBookings(): Booking[] {

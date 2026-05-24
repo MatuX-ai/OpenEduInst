@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { StemCloudService } from '../../services/stem-cloud.service';
 
 export interface TokenTransaction {
   id: string;
@@ -43,7 +45,8 @@ export interface TokenPackage {
   selector: 'app-token-management',
   standalone: true,
   imports: [
-    CommonModule, 
+    CommonModule,
+    FormsModule,
     MatCardModule, 
     MatIconModule, 
     MatButtonModule,
@@ -310,8 +313,9 @@ export interface TokenPackage {
   styles: [`
     .token-management {
       padding: 24px;
-      background: #f5f7fa;
+      background: transparent;
       min-height: 100%;
+      color: #e2e8f0;
     }
 
     /* Page Header */
@@ -319,19 +323,19 @@ export interface TokenPackage {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: 32px;
     }
 
     .page-header h1 {
       margin: 0;
       font-size: 28px;
-      font-weight: 600;
-      color: #1a1a1a;
+      font-weight: 700;
+      color: #ffffff;
     }
 
     .subtitle {
       margin: 8px 0 0 0;
-      color: #666;
+      color: #94a3b8;
       font-size: 14px;
     }
 
@@ -344,7 +348,7 @@ export interface TokenPackage {
       margin-right: 8px;
     }
 
-    /* Balance Overview */
+    /* Balance Overview - Cyberpunk Style */
     .balance-overview {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -353,49 +357,67 @@ export interface TokenPackage {
     }
 
     .balance-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(56, 189, 248, 0.1);
+      box-shadow: 0 0 40px rgba(56, 189, 248, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .balance-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
     }
 
     mat-card-content {
-      padding: 24px !important;
+      padding: 28px !important;
     }
 
     .balance-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
+      gap: 20px;
+      margin-bottom: 24px;
     }
 
     .balance-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+      width: 72px;
+      height: 72px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
+      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
     }
 
     .balance-icon mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
     }
 
     .balance-info h2 {
       margin: 0;
-      font-size: 36px;
-      font-weight: 700;
-      color: #1a1a1a;
+      font-size: 42px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -1.5px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
     }
 
     .balance-info p {
       margin: 4px 0 0 0;
-      color: #666;
-      font-size: 14px;
+      color: #94a3b8;
+      font-size: 15px;
     }
 
     .balance-details {
@@ -873,11 +895,11 @@ export interface TokenPackage {
   `]
 })
 export class TokenManagementComponent implements OnInit {
-  // Balance data
-  currentBalance = 1250;
-  monthlyUsage = 320;
-  monthlyPurchase = 500;
-  estimatedDays = 45;
+  // Balance data with animation support
+  currentBalance = 0;
+  monthlyUsage = 0;
+  monthlyPurchase = 0;
+  estimatedDays = 0;
 
   // Weekly trend data (last 7 days usage)
   weeklyTrend = [
@@ -890,57 +912,30 @@ export class TokenManagementComponent implements OnInit {
     { day: 'Sun', value: 30, change: -15 }
   ];
 
-  // Token services
+  // Token services (Mock for now, can be moved to API later)
   tokenServices: TokenService[] = [
     { 
       id: 'ai-assistant', 
       name: 'AI 助教', 
       description: '智能答疑、作业批改、个性化学习建议', 
-      icon: 'smart_toy', 
+      icon: 'psychology', 
       costPerUse: 5, 
       totalUses: 1240, 
-      color: 'linear-gradient(135deg, #2196f3, #1976d2)' 
+      color: 'linear-gradient(135deg, #3b82f6, #2563eb)' 
     },
     { 
       id: 'auto-grading', 
       name: '智能评测', 
       description: '自动批改编程作业、项目评估、能力诊断', 
-      icon: 'assignment_turned_in', 
+      icon: 'fact_check', 
       costPerUse: 8, 
       totalUses: 856, 
-      color: 'linear-gradient(135deg, #4caf50, #388e3c)' 
-    },
-    { 
-      id: 'course-gen', 
-      name: '课程生成', 
-      description: 'AI生成教案、实验指导、课程内容', 
-      icon: 'auto_stories', 
-      costPerUse: 15, 
-      totalUses: 234, 
-      color: 'linear-gradient(135deg, #ff9800, #f57c00)' 
-    },
-    { 
-      id: 'code-review', 
-      name: '代码审查', 
-      description: '学生代码质量分析、优化建议', 
-      icon: 'code', 
-      costPerUse: 6, 
-      totalUses: 567, 
-      color: 'linear-gradient(135deg, #9c27b0, #7b1fa2)' 
+      color: 'linear-gradient(135deg, #10b981, #059669)' 
     }
   ];
 
   // Transaction history
-  transactions: TokenTransaction[] = [
-    { id: 'TXN-001', type: 'purchase', amount: 500, description: '月度充值', date: '2024-01-20', balanceAfter: 1250 },
-    { id: 'TXN-002', type: 'usage', amount: 25, description: 'AI助教使用 (5次)', date: '2024-01-19', service: 'AI 助教', balanceAfter: 750 },
-    { id: 'TXN-003', type: 'usage', amount: 40, description: '智能评测使用 (5次)', date: '2024-01-18', service: '智能评测', balanceAfter: 775 },
-    { id: 'TXN-004', type: 'bonus', amount: 50, description: '新用户奖励', date: '2024-01-15', balanceAfter: 815 },
-    { id: 'TXN-005', type: 'usage', amount: 30, description: '课程生成使用 (2次)', date: '2024-01-17', service: '课程生成', balanceAfter: 765 },
-    { id: 'TXN-006', type: 'refund', amount: 15, description: '服务异常退款', date: '2024-01-16', service: 'AI 助教', balanceAfter: 795 },
-    { id: 'TXN-007', type: 'usage', amount: 18, description: '代码审查使用 (3次)', date: '2024-01-15', service: '代码审查', balanceAfter: 810 },
-    { id: 'TXN-008', type: 'purchase', amount: 300, description: '临时充值', date: '2024-01-10', balanceAfter: 828 }
-  ];
+  transactions: TokenTransaction[] = [];
 
   // Purchase packages
   tokenPackages: TokenPackage[] = [
@@ -959,9 +954,58 @@ export class TokenManagementComponent implements OnInit {
   typeFilter = '';
   dateFilter = '';
 
-  constructor() {}
+  constructor(private stemService: StemCloudService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadTokenData();
+  }
+
+  loadTokenData(): void {
+    // Load Balance
+    this.stemService.getTokenBalance().subscribe({
+      next: (data) => {
+        this.currentBalance = data.balance;
+      },
+      error: (err) => {
+        console.error('Failed to load balance', err);
+        this.currentBalance = 1250; // Fallback
+      }
+    });
+
+    // Load Transactions
+    this.stemService.getTokenTransactions().subscribe({
+      next: (data) => {
+        this.transactions = data;
+        this.calculateMonthlyStats();
+      },
+      error: (err) => {
+        console.error('Failed to load transactions', err);
+        this.loadMockTransactions();
+      }
+    });
+  }
+
+  calculateMonthlyStats(): void {
+    // Simple logic to calculate stats from transactions
+    this.monthlyUsage = this.transactions
+      .filter(t => t.type === 'usage')
+      .reduce((sum, t) => sum + t.amount, 0);
+    
+    this.monthlyPurchase = this.transactions
+      .filter(t => t.type === 'purchase')
+      .reduce((sum, t) => sum + t.amount, 0);
+
+    this.estimatedDays = this.currentBalance > 0 ? Math.floor(this.currentBalance / (this.monthlyUsage / 30 || 1)) : 0;
+  }
+
+  loadMockTransactions(): void {
+    this.transactions = [
+      { id: 'TXN-001', type: 'purchase', amount: 500, description: '月度充值', date: '2024-01-20', balanceAfter: 1250 },
+      { id: 'TXN-002', type: 'usage', amount: 25, description: 'AI助教使用 (5次)', date: '2024-01-19', service: 'AI 助教', balanceAfter: 750 },
+      { id: 'TXN-003', type: 'usage', amount: 40, description: '智能评测使用 (5次)', date: '2024-01-18', service: '智能评测', balanceAfter: 775 }
+    ];
+    this.calculateMonthlyStats();
+  }
 
   // Helper methods
   getFilteredTransactions(): TokenTransaction[] {
