@@ -29,16 +29,194 @@ const routes: Routes = [
       {
         path: 'finance',
         loadComponent: () =>
-          import('./components/finance-dashboard/finance-dashboard.component').then(
-            (m) => m.FinanceDashboardComponent
+          import('./components/finance-dashboard/billing.component').then(
+            (m) => m.BillingComponent
           ),
       },
-      // 教室管理：通用功能
+      // 教室与设备管理（合并教室管理和设备资产）
       {
-        path: 'classrooms',
+        path: 'devices',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./components/classroom-dashboard/classroom-dashboard.component').then(
+                (m) => m.ClassroomDashboardComponent
+              ),
+          },
+          {
+            path: 'add',
+            loadComponent: () =>
+              import('../../features/stem-cloud/hardware-management.component').then(
+                (m) => m.HardwareManagementComponent
+              ),
+          },
+          {
+            path: ':id',
+            children: [
+              {
+                path: '',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/hardware-management.component').then(
+                    (m) => m.HardwareManagementComponent
+                  ),
+              },
+              {
+                path: 'edit',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/hardware-management.component').then(
+                    (m) => m.HardwareManagementComponent
+                  ),
+              },
+              {
+                path: 'maintenance',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/hardware-management.component').then(
+                    (m) => m.HardwareManagementComponent
+                  ),
+              },
+            ],
+          },
+        ],
+      },
+      // 项目管理（包含教学资源和STEM项目）
+      {
+        path: 'projects',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./components/dashboard-overview/stem-features-container.component').then(
+                (m) => m.StemFeaturesContainerComponent
+              ),
+          },
+          {
+            path: 'create',
+            loadComponent: () =>
+              import('../../features/stem-cloud/project-management.component').then(
+                (m) => m.ProjectManagementComponent
+              ),
+          },
+          {
+            path: ':id',
+            children: [
+              {
+                path: '',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/project-management.component').then(
+                    (m) => m.ProjectManagementComponent
+                  ),
+              },
+              {
+                path: 'edit',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/project-management.component').then(
+                    (m) => m.ProjectManagementComponent
+                  ),
+              },
+              {
+                path: 'showcase',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/project-management.component').then(
+                    (m) => m.ProjectManagementComponent
+                  ),
+              },
+            ],
+          },
+          {
+            path: 'showcase',
+            loadComponent: () =>
+              import('../../features/stem-cloud/project-management.component').then(
+                (m) => m.ProjectManagementComponent
+              ),
+          },
+        ],
+      },
+      // 竞赛认证
+      {
+        path: 'competitions',
         loadComponent: () =>
-          import('./components/classroom-dashboard/classroom-dashboard.component').then(
-            (m) => m.ClassroomDashboardComponent
+          import('./components/competition-management/competition-list.component').then(
+            (m) => m.CompetitionListComponent
+          ),
+      },
+      // Token中心（合并购买Token功能）
+      {
+        path: 'tokens',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./components/token-purchase/token-purchase.component').then(
+                (m) => m.TokenPurchaseComponent
+              ),
+          },
+          {
+            path: 'purchase',
+            loadComponent: () =>
+              import('../../features/stem-cloud/token-management.component').then(
+                (m) => m.TokenManagementComponent
+              ),
+          },
+          {
+            path: 'report',
+            loadComponent: () =>
+              import('../../features/stem-cloud/token-management.component').then(
+                (m) => m.TokenManagementComponent
+              ),
+          },
+          {
+            path: 'service',
+            children: [
+              {
+                path: ':id',
+                loadComponent: () =>
+                  import('../../features/stem-cloud/token-management.component').then(
+                    (m) => m.TokenManagementComponent
+                  ),
+              },
+            ],
+          },
+        ],
+      },
+      // 系统设置
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./components/system-settings/system-settings.component').then(
+            (m) => m.SystemSettingsComponent
+          ),
+      },
+      // 消息中心
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./components/notifications/notifications.component').then(
+            (m) => m.NotificationsComponent
+          ),
+      },
+      // 营销中心
+      {
+        path: 'marketing',
+        loadComponent: () =>
+          import('./components/marketing/marketing.component').then(
+            (m) => m.MarketingComponent
+          ),
+      },
+      // 家长中心
+      {
+        path: 'parent-portal',
+        loadComponent: () =>
+          import('./components/parent-portal/parent-portal.component').then(
+            (m) => m.ParentPortalComponent
+          ),
+      },
+      // 多校区管理
+      {
+        path: 'multi-campus',
+        loadComponent: () =>
+          import('./components/multi-campus/multi-campus.component').then(
+            (m) => m.MultiCampusComponent
           ),
       },
       // 微信客服：通用功能
@@ -65,6 +243,22 @@ const routes: Routes = [
             (m) => m.StudentListComponent
           ),
       },
+      // 招生线索管理
+      {
+        path: 'leads',
+        loadComponent: () =>
+          import('./components/leads-management/leads-management.component').then(
+            (m) => m.LeadsManagementComponent
+          ),
+      },
+      // 教学资源中心
+      {
+        path: 'resources',
+        loadComponent: () =>
+          import('./components/teaching-resources/teaching-resources.component').then(
+            (m) => m.TeachingResourcesComponent
+          ),
+      },
       // 排课管理：教育局通常不需要此功能，可考虑增加类型守卫
       {
         path: 'schedule',
@@ -85,6 +279,64 @@ const routes: Routes = [
           },
         ],
       },
+      // STEM空间预约
+      {
+        path: 'spaces',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../../features/stem-cloud/space-scheduling.component').then(
+                (m) => m.SpaceSchedulingComponent
+              ),
+          },
+          {
+            path: 'book',
+            loadComponent: () =>
+              import('../../features/stem-cloud/space-scheduling.component').then(
+                (m) => m.SpaceSchedulingComponent
+              ),
+          },
+          {
+            path: ':id',
+            loadComponent: () =>
+              import('../../features/stem-cloud/space-scheduling.component').then(
+                (m) => m.SpaceSchedulingComponent
+              ),
+          },
+          {
+            path: 'calendar',
+            loadComponent: () =>
+              import('../../features/stem-cloud/space-scheduling.component').then(
+                (m) => m.SpaceSchedulingComponent
+              ),
+          },
+          {
+            path: 'bookings',
+            children: [
+              {
+                path: ':id',
+                children: [
+                  {
+                    path: '',
+                    loadComponent: () =>
+                      import('../../features/stem-cloud/space-scheduling.component').then(
+                        (m) => m.SpaceSchedulingComponent
+                      ),
+                  },
+                  {
+                    path: 'edit',
+                    loadComponent: () =>
+                      import('../../features/stem-cloud/space-scheduling.component').then(
+                        (m) => m.SpaceSchedulingComponent
+                      ),
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
       // 角色权限：通用功能
       {
         path: 'roles',
@@ -93,13 +345,11 @@ const routes: Routes = [
             (m) => m.RoleListComponent
           ),
       },
-      // 数据分析：通用功能，但不同组织类型展示内容不同
+      // 数据分析：已整合到仪表盘中
       {
         path: 'analytics',
-        loadComponent: () =>
-          import('./components/data-analytics/data-analytics-dashboard.component').then(
-            (m) => m.DataAnalyticsDashboardComponent
-          ),
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
       },
       // 许可证管理
       {

@@ -1,4 +1,4 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .dialog-container {
   min-width: 500px;
@@ -10,25 +10,25 @@
 }
 
 h2[mat-dialog-title] {
-  margin: 0 0 tokens.$spacing-md 0;
-  font-size: tokens.$font-size-xl;
+  margin: 0 0 $spacing-md 0;
+  font-size: $font-size-xl;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
+  color: $color-neutral-900;
 }
 
 mat-progress-bar {
-  margin-top: -(tokens.$spacing-md);
-  margin-bottom: tokens.$spacing-md;
+  margin-top: -($spacing-md);
+  margin-bottom: $spacing-md;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: tokens.$spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .required {
-  color: tokens.$color-error;
-  margin-left: tokens.$spacing-xs;
+  color: $color-error;
+  margin-left: $spacing-xs;
 }
 
 textarea {
@@ -37,6 +37,6 @@ textarea {
 }
 
 [mat-dialog-actions] {
-  padding-top: tokens.$spacing-md;
-  gap: tokens.$spacing-sm;
+  padding-top: $spacing-md;
+  gap: $spacing-sm;
 }

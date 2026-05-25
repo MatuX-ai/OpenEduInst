@@ -1,8 +1,33 @@
+/* ============================================
+   OpenMT Design Tokens - Figma 规范实现
+   参考: docs/figma-design-spec.md
+   ============================================ */
+
 /* 组织类型主题色定义 */
-$org-theme-training: #1976d2; // 培训机构：专业蓝
-$org-theme-k12: #4caf50;      // K12学校：生机绿
-$org-theme-vocational: #ff9800; // 职业学校：活力橙
-$org-theme-bureau: #9c27b0;   // 教育局：稳重紫
+$org-theme-training: #0066FF;   // 培训机构：科技蓝 (Tech Blue)
+$org-theme-k12: #00CC66;        // K12学校：电路板绿 (Circuit Green)
+$org-theme-vocational: #FF6600; // 职业学校：警告橙 (Warning Orange)
+$org-theme-bureau: #9C27B0;     // 教育局：稳重紫
+
+/* 色彩系统 (Figma 规范) */
+$color-primary: #0066FF;        // 科技蓝
+$color-primary-light: #3385FF;
+$color-primary-dark: #0052CC;
+
+$color-secondary: #00CC66;      // 电路板绿
+$color-secondary-light: #33D985;
+$color-secondary-dark: #00A352;
+
+$color-warning: #FF6600;        // 警告橙
+$color-error: #FF3333;          // 错误红
+
+/* 中性色 (浅色模式) */
+$color-bg-primary: #F5F7FA;     // 主背景
+$color-bg-card: #FFFFFF;        // 卡片背景
+$color-border: #E2E8F0;         // 边框
+$color-text-primary: #1E293B;   // 主要文字
+$color-text-secondary: #64748B; // 次要文字
+$color-text-muted: #94A3B8;     // 辅助文字
 
 @mixin org-theme($type) {
   @if $type == 'training' {
@@ -16,12 +41,53 @@ $org-theme-bureau: #9c27b0;   // 教育局：稳重紫
   }
 }
 
+/* 间距系统 (8px 基础单位) */
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+$spacing-3xl: 64px;
+
+/* 圆角规范 */
+$radius-sm: 4px;   // 按钮、标签
+$radius-md: 8px;   // 卡片、输入框
+$radius-lg: 12px;  // 大型卡片、模态框
+$radius-full: 9999px; // 圆形
+
+/* 阴影 (浅色模式) */
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+/* 字体系统 */
+$font-family: 'Inter', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 24px;
+$font-size-2xl: 36px;
+$font-size-3xl: 48px;
+
+/* 过渡动画 */
+$transition-fast: 200ms ease;
+$transition-normal: 300ms ease;
+$transition-slow: 500ms ease;
+
+/* 通用卡片样式 */
 .dashboard-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
+  background: $color-bg-card;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  border: 1px solid $color-border;
+  transition: all $transition-normal;
   
   &:hover {
-    transform: translateY(-4px);
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: $color-primary;
   }
 }

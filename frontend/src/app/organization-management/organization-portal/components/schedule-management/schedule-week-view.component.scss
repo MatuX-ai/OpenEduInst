@@ -1,8 +1,8 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .week-view-container {
-  padding: tokens.$spacing-lg;
-  background-color: tokens.$color-neutral-100;
+  padding: $spacing-lg;
+  background-color: $color-neutral-100;
   min-height: 100%;
 }
 
@@ -11,8 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-lg;
-  gap: tokens.$spacing-md;
+  margin-bottom: $spacing-lg;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -23,31 +23,31 @@
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
 }
 
 .current-week {
-  font-size: tokens.$font-size-lg;
+  font-size: $font-size-lg;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  margin: 0 tokens.$spacing-md;
+  color: $color-neutral-900;
+  margin: 0 $spacing-md;
   white-space: nowrap;
 }
 
 .view-controls {
   display: flex;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
 }
 
 /* 课程表网�?*/
 .schedule-grid {
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
-  border: 1px solid tokens.$color-neutral-300;
-  border-radius: tokens.$radius-md;
+  border: 1px solid $color-neutral-300;
+  border-radius: $radius-md;
   overflow: hidden;
   background-color: white;
-  box-shadow: tokens.$shadow-sm;
+  box-shadow: $shadow-sm;
 }
 
 /* 时间轴表�?*/
@@ -55,54 +55,54 @@
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 60px repeat(7, 1fr);
-  border-bottom: 2px solid tokens.$color-neutral-300;
-  background-color: tokens.$color-neutral-50;
+  border-bottom: 2px solid $color-neutral-300;
+  background-color: $color-neutral-50;
 }
 
 .corner-cell {
-  border-right: 1px solid tokens.$color-neutral-300;
-  background-color: tokens.$color-neutral-50;
+  border-right: 1px solid $color-neutral-300;
+  background-color: $color-neutral-50;
 }
 
 .day-header {
   text-align: center;
-  padding: tokens.$spacing-md tokens.$spacing-xs;
-  border-right: 1px solid tokens.$color-neutral-300;
-  transition: background-color tokens.$transition-fast;
+  padding: $spacing-md $spacing-xs;
+  border-right: 1px solid $color-neutral-300;
+  transition: background-color $transition-fast;
 
   &:last-child {
     border-right: none;
   }
 
   &.today {
-    background-color: tokens.$color-brand-primary-light;  // #e3f2fd
+    background-color: $color-brand-primary-light;  // #e3f2fd
 
     .day-label {
-      color: tokens.$color-brand-primary;
+      color: $color-brand-primary;
       font-weight: bold;
     }
   }
 }
 
 .day-label {
-  font-size: tokens.$font-size-sm;
-  color: tokens.$color-neutral-600;
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
   font-weight: 500;
 }
 
 /* 时间刻度�?*/
 .time-column {
-  border-right: 2px solid tokens.$color-neutral-300;
+  border-right: 2px solid $color-neutral-300;
 }
 
 .hour-label {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  font-size: tokens.$font-size-xs;
-  color: tokens.$color-neutral-600;
-  border-bottom: 1px solid tokens.$color-neutral-200;
-  padding-top: tokens.$spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-neutral-600;
+  border-bottom: 1px solid $color-neutral-200;
+  padding-top: $spacing-xs;
 }
 
 /* 课程内容区域 */
@@ -116,7 +116,7 @@
 
 .day-column {
   position: relative;
-  border-right: 1px solid tokens.$color-neutral-200;
+  border-right: 1px solid $color-neutral-200;
 
   &:last-child {
     border-right: none;
@@ -124,7 +124,7 @@
 }
 
 .hour-grid-line {
-  border-bottom: 1px solid tokens.$color-neutral-200;
+  border-bottom: 1px solid $color-neutral-200;
   width: 100%;
 }
 
@@ -239,23 +239,23 @@
 /* 空状�?*/
 .empty-state {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  margin-top: tokens.$spacing-lg;
+  border-radius: $radius-md;
+  margin-top: $spacing-lg;
 
   mat-icon {
-    font-size: tokens.$font-size-3xl * 2;
-    width: tokens.$font-size-3xl * 2;
-    height: tokens.$font-size-3xl * 2;
-    color: tokens.$color-neutral-500;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-500;
+    margin-bottom: $spacing-md;
   }
 
   p {
-    font-size: tokens.$font-size-base;
-    color: tokens.$color-neutral-600;
-    margin-bottom: tokens.$spacing-lg;
+    font-size: $font-size-base;
+    color: $color-neutral-600;
+    margin-bottom: $spacing-lg;
   }
 }
 
@@ -263,12 +263,12 @@
 .legend {
   display: flex;
   justify-content: center;
-  gap: tokens.$spacing-xl;
-  margin-top: tokens.$spacing-lg;
-  padding: tokens.$spacing-md;
+  gap: $spacing-xl;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  box-shadow: tokens.$shadow-sm;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
   @media (max-width: 768px) {
     flex-wrap: wrap;
@@ -279,15 +279,15 @@
 .legend-item {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-xs;
-  font-size: tokens.$font-size-xs;
-  color: tokens.$color-neutral-600;
+  gap: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-neutral-600;
 }
 
 .legend-color {
   width: 20px;
   height: 20px;
-  border-radius: tokens.$radius-sm;
+  border-radius: $radius-sm;
   flex-shrink: 0;
 }
 

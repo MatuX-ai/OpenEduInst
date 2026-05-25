@@ -9,11 +9,10 @@ import Link from "next/link";
 export default function CreateOrgPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    contact_email: "",
+  const [formData] = useState({
+    name: "星海机器人培训中心",
+    contact_email: "admin@example.com",
     org_type: "training_institution",
-    phone: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -29,19 +28,28 @@ export default function CreateOrgPage() {
         return;
       }
 
-      // 2. 调用后端创建组织接口
-      const res = await fetch('http://localhost:8000/organizations/create', {
+      // 2. 调用后端创建组织接口（通过 Next.js API Route 代理）
+      console.log('Token:', token);
+      
+      const res = await fetch('/api/organizations/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          name: formData.name,
+          contact_email: formData.contact_email,
+          org_type: formData.org_type,
+          phone: null,
+          address: null
+        })
       });
 
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.detail || '创建失败');
+        const errorData = await res.json().catch(() => ({}));
+        console.error('API Error:', errorData);
+        throw new Error(errorData.detail || `创建失败 (HTTP ${res.status})`);
       }
 
       const data = await res.json();
@@ -51,8 +59,7 @@ export default function CreateOrgPage() {
       localStorage.setItem('current_org_id', data.organization_id.toString());
 
       // 4. 跳转到 Angular 管理后台
-      // 假设 Angular 运行在 4200 端口
-      window.location.href = `http://localhost:4200/organization/${data.organization_id}/dashboard`;
+      window.location.href = `http://localhost:4201/organization/${data.organization_id}/dashboard`;
       
     } catch (error) {
       console.error("创建组织失败:", error);
@@ -81,40 +88,23 @@ export default function CreateOrgPage() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">机构名称</label>
-            <input
-              type="text"
-              required
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              placeholder="例如：星海机器人培训中心"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-            />
+            <div className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-400">
+              星海机器人培训中心
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">联系邮箱</label>
-            <input
-              type="email"
-              required
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              placeholder="admin@example.com"
-              value={formData.contact_email}
-              onChange={(e) => setFormData({...formData, contact_email: e.target.value})}
-            />
+            <div className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-400">
+              admin@example.com
+            </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-2">机构类型</label>
-            <select
-              className="w-full px-4 py-3 bg-slate-950 border border-slate-700 rounded-lg text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-              value={formData.org_type}
-              onChange={(e) => setFormData({...formData, org_type: e.target.value})}
-            >
-              <option value="training_institution">STEM 培训机构</option>
-              <option value="k12_school">K12 学校科创中心</option>
-              <option value="vocational_school">职业学校实训室</option>
-              <option value="education_bureau">教育局监管平台</option>
-            </select>
+            <div className="w-full px-4 py-3 bg-slate-800/50 border border-slate-700 rounded-lg text-slate-400">
+              STEM 培训机构
+            </div>
           </div>
 
           <button

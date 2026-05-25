@@ -1,8 +1,8 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .month-view-container {
-  padding: tokens.$spacing-lg;
-  background-color: tokens.$color-neutral-100;
+  padding: $spacing-lg;
+  background-color: $color-neutral-100;
   min-height: 100%;
 }
 
@@ -11,46 +11,46 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-lg;
+  margin-bottom: $spacing-lg;
 }
 
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
 }
 
 .current-month {
-  font-size: tokens.$font-size-lg;
+  font-size: $font-size-lg;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  margin: 0 tokens.$spacing-md;
+  color: $color-neutral-900;
+  margin: 0 $spacing-md;
   white-space: nowrap;
 }
 
 /* 日历网格 */
 .calendar-grid {
   background-color: white;
-  border-radius: tokens.$radius-md;
+  border-radius: $radius-md;
   overflow: hidden;
-  box-shadow: tokens.$shadow-sm;
+  box-shadow: $shadow-sm;
 }
 
 /* 星期标题 */
 .weekday-header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border-bottom: 2px solid tokens.$color-neutral-300;
-  background-color: tokens.$color-neutral-50;
+  border-bottom: 2px solid $color-neutral-300;
+  background-color: $color-neutral-50;
 }
 
 .weekday-cell {
   text-align: center;
-  padding: tokens.$spacing-md tokens.$spacing-xs;
-  font-size: tokens.$font-size-sm;
+  padding: $spacing-md $spacing-xs;
+  font-size: $font-size-sm;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  border-right: 1px solid tokens.$color-neutral-300;
+  color: $color-neutral-900;
+  border-right: 1px solid $color-neutral-300;
 
   &:last-child {
     border-right: none;
@@ -66,36 +66,36 @@
 
 .day-cell {
   min-height: 120px;
-  padding: tokens.$spacing-xs;
-  border-right: 1px solid tokens.$color-neutral-200;
-  border-bottom: 1px solid tokens.$color-neutral-200;
+  padding: $spacing-xs;
+  border-right: 1px solid $color-neutral-200;
+  border-bottom: 1px solid $color-neutral-200;
   cursor: pointer;
-  transition: background-color tokens.$transition-fast;
+  transition: background-color $transition-fast;
 
   &:nth-child(7n) {
     border-right: none;
   }
 
   &:not(.current-month) {
-    background-color: tokens.$color-neutral-50;
+    background-color: $color-neutral-50;
     opacity: 0.6;
   }
 
   &:hover {
-    background-color: tokens.$color-neutral-100;
+    background-color: $color-neutral-100;
   }
 
   &.today {
-    background-color: tokens.$color-brand-primary-light;  // #e3f2fd
+    background-color: $color-brand-primary-light;  // #e3f2fd
 
     .date-number {
-      background-color: tokens.$color-brand-primary;
+      background-color: $color-brand-primary;
       color: white;
     }
   }
 
   &.has-schedules {
-    background-color: tokens.$color-warning-light;  // #fff3e0
+    background-color: $color-warning-light;  // #fff3e0
   }
 }
 
@@ -105,29 +105,29 @@
   height: 28px;
   line-height: 28px;
   text-align: center;
-  border-radius: tokens.$radius-full;
-  font-size: tokens.$font-size-sm;
+  border-radius: $radius-full;
+  font-size: $font-size-sm;
   font-weight: 500;
-  color: tokens.$color-neutral-900;
-  margin-bottom: tokens.$spacing-md;
+  color: $color-neutral-900;
+  margin-bottom: $spacing-md;
 }
 
 /* 课程列表 */
 .schedules-list {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-xs;
+  gap: $spacing-xs;
 }
 
 .schedule-dot {
-  padding: tokens.$spacing-xs calc(tokens.$spacing-xs - 2px);
-  border-radius: tokens.$radius-sm;
+  padding: $spacing-xs calc($spacing-xs - 2px);
+  border-radius: $radius-sm;
   color: white;
-  font-size: calc(tokens.$font-size-xs - 2px);
+  font-size: calc($font-size-xs - 2px);
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-xs;
-  transition: transform tokens.$transition-fast;
+  gap: $spacing-xs;
+  transition: transform $transition-fast;
 
   &:hover {
     transform: translateX(2px);
@@ -140,32 +140,32 @@
 }
 
 .more-count {
-  font-size: calc(tokens.$font-size-xs - 2px);
-  color: tokens.$color-neutral-600;
+  font-size: calc($font-size-xs - 2px);
+  color: $color-neutral-600;
   text-align: center;
-  padding: calc(tokens.$spacing-xs - 4px);
+  padding: calc($spacing-xs - 4px);
 }
 
 /* 空状态 */
 .empty-state {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  margin-top: tokens.$spacing-lg;
+  border-radius: $radius-md;
+  margin-top: $spacing-lg;
 
   mat-icon {
-    font-size: tokens.$font-size-3xl * 2;
-    width: tokens.$font-size-3xl * 2;
-    height: tokens.$font-size-3xl * 2;
-    color: tokens.$color-neutral-500;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-500;
+    margin-bottom: $spacing-md;
   }
 
   p {
-    font-size: tokens.$font-size-base;
-    color: tokens.$color-neutral-600;
-    margin-bottom: tokens.$spacing-lg;
+    font-size: $font-size-base;
+    color: $color-neutral-600;
+    margin-bottom: $spacing-lg;
   }
 }
 
@@ -173,12 +173,12 @@
 .legend {
   display: flex;
   justify-content: center;
-  gap: tokens.$spacing-xl;
-  margin-top: tokens.$spacing-lg;
-  padding: tokens.$spacing-md;
+  gap: $spacing-xl;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  box-shadow: tokens.$shadow-sm;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
   @media (max-width: 768px) {
     flex-wrap: wrap;
@@ -189,15 +189,15 @@
 .legend-item {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-xs;
-  font-size: tokens.$font-size-xs;
-  color: tokens.$color-neutral-600;
+  gap: $spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-neutral-600;
 }
 
 .legend-color {
   width: 20px;
   height: 20px;
-  border-radius: tokens.$radius-sm;
+  border-radius: $radius-sm;
   flex-shrink: 0;
 }
 

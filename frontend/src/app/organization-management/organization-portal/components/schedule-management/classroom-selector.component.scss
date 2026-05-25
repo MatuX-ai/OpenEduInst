@@ -1,26 +1,26 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .classroom-selector-container {
-  padding: tokens.$spacing-md;
+  padding: $spacing-md;
 }
 
 .section-title {
-  font-size: tokens.$font-size-lg;
+  font-size: $font-size-lg;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  margin: 0 0 tokens.$spacing-md 0;
+  color: $color-neutral-900;
+  margin: 0 0 $spacing-md 0;
 }
 
 mat-progress-bar {
-  margin-bottom: tokens.$spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 /* 类型筛�?*/
 .type-filters {
   display: flex;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
   flex-wrap: wrap;
-  margin-bottom: tokens.$spacing-md;
+  margin-bottom: $spacing-md;
   align-items: center;
 }
 
@@ -28,7 +28,7 @@ mat-progress-bar {
 .classroom-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -36,23 +36,23 @@ mat-progress-bar {
 }
 
 .classroom-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-  transition: transform tokens.$transition-fast, box-shadow tokens.$transition-fast, border tokens.$transition-fast;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast, box-shadow $transition-fast, border $transition-fast;
   cursor: pointer;
   border: 2px solid transparent;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: tokens.$shadow-md;
+    box-shadow: $shadow-md;
   }
 
   &.selected {
-    border-color: tokens.$color-brand-primary;
-    background-color: tokens.$color-brand-primary-light;  // #e3f2fd
+    border-color: $color-brand-primary;
+    background-color: $color-brand-primary-light;  // #e3f2fd
 
     .classroom-name {
-      color: tokens.$color-brand-primary;
+      color: $color-brand-primary;
       font-weight: bold;
     }
   }
@@ -63,7 +63,7 @@ mat-progress-bar {
   }
 
   mat-card-content {
-    padding: tokens.$spacing-md !important;
+    padding: $spacing-md !important;
   }
 }
 
@@ -71,7 +71,7 @@ mat-progress-bar {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: tokens.$spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .classroom-info {
@@ -81,62 +81,62 @@ mat-progress-bar {
 .classroom-name {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
-  font-size: tokens.$font-size-base;
+  gap: $spacing-sm;
+  font-size: $font-size-base;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  margin-bottom: tokens.$spacing-xs;
+  color: $color-neutral-900;
+  margin-bottom: $spacing-xs;
 
   mat-icon {
-    font-size: tokens.$font-size-lg;
-    width: tokens.$font-size-lg;
-    height: tokens.$font-size-lg;
+    font-size: $font-size-lg;
+    width: $font-size-lg;
+    height: $font-size-lg;
   }
 }
 
 .classroom-type {
-  font-size: tokens.$font-size-xs + 2;
-  color: tokens.$color-neutral-600;
+  font-size: $font-size-xs + 2;
+  color: $color-neutral-600;
 }
 
 .card-actions {
   display: flex;
-  gap: tokens.$spacing-xs;
+  gap: $spacing-xs;
 }
 
 /* 卡片详情 */
 .card-details {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-sm;
-  margin-top: tokens.$spacing-md;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
 }
 
 .detail-item {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
-  font-size: tokens.$font-size-xs + 2;
-  color: tokens.$color-neutral-600;
+  gap: $spacing-sm;
+  font-size: $font-size-xs + 2;
+  color: $color-neutral-600;
 
   mat-icon {
-    font-size: tokens.$font-size-lg;
-    width: tokens.$font-size-lg;
-    height: tokens.$font-size-lg;
-    color: tokens.$color-neutral-500;
+    font-size: $font-size-lg;
+    width: $font-size-lg;
+    height: $font-size-lg;
+    color: $color-neutral-500;
   }
 }
 
 .equipment-list {
   display: flex;
   flex-wrap: wrap;
-  gap: tokens.$spacing-xs;
-  margin-left: tokens.$spacing-xs;
+  gap: $spacing-xs;
+  margin-left: $spacing-xs;
 
   mat-chip {
     height: 24px;
-    font-size: tokens.$font-size-xs - 2;
-    background-color: tokens.$color-neutral-100;
+    font-size: $font-size-xs - 2;
+    background-color: $color-neutral-100;
   }
 }
 
@@ -144,41 +144,41 @@ mat-progress-bar {
 .unavailable-badge {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
-  padding: tokens.$spacing-xs tokens.$spacing-md;
-  background-color: tokens.$color-error-light;  // #ffebee
-  border-radius: tokens.$radius-sm;
-  margin-top: tokens.$spacing-md;
-  color: tokens.$color-error-dark;  // #c62828
-  font-size: tokens.$font-size-xs + 2;
+  gap: $spacing-sm;
+  padding: $spacing-xs $spacing-md;
+  background-color: $color-error-light;  // #ffebee
+  border-radius: $radius-sm;
+  margin-top: $spacing-md;
+  color: $color-error-dark;  // #c62828
+  font-size: $font-size-xs + 2;
   font-weight: 600;
 
   mat-icon {
-    font-size: tokens.$font-size-lg;
-    width: tokens.$font-size-lg;
-    height: tokens.$font-size-lg;
+    font-size: $font-size-lg;
+    width: $font-size-lg;
+    height: $font-size-lg;
   }
 }
 
 /* 空闲时段展示 */
 .free-slots-section {
-  margin-top: tokens.$spacing-lg;
-  padding: tokens.$spacing-md;
-  background-color: tokens.$color-neutral-100;
-  border-radius: tokens.$radius-md;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $color-neutral-100;
+  border-radius: $radius-md;
 
   h4 {
-    font-size: tokens.$font-size-base;
+    font-size: $font-size-base;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-md 0;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-md 0;
   }
 }
 
 .free-slots-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -186,12 +186,12 @@ mat-progress-bar {
 }
 
 .free-slot {
-  padding: tokens.$spacing-md;
+  padding: $spacing-md;
   background-color: white;
-  border-radius: tokens.$radius-md;
+  border-radius: $radius-md;
   text-align: center;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform tokens.$transition-fast;
+  transition: transform $transition-fast;
 
   &:hover {
     transform: translateY(-2px);
@@ -199,16 +199,16 @@ mat-progress-bar {
   }
 
   .slot-day {
-    font-size: tokens.$font-size-sm;
+    font-size: $font-size-sm;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin-bottom: tokens.$spacing-xs;
+    color: $color-neutral-900;
+    margin-bottom: $spacing-xs;
   }
 
   .slot-time {
-    font-size: tokens.$font-size-xs + 2;
-    color: tokens.$color-neutral-600;
-    margin-bottom: tokens.$spacing-sm;
+    font-size: $font-size-xs + 2;
+    color: $color-neutral-600;
+    margin-bottom: $spacing-sm;
   }
 
   button {
@@ -219,19 +219,19 @@ mat-progress-bar {
 /* 空状�?*/
 .empty-state {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
   grid-column: 1 / -1;
 
   mat-icon {
-    font-size: tokens.$font-size-3xl * 2;
-    width: tokens.$font-size-3xl * 2;
-    height: tokens.$font-size-3xl * 2;
-    color: tokens.$color-neutral-500;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-500;
+    margin-bottom: $spacing-md;
   }
 
   p {
-    font-size: tokens.$font-size-base;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-base;
+    color: $color-neutral-600;
   }
 }

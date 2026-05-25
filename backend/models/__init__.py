@@ -22,6 +22,11 @@ from .tenant import TenantConfig, TenantFeatureFlag
 from .schedule import Schedule, Lead, Settlement, ScheduleStatus, LeadStatus
 from .classroom import Classroom, ClassSchedule
 from .student import Student, Enrollment, AttendanceRecord, StudentStatus, Gender
+from .resource import TeachingResource, ResourceCategory, ResourceType, ResourceFormat
+from .competition import Competition, CompetitionRegistration, Certification, ExamRegistration
+from .notification import Notification, NotificationType, NotificationPriority
+from .marketing import MarketingCampaign, Coupon, CampaignType, CampaignStatus
+from .parent_portal import ClassFeedback, StudentAchievement, ParentMessage, FeedbackRating
 
 __all__ = [
     # License models
@@ -62,4 +67,28 @@ __all__ = [
     "AttendanceRecord",
     "StudentStatus",
     "Gender",
+    # Resource models
+    "TeachingResource",
+    "ResourceCategory",
+    "ResourceType",
+    "ResourceFormat",
+    # Competition models
+    "Competition",
+    "CompetitionRegistration",
+    "Certification",
+    "ExamRegistration",
+    # Notification models
+    "Notification",
+    "NotificationType",
+    "NotificationPriority",
+    # Marketing models
+    "MarketingCampaign",
+    "Coupon",
+    "CampaignType",
+    "CampaignStatus",
+    # Parent Portal models
+    "ClassFeedback",
+    "StudentAchievement",
+    "ParentMessage",
+    "FeedbackRating",
 ]

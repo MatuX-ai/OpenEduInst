@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,41 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { StemCloudService } from '../../services/stem-cloud.service';
+import { StemCloudService, SpaceRoom, Booking, SpaceCategory } from '../../services/stem-cloud.service';
 
-export interface SpaceRoom {
-  id: string;
-  name: string;
-  type: string;
-  capacity: number;
-  status: 'available' | 'occupied' | 'maintenance' | 'reserved';
-  currentActivity?: string;
-  nextBooking?: string;
-  equipment: string[];
-  image?: string;
-}
-
-export interface Booking {
-  id: string;
-  roomId: string;
-  roomName: string;
-  user: string;
-  purpose: string;
-  startTime: string;
-  endTime: string;
-  date: string;
-  status: 'confirmed' | 'pending' | 'cancelled';
-  participants: number;
-}
-
-export interface SpaceCategory {
-  id: string;
-  name: string;
-  icon: string;
-  count: number;
-  available: number;
-  color: string;
-}
+// Re-export for template compatibility
+export { SpaceRoom, Booking, SpaceCategory };
 
 @Component({
   selector: 'app-space-scheduling',
@@ -182,10 +152,10 @@ export interface SpaceCategory {
             </p>
 
             <div class="space-equipment">
-              <mat-chip *ngFor="let equip of room.equipment.slice(0, 3)" class="equipment-chip">
+              <mat-chip *ngFor="let equip of (room.equipment || []).slice(0, 3)" class="equipment-chip">
                 {{ equip }}
               </mat-chip>
-              <span *ngIf="room.equipment.length > 3" class="more-equipment">+{{ room.equipment.length - 3 }}更多</span>
+              <span *ngIf="(room.equipment || []).length > 3" class="more-equipment">+{{ (room.equipment || []).length - 3 }}更多</span>
             </div>
 
             <div class="space-booking-info" *ngIf="room.currentActivity || room.nextBooking">
@@ -384,8 +354,9 @@ export interface SpaceCategory {
   styles: [`
     .space-scheduling {
       padding: 24px;
-      background: #f5f7fa;
+      background: #0f172a;
       min-height: 100%;
+      color: #e2e8f0;
     }
 
     /* Page Header */
@@ -398,9 +369,11 @@ export interface SpaceCategory {
 
     .page-header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 48px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
@@ -477,12 +450,12 @@ export interface SpaceCategory {
     .stat-value {
       font-size: 32px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #ffffff;
       margin: 8px 0;
     }
 
     .stat-label {
-      color: #666;
+      color: #94a3b8;
       font-size: 14px;
       font-weight: 500;
     }
@@ -491,7 +464,7 @@ export interface SpaceCategory {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -547,13 +520,13 @@ export interface SpaceCategory {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .category-count {
       margin: 4px 0 8px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .availability-info {
@@ -647,7 +620,7 @@ export interface SpaceCategory {
       margin: 0 0 8px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .space-capacity {
@@ -656,7 +629,7 @@ export interface SpaceCategory {
       gap: 4px;
       margin: 0 0 12px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .space-capacity mat-icon {
@@ -674,13 +647,13 @@ export interface SpaceCategory {
 
     .equipment-chip {
       font-size: 11px;
-      background: #f5f5f5;
-      color: #666;
+      background: rgba(30, 41, 59, 0.6);
+      color: #94a3b8;
     }
 
     .more-equipment {
       font-size: 11px;
-      color: #999;
+      color: #64748b;
     }
 
     .space-booking-info {
@@ -692,7 +665,7 @@ export interface SpaceCategory {
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
       margin-bottom: 4px;
     }
 
@@ -818,7 +791,7 @@ export interface SpaceCategory {
     .form-group label {
       font-size: 14px;
       font-weight: 500;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .form-group input,
@@ -901,6 +874,11 @@ export class SpaceSchedulingComponent implements OnInit {
 
   // Space rooms
   spaceRooms: SpaceRoom[] = [];
+  
+  // Available rooms for booking
+  get availableRooms(): SpaceRoom[] {
+    return this.spaceRooms.filter(r => r.status === 'available');
+  }
 
   // Today's bookings
   bookings: Booking[] = [];
@@ -924,9 +902,16 @@ export class SpaceSchedulingComponent implements OnInit {
   searchTerm = '';
   statusFilter = '';
 
-  constructor(private stemService: StemCloudService) {}
+  orgId!: number;
+
+  constructor(
+    private stemService: StemCloudService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.orgId = +this.route.parent?.snapshot.params['id'] || 1;
     this.loadSpaceData();
   }
 
@@ -1026,35 +1011,41 @@ export class SpaceSchedulingComponent implements OnInit {
 
   // Event handlers
   onBookSpace(): void {
-    console.log('Book new space');
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'book']);
   }
 
   onViewCalendar(): void {
-    console.log('View calendar');
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'calendar']);
   }
 
   onCategorySelect(category: SpaceCategory): void {
     console.log('Category selected:', category);
+    // Filter spaces by category
   }
 
   onViewRoomDetails(room: SpaceRoom): void {
-    console.log('View room details:', room);
+    this.router.navigate(['/organization', this.orgId, 'spaces', room.id]);
   }
 
   onBookRoom(room: SpaceRoom): void {
-    console.log('Book room:', room);
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'book'], {
+      queryParams: { roomId: room.id }
+    });
   }
 
   onViewBooking(booking: Booking): void {
-    console.log('View booking:', booking);
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'bookings', booking.id]);
   }
 
   onEditBooking(booking: Booking): void {
-    console.log('Edit booking:', booking);
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'bookings', booking.id, 'edit']);
   }
 
   onCancelBooking(booking: Booking): void {
-    console.log('Cancel booking:', booking);
+    if (confirm('确定要取消这个预约吗？')) {
+      console.log('Cancel booking:', booking);
+      // TODO: Call API to cancel booking
+    }
   }
 
   onClearForm(): void {
@@ -1070,6 +1061,23 @@ export class SpaceSchedulingComponent implements OnInit {
   }
 
   onSubmitQuickBooking(): void {
-    console.log('Submit quick booking:', this.quickBooking);
+    // Validate form
+    if (!this.quickBooking.roomId || !this.quickBooking.date || !this.quickBooking.startTime) {
+      alert('请填写完整的预约信息');
+      return;
+    }
+    
+    // Navigate to booking confirmation with form data
+    this.router.navigate(['/organization', this.orgId, 'spaces', 'book'], {
+      queryParams: {
+        roomId: this.quickBooking.roomId,
+        date: this.quickBooking.date,
+        startTime: this.quickBooking.startTime,
+        endTime: this.quickBooking.endTime,
+        purpose: this.quickBooking.purpose,
+        participants: this.quickBooking.participants,
+        phone: this.quickBooking.phone
+      }
+    });
   }
 }

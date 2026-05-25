@@ -264,6 +264,8 @@ export class OrganizationListComponent implements OnInit {
       setTimeout(() => {
         this.organizations = mockOrganizations as any;
         this.loading = false;
+        // Mock 模式下，如果只有一个组织，自动跳转
+        this.checkAndRedirect();
       }, environment.mockDataDelay);
       return;
     }
@@ -272,6 +274,8 @@ export class OrganizationListComponent implements OnInit {
       next: (data) => {
         this.organizations = data;
         this.loading = false;
+        // 真实 API 模式下，如果只有一个组织，自动跳转
+        this.checkAndRedirect();
       },
       error: (err) => {
         console.error('加载组织列表失败:', err);
@@ -280,6 +284,22 @@ export class OrganizationListComponent implements OnInit {
         this.showSnackbar('加载失败', 'error');
       },
     });
+  }
+
+  /**
+   * 检查并自动跳转（用户只能有一个组织）
+   */
+  checkAndRedirect(): void {
+    if (this.organizations.length === 0) {
+      // 没有组织，显示创建引导
+      return;
+    }
+    
+    if (this.organizations.length >= 1) {
+      // 用户只能有一个组织，直接跳转到该组织的 dashboard
+      const org = this.organizations[0];
+      this.router.navigate(['/organization', org.id, 'dashboard']);
+    }
   }
 
   /**

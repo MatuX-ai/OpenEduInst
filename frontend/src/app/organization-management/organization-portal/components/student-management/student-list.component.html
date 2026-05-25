@@ -1,75 +1,13 @@
 <div class="student-list-container">
-  <!-- 统计卡片 -->
-  <div class="stats-grid">
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-header">
-          <mat-icon class="stat-icon total">school</mat-icon>
-          <h3>总学员数</h3>
-        </div>
-        <div class="stat-value">{{ stats?.totalStudents || 0 }}</div>
-        <div class="stat-footer">全部学员</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-header">
-          <mat-icon class="stat-icon active">person</mat-icon>
-          <h3>在读学员</h3>
-        </div>
-        <div class="stat-value">{{ stats?.activeStudents || 0 }}</div>
-        <div class="stat-footer">正在学习</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-header">
-          <mat-icon class="stat-icon graduated">emoji_events</mat-icon>
-          <h3>已毕业</h3>
-        </div>
-        <div class="stat-value">{{ stats?.graduatedStudents || 0 }}</div>
-        <div class="stat-footer">已完成学业</div>
-      </mat-card-content>
-    </mat-card>
-
-    <mat-card class="stat-card">
-      <mat-card-content>
-        <div class="stat-header">
-          <mat-icon class="stat-icon courses">menu_book</mat-icon>
-          <h3>总课程数</h3>
-        </div>
-        <div class="stat-value">{{ stats?.totalEnrolledCourses || 0 }}</div>
-        <div class="stat-footer">已报名课程</div>
-      </mat-card-content>
-    </mat-card>
-  </div>
-
   <!-- 工具栏 -->
   <div class="toolbar">
-    <!-- 快捷筛选标签 -->
-    <div class="quick-filters">
-      @for (option of quickFilterOptions; track option.value) {
-        <button
-          mat-stroked-button
-          [class.active]="currentQuickFilter === option.value"
-          (click)="onQuickFilter(option.value)">
-          <mat-icon>{{ option.icon }}</mat-icon>
-          {{ option.label }}
-          @if (option.value === 'active') {
-            <span class="badge">{{ stats.activeStudents }}</span>
-          }
-        </button>
-      }
+    <div>
+      <h1 class="page-title">学员管理</h1>
+      <p class="page-subtitle">管理学员档案、学习进度和续费提醒</p>
     </div>
 
     <!-- 操作按钮 -->
     <div class="actions">
-      <button mat-icon-button matTooltip="刷新数据" (click)="refreshData()">
-        <mat-icon>refresh</mat-icon>
-      </button>
-
       @if (isSelectionActive) {
         <div class="batch-toolbar">
           <span class="selected-count">
@@ -97,139 +35,169 @@
           <mat-icon>person_add</mat-icon>
           添加学员
         </button>
-        <button mat-stroked-button (click)="onExportExcel()">
-          <mat-icon>download</mat-icon>
-          导出
-        </button>
       }
     </div>
   </div>
 
-  <!-- 高级筛选 -->
-  <div class="advanced-filters">
-    <mat-form-field appearance="outline" class="search-field">
-      <mat-label>搜索姓名或邮箱</mat-label>
-      <input matInput [(ngModel)]="filter.keyword" placeholder="输入关键词搜索..." (keyup.enter)="onSearch()" />
-      <mat-icon matPrefix>search</mat-icon>
-      @if (filter.keyword) {
-        <button matSuffix mat-icon-button (click)="filter.keyword = ''; onSearch()">
-          <mat-icon>close</mat-icon>
-        </button>
-      }
-    </mat-form-field>
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-info">
+            <p class="stat-label">在训学员</p>
+            <p class="stat-value">{{ stats.totalStudents || 0 }}</p>
+            <p class="stat-trend">
+              <mat-icon>trending_up</mat-icon>
+              +12.5% 较上月
+            </p>
+          </div>
+          <div class="stat-icon-wrapper blue">
+            <mat-icon>people</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-    <mat-form-field appearance="outline" class="filter-field">
-      <mat-label>年级</mat-label>
-      <mat-select [(ngModel)]="filter.grade" (selectionChange)="onSearch()">
-        <mat-option value="">全部年级</mat-option>
-        <mat-option *ngFor="let grade of grades" [value]="grade.name">
-          {{ grade.name }} ({{ grade.studentCount }})
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-info">
+            <p class="stat-label">本月消课</p>
+            <p class="stat-value">1,248</p>
+            <p class="stat-trend text-muted">课时</p>
+          </div>
+          <div class="stat-icon-wrapper purple">
+            <mat-icon>access_time</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
 
-    @if (filter.keyword || filter.grade) {
-      <button mat-stroked-button color="warn" (click)="resetFilter()">
-        <mat-icon>clear_all</mat-icon>
-        清除筛选
-      </button>
-    }
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-info">
+            <p class="stat-label">即将到期</p>
+            <p class="stat-value">23</p>
+            <p class="stat-trend warning">需跟进续费</p>
+          </div>
+          <div class="stat-icon-wrapper amber">
+            <mat-icon>book</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-content>
+        <div class="stat-content">
+          <div class="stat-info">
+            <p class="stat-label">续费率</p>
+            <p class="stat-value">78%</p>
+            <p class="stat-trend success">行业领先</p>
+          </div>
+          <div class="stat-icon-wrapper emerald">
+            <mat-icon>military_tech</mat-icon>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <!-- 表格内容 -->
   <mat-card class="table-card">
+    <div class="table-header">
+      <div class="table-title-section">
+        <h2 class="table-title">学员列表</h2>
+        <span class="table-count">共 {{ total }} 人</span>
+      </div>
+      <div class="table-actions">
+        <div class="search-field-wrapper">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input 
+            type="text" 
+            [(ngModel)]="filter.keyword" 
+            placeholder="搜索学员姓名..."
+            (keyup.enter)="onSearch()"
+            class="search-input"
+          />
+          @if (filter.keyword) {
+            <button mat-icon-button class="clear-btn" (click)="filter.keyword = ''; onSearch()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </div>
+        <button mat-stroked-button (click)="resetFilter()">
+          <mat-icon>filter_list</mat-icon>
+          筛选
+        </button>
+      </div>
+    </div>
+
     @if (loading) {
       <mat-progress-bar mode="indeterminate"></mat-progress-bar>
     }
 
     <table mat-table [dataSource]="students" class="student-table">
-      <!-- 复选框列 -->
-      <ng-container matColumnDef="select">
-        <th mat-header-cell *matHeaderCellDef>
-          <mat-checkbox
-            (change)="onSelectAll($event)"
-            [checked]="selectedStudents.size === students.length && students.length > 0"
-            [indeterminate]="selectedStudents.size > 0 && selectedStudents.size < students.length">
-          </mat-checkbox>
-        </th>
-        <td mat-cell *matCellDef="let student">
-          <mat-checkbox
-            [checked]="selectedStudents.has(student.id)"
-            (change)="onCheckboxChange(student.id, $event)">
-          </mat-checkbox>
-        </td>
-      </ng-container>
-
-      <!-- 头像列 -->
-      <ng-container matColumnDef="avatar">
-        <th mat-header-cell *matHeaderCellDef></th>
-        <td mat-cell *matCellDef="let student">
-          <div class="avatar-wrapper" (click)="onViewDetail(student)">
-            @if (student.avatar) {
-              <img [src]="student.avatar" [alt]="student.name" class="avatar" />
-            } @else {
-              <div class="avatar-placeholder" [style.background]="getAvatarColor(student.name)">
-                {{ student.name.charAt(0).toUpperCase() }}
-              </div>
-            }
-          </div>
-        </td>
-      </ng-container>
-
-      <!-- 姓名 -->
+      <!-- 学员信息 -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef>学员信息</th>
         <td mat-cell *matCellDef="let student">
-          <div class="name-cell">
-            <span class="name">{{ student.name }}</span>
-            <span class="email">{{ student.email }}</span>
+          <div class="student-info-cell">
+            <div class="avatar-circle" [style.background]="getAvatarColor(student.name)">
+              {{ student.name.charAt(0) }}
+            </div>
+            <div class="student-text">
+              <p class="student-name">{{ student.name }}</p>
+              <p class="student-grade">{{ student.grade }}</p>
+            </div>
           </div>
         </td>
       </ng-container>
 
-      <!-- 年级 -->
-      <ng-container matColumnDef="grade">
-        <th mat-header-cell *matHeaderCellDef>年级</th>
+      <!-- 报读课程 -->
+      <ng-container matColumnDef="courses">
+        <th mat-header-cell *matHeaderCellDef>报读课程</th>
         <td mat-cell *matCellDef="let student">
-          <mat-chip size="small">{{ student.grade }}</mat-chip>
-        </td>
-      </ng-container>
-
-      <!-- 报名课程数 -->
-      <ng-container matColumnDef="enrolledCourses">
-        <th mat-header-cell *matHeaderCellDef>课程</th>
-        <td mat-cell *matCellDef="let student">
-          <div class="course-count">
-            <mat-icon>menu_book</mat-icon>
-            <span>{{ student.enrolledCourses }} 门</span>
+          <div class="course-tags">
+            <mat-chip size="small" class="course-chip">{{ student.enrolledCourses }} 门课程</mat-chip>
           </div>
         </td>
       </ng-container>
 
-      <!-- 学习进度 -->
-      <ng-container matColumnDef="progress">
-        <th mat-header-cell *matHeaderCellDef>学习进度</th>
+      <!-- 剩余课时 -->
+      <ng-container matColumnDef="hours">
+        <th mat-header-cell *matHeaderCellDef>剩余课时</th>
         <td mat-cell *matCellDef="let student">
-          <div class="progress-cell">
-            <mat-progress-bar
-              mode="determinate"
-              [value]="student.progress"
-              [color]="getProgressColor(student.progress)"
-              class="progress-bar">
-            </mat-progress-bar>
-            <span class="progress-text">{{ student.progress }}%</span>
+          <div class="hours-cell">
+            <p class="hours-text">{{ student.attendanceRate || 0 }} / 48</p>
+            <div class="hours-bar-bg">
+              <div 
+                class="hours-bar-fill" 
+                [style.width.%]="student.attendanceRate || 0"
+                [class]="getHoursBarClass(student.attendanceRate)">
+              </div>
+            </div>
           </div>
         </td>
       </ng-container>
 
-      <!-- 出勤率 -->
-      <ng-container matColumnDef="attendanceRate">
-        <th mat-header-cell *matHeaderCellDef>出勤率</th>
+      <!-- 项目成果 -->
+      <ng-container matColumnDef="projects">
+        <th mat-header-cell *matHeaderCellDef>项目成果</th>
         <td mat-cell *matCellDef="let student">
-          <div class="attendance-cell" [class]="getAttendanceColor(student.attendanceRate)">
-            <mat-icon>{{ student.attendanceRate && student.attendanceRate >= 90 ? 'check_circle' : 'schedule' }}</mat-icon>
-            <span>{{ student.attendanceRate || 0 }}%</span>
+          <div class="projects-cell">
+            <span class="project-count">{{ student.progress }} 个项目</span>
           </div>
+        </td>
+      </ng-container>
+
+      <!-- 最近上课 -->
+      <ng-container matColumnDef="lastClass">
+        <th mat-header-cell *matHeaderCellDef>最近上课</th>
+        <td mat-cell *matCellDef="let student">
+          <span class="last-class-text">2026-05-20</span>
         </td>
       </ng-container>
 
@@ -237,9 +205,9 @@
       <ng-container matColumnDef="status">
         <th mat-header-cell *matHeaderCellDef>状态</th>
         <td mat-cell *matCellDef="let student">
-          <mat-chip [color]="getStatusChipColor(student.status)" highlighted>
+          <span class="status-badge" [class]="getStatusBadgeClass(student.status)">
             {{ getStatusChipLabel(student.status) }}
-          </mat-chip>
+          </span>
         </td>
       </ng-container>
 
@@ -248,30 +216,8 @@
         <th mat-header-cell *matHeaderCellDef>操作</th>
         <td mat-cell *matCellDef="let student">
           <div class="action-buttons">
-            <button mat-icon-button matTooltip="查看详情" (click)="onViewDetail(student)">
-              <mat-icon>visibility</mat-icon>
-            </button>
-            <button mat-icon-button matTooltip="编辑信息" (click)="onEditStudent(student)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button [matMenuTriggerFor]="actionMenu" matTooltip="更多操作">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #actionMenu="matMenu">
-              <button mat-menu-item (click)="onViewDetail(student)">
-                <mat-icon>person</mat-icon>
-                <span>查看详情</span>
-              </button>
-              <button mat-menu-item (click)="onEditStudent(student)">
-                <mat-icon>edit</mat-icon>
-                <span>编辑信息</span>
-              </button>
-              <mat-divider></mat-divider>
-              <button mat-menu-item (click)="onDeleteStudent(student)" class="delete-item">
-                <mat-icon color="warn">delete</mat-icon>
-                <span>删除学员</span>
-              </button>
-            </mat-menu>
+            <button class="action-link primary" (click)="onViewDetail(student)">详情</button>
+            <button class="action-link" (click)="onEditStudent(student)">编辑</button>
           </div>
         </td>
       </ng-container>
@@ -286,28 +232,23 @@
         <mat-icon>person_search</mat-icon>
         <h3>暂无学员数据</h3>
         <p>当前筛选条件下没有找到学员</p>
-        <button mat-flat-button color="primary" (click)="resetFilter()">
-          <mat-icon>refresh</mat-icon>
-          重置筛选
-        </button>
-        <button mat-stroked-button color="primary" (click)="onAddStudent()">
-          <mat-icon>person_add</mat-icon>
-          添加学员
-        </button>
       </div>
     }
 
     <!-- 分页器 -->
     @if (total > 0) {
-      <mat-paginator
-        [length]="total"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        [pageSizeOptions]="[5, 10, 20, 50]"
-        showFirstLastButtons
-        (page)="onPageChange($event)"
-        aria-label="分页">
-      </mat-paginator>
+      <div class="pagination-section">
+        <p class="pagination-info">显示 1-{{ students.length }} 条，共 {{ total }} 条</p>
+        <mat-paginator
+          [length]="total"
+          [pageSize]="pageSize"
+          [pageIndex]="pageIndex"
+          [pageSizeOptions]="[5, 10, 20, 50]"
+          showFirstLastButtons
+          (page)="onPageChange($event)"
+          aria-label="分页">
+        </mat-paginator>
+      </div>
     }
   </mat-card>
 </div>

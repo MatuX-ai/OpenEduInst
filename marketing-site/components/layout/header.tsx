@@ -38,12 +38,20 @@ export default function Header() {
               {link.label}
             </Link>
           ))}
-          <Link
-            href="/demo"
-            className="ml-3 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors"
-          >
-            立即试用
-          </Link>
+          <div className="ml-3 flex items-center gap-2">
+            <Link
+              href="/demo/login"
+              className="px-4 py-2 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors"
+            >
+              登录
+            </Link>
+            <Link
+              href="/demo/create-org"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              注册
+            </Link>
+          </div>
         </nav>
 
         {/* Mobile Hamburger */}
@@ -70,13 +78,22 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/demo"
-              onClick={() => setMobileOpen(false)}
-              className="mt-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors text-center"
-            >
-              立即试用
-            </Link>
+            <div className="mt-2 flex flex-col gap-2">
+              <Link
+                href="/demo/login"
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-2.5 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors text-center border border-slate-700 rounded-lg"
+              >
+                登录
+              </Link>
+              <Link
+                href="/demo/create-org"
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors text-center"
+              >
+                注册
+              </Link>
+            </div>
           </nav>
         </div>
       )}

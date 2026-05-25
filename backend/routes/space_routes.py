@@ -181,6 +181,22 @@ def create_booking(
     
     db.add(db_booking)
     
+    # 联动逻辑：如果预约时指定了所需设备，则自动锁定这些设备的状态
+    if booking.required_equipment:
+        try:
+            import json
+            equipment_ids = json.loads(booking.required_equipment)
+            for device_id in equipment_ids:
+                device = db.query(HardwareDevice).filter(
+                    HardwareDevice.id == device_id,
+                    HardwareDevice.org_id == space.org_id
+                ).first()
+                if device and device.status == DeviceStatus.AVAILABLE:
+                    device.status = DeviceStatus.IN_USE
+                    device.assigned_to = 1  # 简化处理
+        except Exception as e:
+            print(f"Failed to lock equipment: {e}")
+    
     # 更新空间的当前占用数
     space.current_occupancy += booking.participant_count
     
@@ -267,6 +283,22 @@ def cancel_booking(
     space = db.query(MakerSpace).filter(MakerSpace.id == booking.space_id).first()
     if space:
         space.current_occupancy = max(0, space.current_occupancy - booking.participant_count)
+    
+    # 联动逻辑：取消预约时，释放之前锁定的设备状态
+    if booking.required_equipment:
+        try:
+            import json
+            equipment_ids = json.loads(booking.required_equipment)
+            for device_id in equipment_ids:
+                device = db.query(HardwareDevice).filter(
+                    HardwareDevice.id == device_id,
+                    HardwareDevice.org_id == space.org_id if space else None
+                ).first()
+                if device and device.status == DeviceStatus.IN_USE:
+                    device.status = DeviceStatus.AVAILABLE
+                    device.assigned_to = None
+        except Exception as e:
+            print(f"Failed to release equipment: {e}")
     
     db.commit()
     db.refresh(booking)

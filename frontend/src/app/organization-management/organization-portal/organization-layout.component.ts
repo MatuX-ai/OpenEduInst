@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 import { environment } from '../../../environments/environment';
@@ -19,6 +20,9 @@ import { mockOrganizations } from './mock-dashboard-data';
           <button mat-icon-button (click)="goBack()" matTooltip="返回机构列表">
             <mat-icon>arrow_back</mat-icon>
           </button>
+          <button mat-icon-button (click)="toggleSidebar()" matTooltip="切换侧边栏">
+            <mat-icon>{{ sidebarOpened ? 'menu_open' : 'menu' }}</mat-icon>
+          </button>
           <span class="page-title">{{ organizationName || '机构管理' }}</span>
         </div>
         <div class="header-right">
@@ -29,15 +33,23 @@ import { mockOrganizations } from './mock-dashboard-data';
       </header>
 
       <!-- 主体内容区（侧边栏 + 主内容） -->
-      <div class="layout-body">
+      <mat-sidenav-container class="layout-body">
         <!-- 侧边栏导航 -->
-        <app-organization-side-nav class="side-nav"></app-organization-side-nav>
+        <mat-sidenav #sidenav 
+                     mode="side" 
+                     [opened]="sidebarOpened"
+                     [style.width.px]="240"
+                     class="side-nav">
+          <app-organization-side-nav></app-organization-side-nav>
+        </mat-sidenav>
 
         <!-- 主内容区域 -->
-        <div class="layout-content">
-          <router-outlet></router-outlet>
-        </div>
-      </div>
+        <mat-sidenav-content class="layout-content-wrapper">
+          <div class="layout-content">
+            <router-outlet></router-outlet>
+          </div>
+        </mat-sidenav-content>
+      </mat-sidenav-container>
     </div>
   `,
   styles: [
@@ -84,18 +96,25 @@ import { mockOrganizations } from './mock-dashboard-data';
 
       /* 主体内容区 */
       .layout-body {
-        display: flex;
         flex: 1;
         overflow: hidden;
       }
 
+      ::ng-deep .mat-drawer-container {
+        background-color: tokens.$color-neutral-100;
+      }
+
+      ::ng-deep .mat-drawer {
+        background-color: #0F172A;
+      }
+
       .side-nav {
-        width: 280px;
-        flex-shrink: 0;
-        background-color: white;
-        box-shadow: tokens.$shadow-sm;
-        overflow-y: auto;
-        height: calc(100vh - 64px);
+        border-right: none !important;
+      }
+
+      .layout-content-wrapper {
+        display: flex;
+        flex-direction: column;
       }
 
       .layout-content {
@@ -111,11 +130,13 @@ import { mockOrganizations } from './mock-dashboard-data';
     MatIconModule,
     MatButtonModule,
     MatTooltipModule,
+    MatSidenavModule,
     OrganizationSideNavComponent,
   ],
 })
 export class OrganizationLayoutComponent implements OnInit {
   organizationName: string = '机构管理';
+  sidebarOpened: boolean = true;
 
   constructor(
     private router: Router,
@@ -161,5 +182,9 @@ export class OrganizationLayoutComponent implements OnInit {
 
   refreshPage(): void {
     window.location.reload();
+  }
+
+  toggleSidebar(): void {
+    this.sidebarOpened = !this.sidebarOpened;
   }
 }

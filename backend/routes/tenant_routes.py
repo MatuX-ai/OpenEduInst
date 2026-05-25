@@ -16,34 +16,80 @@ router = APIRouter(
     tags=["tenant"]
 )
 
-# 定义基础菜单结构
+# 定义基础菜单结构 (按业务场景分组)
 BASE_MENU = [
-    {"id": "dashboard", "title": "仪表盘", "icon": "dashboard", "path": "dashboard"},
-    {"id": "classrooms", "title": "教室管理", "icon": "class", "path": "classrooms"},
-    {"id": "teachers", "title": "教师管理", "icon": "person", "path": "teachers"},
-    {"id": "students", "title": "学员管理", "icon": "school", "path": "students"},
-    {"id": "roles", "title": "角色权限", "icon": "admin_panel_settings", "path": "roles"},
-    {"id": "analytics", "title": "数据看板", "icon": "insights", "path": "analytics"}
+    {
+        "id": "overview",
+        "title": "经营概览",
+        "icon": "dashboard",
+        "children": [
+            {"id": "dashboard", "title": "经营仪表盘", "icon": "space_dashboard", "path": "dashboard"}
+        ]
+    },
+    {
+        "id": "academic",
+        "title": "教务中心",
+        "icon": "school",
+        "children": [
+            {"id": "students", "title": "学员管理", "icon": "people", "path": "students"},
+            {"id": "teachers", "title": "教师管理", "icon": "person", "path": "teachers"},
+            {"id": "schedule", "title": "排课管理", "icon": "calendar_month", "path": "schedule"}
+        ]
+    },
+    {
+        "id": "marketing",
+        "title": "招生与营销",
+        "icon": "campaign",
+        "children": [
+            {"id": "marketing-center", "title": "营销中心", "icon": "trending_up", "path": "marketing"},
+            {"id": "parent-portal", "title": "家长中心", "icon": "family_restroom", "path": "parent-portal"},
+            {"id": "resources", "title": "教学资源", "icon": "library_books", "path": "resources"}
+        ]
+    },
+    {
+        "id": "stem-lab",
+        "title": "STEM 实验室",
+        "icon": "science",
+        "children": [
+            {"id": "projects", "title": "项目管理", "icon": "account_tree", "path": "projects"},
+            {"id": "devices", "title": "设备与空间", "icon": "devices", "path": "devices"},
+            {"id": "competitions", "title": "竞赛认证", "icon": "emoji_events", "path": "competitions"}
+        ]
+    },
+    {
+        "id": "finance",
+        "title": "财务与资产",
+        "icon": "account_balance_wallet",
+        "children": [
+            {"id": "finance-dashboard", "title": "财务管理", "icon": "payments", "path": "finance"},
+            {"id": "licenses", "title": "许可证/Token", "icon": "vpn_key", "path": "licenses"},
+            {"id": "multi-campus", "title": "多校区管理", "icon": "business", "path": "multi-campus"}
+        ]
+    },
+    {
+        "id": "system",
+        "title": "系统设置",
+        "icon": "settings",
+        "children": [
+            {"id": "users", "title": "团队与权限", "icon": "group", "path": "users"},
+            {"id": "notifications", "title": "消息中心", "icon": "notifications", "path": "notifications"},
+            {"id": "settings", "title": "基础配置", "icon": "tune", "path": "settings"}
+        ]
+    }
 ]
 
+# 针对不同组织类型的补充菜单项（已整合进 BASE_MENU，此处保留作为扩展点）
 ORG_SPECIFIC_MENU: Dict[OrganizationType, List[Dict[str, Any]]] = {
-    OrganizationType.TRAINING: [
-        {"id": "finance", "title": "财务管理", "icon": "account_balance_wallet", "path": "finance"},
-        {"id": "wechat-cs", "title": "微信客服", "icon": "wechat", "path": "wechat-cs"},
-        {"id": "schedule", "title": "排课管理", "icon": "event", "path": "schedule"}
-    ],
+    OrganizationType.TRAINING: [],
     OrganizationType.K12: [
         {"id": "home-school", "title": "家校互动", "icon": "message", "path": "home-school"},
-        {"id": "schedule", "title": "课表查询", "icon": "event_note", "path": "schedule"}
+        {"id": "clubs", "title": "社团管理", "icon": "groups", "path": "clubs"}
     ],
     OrganizationType.VOCATIONAL: [
-        {"id": "finance", "title": "财务管理", "icon": "account_balance_wallet", "path": "finance"},
-        {"id": "training", "title": "实训管理", "icon": "build", "path": "training"},
         {"id": "internship", "title": "实习跟踪", "icon": "work", "path": "internship"}
     ],
     OrganizationType.BUREAU: [
-        {"id": "district-stats", "title": "辖区统计", "icon": "bar_chart", "path": "district-stats"},
-        {"id": "security", "title": "安全预警", "icon": "security", "path": "security"}
+        {"id": "district-stats", "title": "辖区统计", "icon": "bar_chart", "path": "district-stats"}
     ]
 }
 

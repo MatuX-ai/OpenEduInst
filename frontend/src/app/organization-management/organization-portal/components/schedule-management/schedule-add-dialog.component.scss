@@ -1,4 +1,4 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .dialog-container {
   min-width: 600px;
@@ -10,41 +10,41 @@
 }
 
 h2[mat-dialog-title] {
-  margin: 0 0 tokens.$spacing-md 0;
-  font-size: tokens.$font-size-xl;
+  margin: 0 0 $spacing-md 0;
+  font-size: $font-size-xl;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
+  color: $color-neutral-900;
 }
 
 mat-progress-bar {
-  margin-top: -(tokens.$spacing-md);
-  margin-bottom: tokens.$spacing-md;
+  margin-top: -($spacing-md);
+  margin-bottom: $spacing-md;
 }
 
 .full-width {
   width: 100%;
-  margin-bottom: tokens.$spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .required {
-  color: tokens.$color-error;
-  margin-left: tokens.$spacing-xs;
+  color: $color-error;
+  margin-left: $spacing-xs;
 }
 
 /* 步进器样�?*/
 mat-stepper {
   ::ng-deep {
     .mat-step-header {
-      padding: tokens.$spacing-md;
+      padding: $spacing-md;
 
       .mat-step-label {
-        font-size: tokens.$font-size-sm;
+        font-size: $font-size-sm;
         font-weight: 500;
       }
     }
 
     .mat-step-content {
-      padding: tokens.$spacing-md 0;
+      padding: $spacing-md 0;
     }
   }
 }
@@ -52,92 +52,92 @@ mat-stepper {
 .stepper-actions {
   display: flex;
   justify-content: space-between;
-  margin-top: tokens.$spacing-lg;
-  gap: tokens.$spacing-sm;
+  margin-top: $spacing-lg;
+  gap: $spacing-sm;
 }
 
 /* 时间范围�?*/
 .time-range-group {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-md;
-  margin-bottom: tokens.$spacing-md;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
 
   .time-field {
     flex: 1;
   }
 
   mat-icon {
-    color: tokens.$color-neutral-500;
-    margin-top: tokens.$spacing-lg;
+    color: $color-neutral-500;
+    margin-top: $spacing-lg;
   }
 }
 
 /* 重复设置区域 */
 .repeat-section {
-  margin-top: tokens.$spacing-lg;
-  padding: tokens.$spacing-md;
-  background-color: tokens.$color-neutral-100;
-  border-radius: tokens.$radius-md;
+  margin-top: $spacing-lg;
+  padding: $spacing-md;
+  background-color: $color-neutral-100;
+  border-radius: $radius-md;
 
   h4 {
-    font-size: tokens.$font-size-base;
+    font-size: $font-size-base;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-md 0;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-md 0;
   }
 }
 
 /* 学员选择区域 */
 .student-selection {
   .hint {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
+    margin-bottom: $spacing-md;
   }
 
   .student-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: tokens.$spacing-md;
+    gap: $spacing-md;
     max-height: 300px;
     overflow-y: auto;
-    padding: tokens.$spacing-xs;
+    padding: $spacing-xs;
 
     mat-checkbox {
-      padding: tokens.$spacing-xs;
-      border-radius: tokens.$radius-sm;
-      background-color: tokens.$color-neutral-50;
+      padding: $spacing-xs;
+      border-radius: $radius-sm;
+      background-color: $color-neutral-50;
 
       &:hover {
-        background-color: tokens.$color-neutral-200;
+        background-color: $color-neutral-200;
       }
     }
   }
 
   .empty-text {
     text-align: center;
-    color: tokens.$color-neutral-500;
-    padding: tokens.$spacing-3xl tokens.$spacing-lg;
+    color: $color-neutral-500;
+    padding: $spacing-3xl $spacing-lg;
   }
 }
 
 /* 确认信息区域 */
 .confirm-section {
   h4 {
-    font-size: tokens.$font-size-base;
+    font-size: $font-size-base;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-md 0;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-md 0;
   }
 
   .info-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: tokens.$spacing-md;
-    padding: tokens.$spacing-md;
-    background-color: tokens.$color-neutral-100;
-    border-radius: tokens.$radius-md;
+    gap: $spacing-md;
+    padding: $spacing-md;
+    background-color: $color-neutral-100;
+    border-radius: $radius-md;
 
     @media (max-width: 600px) {
       grid-template-columns: 1fr;
@@ -147,17 +147,17 @@ mat-stepper {
   .info-item {
     display: flex;
     flex-direction: column;
-    gap: tokens.$spacing-xs;
+    gap: $spacing-xs;
 
     .label {
-      font-size: tokens.$font-size-xs;
-      color: tokens.$color-neutral-600;
+      font-size: $font-size-xs;
+      color: $color-neutral-600;
       font-weight: 500;
     }
 
     .value {
-      font-size: tokens.$font-size-sm;
-      color: tokens.$color-neutral-900;
+      font-size: $font-size-sm;
+      color: $color-neutral-900;
       font-weight: 600;
     }
   }
@@ -168,35 +168,35 @@ mat-stepper {
 .conflict-success {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-md;
-  padding: tokens.$spacing-sm tokens.$spacing-md;
-  border-radius: tokens.$radius-md;
-  margin-top: tokens.$spacing-md;
+  gap: $spacing-md;
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-md;
+  margin-top: $spacing-md;
   font-weight: 500;
 
   &.conflict-warning {
-    background-color: tokens.$color-error-light;  // #ffebee
-    color: tokens.$color-error-dark;  // #c62828
+    background-color: $color-error-light;  // #ffebee
+    color: $color-error-dark;  // #c62828
 
     mat-icon {
-      color: tokens.$color-error-dark;  // #c62828
+      color: $color-error-dark;  // #c62828
     }
   }
 
   &.conflict-success {
-    background-color: tokens.$color-success-light;  // #e8f5e9
-    color: tokens.$color-success-dark;  // #2e7d32
+    background-color: $color-success-light;  // #e8f5e9
+    color: $color-success-dark;  // #2e7d32
 
     mat-icon {
-      color: tokens.$color-success-dark;  // #2e7d32
+      color: $color-success-dark;  // #2e7d32
     }
   }
 }
 
 /* 对话框底部操作栏 */
 [mat-dialog-actions] {
-  padding-top: tokens.$spacing-md;
-  gap: tokens.$spacing-sm;
+  padding-top: $spacing-md;
+  gap: $spacing-sm;
 }
 
 /* 滚动条美�?*/
@@ -205,15 +205,15 @@ mat-stepper {
 }
 
 .student-list::-webkit-scrollbar-track {
-  background: tokens.$color-neutral-200;
-  border-radius: tokens.$radius-sm;
+  background: $color-neutral-200;
+  border-radius: $radius-sm;
 }
 
 .student-list::-webkit-scrollbar-thumb {
-  background: tokens.$color-neutral-400;
-  border-radius: tokens.$radius-sm;
+  background: $color-neutral-400;
+  border-radius: $radius-sm;
 
   &:hover {
-    background: tokens.$color-neutral-500;
+    background: $color-neutral-500;
   }
 }

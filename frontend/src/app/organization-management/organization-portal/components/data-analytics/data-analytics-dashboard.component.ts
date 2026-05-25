@@ -38,30 +38,40 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
   selector: 'app-data-analytics-dashboard',
   template: `
     <div class="dashboard-container">
-      <!-- 顶部工具栏 -->
-      <div class="toolbar">
-        <h1><mat-icon>insights</mat-icon> 数据看板与 BI 分析</h1>
-        <div class="actions">
-          <mat-form-field appearance="outline" class="time-range-selector">
-            <mat-label>时间范围</mat-label>
-            <mat-select [(ngModel)]="selectedTimeRange">
-              <mat-option value="today">今日</mat-option>
-              <mat-option value="week">本周</mat-option>
-              <mat-option value="month" selected>本月</mat-option>
-              <mat-option value="quarter">本季度</mat-option>
-              <mat-option value="year">本年度</mat-option>
-            </mat-select>
-          </mat-form-field>
-          <button mat-stroked-button (click)="refreshData()">
-            <mat-icon>refresh</mat-icon>
-            刷新
-          </button>
-          <button mat-raised-button color="primary" (click)="exportReport()">
-            <mat-icon>download</mat-icon>
-            导出报表
-          </button>
+      <!-- 页面头部 -->
+      <header class="page-header">
+        <div class="header-content">
+          <div class="header-left">
+            <div class="title-section">
+              <h1>
+                <mat-icon class="title-icon">insights</mat-icon>
+                <span class="title-text">数据看板与 BI 分析</span>
+              </h1>
+              <p class="subtitle">实时监控机构经营数据，智能洞察业务趋势</p>
+            </div>
+          </div>
+          <div class="header-actions">
+            <mat-form-field appearance="outline" class="time-selector" subscriptSizing="dynamic">
+              <mat-label>时间范围</mat-label>
+              <mat-select [(ngModel)]="selectedTimeRange">
+                <mat-option value="today">今日</mat-option>
+                <mat-option value="week">本周</mat-option>
+                <mat-option value="month">本月</mat-option>
+                <mat-option value="quarter">本季度</mat-option>
+                <mat-option value="year">本年度</mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-stroked-button class="action-btn" (click)="refreshData()">
+              <mat-icon>refresh</mat-icon>
+              <span>刷新数据</span>
+            </button>
+            <button mat-flat-button color="primary" class="action-btn primary-btn" (click)="exportReport()">
+              <mat-icon>download</mat-icon>
+              <span>导出报表</span>
+            </button>
+          </div>
         </div>
-      </div>
+      </header>
 
       <!-- 加载状态 -->
       <div class="loading-container" *ngIf="loading">
@@ -71,151 +81,186 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       <!-- 主要内容 -->
       <div *ngIf="!loading" class="main-content">
-        <!-- 经营总览卡片 -->
-        <div class="overview-grid">
-          <mat-card class="overview-card revenue-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>account_balance_wallet</mat-icon>
-                本月收入
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="value">¥{{ overview?.monthlyRevenue | number: '1.0-0' }}</div>
-              <div class="trend positive">
-                <mat-icon>trending_up</mat-icon>
-                <span>+{{ overview?.monthlyGrowth }}%</span>
-                <span class="label">较上月</span>
+        <!-- KPI 核心指标卡片 -->
+        <section class="kpi-section">
+          <div class="section-header">
+            <h2 class="section-title">
+              <mat-icon>trending_up</mat-icon>
+              <span>核心经营指标</span>
+            </h2>
+            <span class="section-badge">实时更新</span>
+          </div>
+          <div class="overview-grid">
+            <mat-card class="kpi-card revenue-card">
+              <div class="kpi-icon-wrapper">
+                <mat-icon class="kpi-icon">account_balance_wallet</mat-icon>
               </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="overview-card students-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>school</mat-icon>
-                学员总数
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="value">{{ overview?.totalStudents | number }}</div>
-              <div class="sub-value">在读 {{ overview?.activeStudents | number }} 人</div>
-              <div class="trend positive">
-                <mat-icon>trending_up</mat-icon>
-                <span>+{{ studentStats?.newStudentsThisMonth }}</span>
-                <span class="label">本月新增</span>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="overview-card teachers-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>group</mat-icon>
-                教师总数
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="value">{{ overview?.totalTeachers | number }}</div>
-              <div class="sub-value">在职 {{ overview?.activeTeachers | number }} 人</div>
-              <div class="trend neutral">
-                <mat-icon>remove</mat-icon>
-                <span>平均评分 {{ teacherStats?.averageRating | number: '1.1' }}</span>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="overview-card courses-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>menu_book</mat-icon>
-                课程总数
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="value">{{ overview?.totalCourses | number }}</div>
-              <div class="sub-value">进行中 {{ overview?.runningCourses | number }} 门</div>
-              <div class="trend positive">
-                <mat-icon>trending_up</mat-icon>
-                <span>教室使用率 {{ overview?.classroomUtilization }}%</span>
-              </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
-
-        <!-- 预警信息 -->
-        <div class="warnings-section" *ngIf="warnings.length > 0">
-          <mat-card class="warnings-card">
-            <mat-card-header>
-              <mat-card-title>
-                <mat-icon>warning</mat-icon>
-                数据预警
-                <mat-chip [color]="'warn'" *ngIf="unreadWarnings > 0"
-                  >{{ unreadWarnings }}条未读</mat-chip
-                >
-              </mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="warning-list">
-                <div
-                  *ngFor="let warning of warnings; trackBy: trackByWarningFn"
-                  class="warning-item"
-                  [class.warning-high]="warning.level === 'high'"
-                  [class.warning-medium]="warning.level === 'medium'"
-                  [class.warning-low]="warning.level === 'low'"
-                >
-                  <mat-icon class="warning-icon">{{ getWarningIcon(warning.level) }}</mat-icon>
-                  <div class="warning-content">
-                    <div class="warning-title">{{ warning.title }}</div>
-                    <div class="warning-message">{{ warning.message }}</div>
-                    <div class="warning-meta">
-                      <span>{{ warning.metric }}: {{ warning.currentValue | number }}</span>
-                      <span class="threshold">阈值：{{ warning.thresholdValue | number }}</span>
-                    </div>
-                  </div>
-                  <button mat-icon-button (click)="dismissWarning(warning.id)">
-                    <mat-icon>close</mat-icon>
-                  </button>
+              <div class="kpi-content">
+                <div class="kpi-label">本月收入</div>
+                <div class="kpi-value">¥{{ overview?.monthlyRevenue | number: '1.0-0' }}</div>
+                <div class="kpi-trend positive">
+                  <mat-icon>trending_up</mat-icon>
+                  <span class="trend-value">+{{ overview?.monthlyGrowth }}%</span>
+                  <span class="trend-label">较上月</span>
                 </div>
               </div>
-            </mat-card-content>
-          </mat-card>
-        </div>
+            </mat-card>
+
+            <mat-card class="kpi-card students-card">
+              <div class="kpi-icon-wrapper">
+                <mat-icon class="kpi-icon">school</mat-icon>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">学员总数</div>
+                <div class="kpi-value">{{ overview?.totalStudents | number }}</div>
+                <div class="kpi-meta">
+                  <span class="meta-item">在读 {{ overview?.activeStudents | number }} 人</span>
+                </div>
+                <div class="kpi-trend positive">
+                  <mat-icon>person_add</mat-icon>
+                  <span class="trend-value">+{{ studentStats?.newStudentsThisMonth }}</span>
+                  <span class="trend-label">本月新增</span>
+                </div>
+              </div>
+            </mat-card>
+
+            <mat-card class="kpi-card teachers-card">
+              <div class="kpi-icon-wrapper">
+                <mat-icon class="kpi-icon">group</mat-icon>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">教师团队</div>
+                <div class="kpi-value">{{ overview?.totalTeachers | number }}</div>
+                <div class="kpi-meta">
+                  <span class="meta-item">在职 {{ overview?.activeTeachers | number }} 人</span>
+                </div>
+                <div class="kpi-trend neutral">
+                  <mat-icon>star</mat-icon>
+                  <span class="trend-value">{{ teacherStats?.averageRating | number: '1.1' }}</span>
+                  <span class="trend-label">平均评分</span>
+                </div>
+              </div>
+            </mat-card>
+
+            <mat-card class="kpi-card courses-card">
+              <div class="kpi-icon-wrapper">
+                <mat-icon class="kpi-icon">menu_book</mat-icon>
+              </div>
+              <div class="kpi-content">
+                <div class="kpi-label">课程体系</div>
+                <div class="kpi-value">{{ overview?.totalCourses | number }}</div>
+                <div class="kpi-meta">
+                  <span class="meta-item">进行中 {{ overview?.runningCourses | number }} 门</span>
+                </div>
+                <div class="kpi-trend positive">
+                  <mat-icon>check_circle</mat-icon>
+                  <span class="trend-value">{{ overview?.classroomUtilization }}%</span>
+                  <span class="trend-label">教室使用率</span>
+                </div>
+              </div>
+            </mat-card>
+          </div>
+        </section>
+
+        <!-- 智能预警中心 -->
+        <section class="alerts-section" *ngIf="warnings.length > 0">
+          <div class="section-header">
+            <h2 class="section-title">
+              <mat-icon>notifications_active</mat-icon>
+              <span>智能预警中心</span>
+            </h2>
+            <mat-chip-set class="alert-badge" *ngIf="unreadWarnings > 0">
+              <mat-chip color="warn" highlighted>
+                <mat-icon>warning</mat-icon>
+                {{ unreadWarnings }}条未读
+              </mat-chip>
+            </mat-chip-set>
+          </div>
+          <div class="alerts-grid">
+            <div
+              *ngFor="let warning of warnings; trackBy: trackByWarningFn"
+              class="alert-card"
+              [class.alert-critical]="warning.level === 'critical'"
+              [class.alert-high]="warning.level === 'high'"
+              [class.alert-medium]="warning.level === 'medium'"
+              [class.alert-low]="warning.level === 'low'"
+            >
+              <div class="alert-header">
+                <div class="alert-icon-wrapper">
+                  <mat-icon class="alert-icon">{{ getWarningIcon(warning.level) }}</mat-icon>
+                </div>
+                <div class="alert-info">
+                  <h3 class="alert-title">{{ warning.title }}</h3>
+                  <p class="alert-message">{{ warning.message }}</p>
+                </div>
+                <button mat-icon-button class="dismiss-btn" (click)="dismissWarning(warning.id)" matTooltip="忽略此预警">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              <div class="alert-footer">
+                <div class="alert-metric">
+                  <span class="metric-label">当前值</span>
+                  <span class="metric-value">{{ warning.metric }}: {{ warning.currentValue | number }}</span>
+                </div>
+                <div class="alert-threshold">
+                  <span class="threshold-label">阈值</span>
+                  <span class="threshold-value">{{ warning.thresholdValue | number }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <!-- 功能标签页 -->
-        <mat-tab-group color="primary" dynamicHeight>
-          <!-- 学员分析 -->
-          <mat-tab label="学员分析">
-            <div class="tab-content">
-              <div class="charts-grid">
-                <mat-card class="chart-card">
-                  <mat-card-header>
-                    <mat-card-title>年级分布</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <div class="stat-list">
-                      <div
-                        *ngFor="
-                          let item of studentStats?.gradeDistribution;
-                          trackBy: trackByGradeFn
-                        "
-                        class="stat-item"
-                      >
-                        <div class="stat-label">{{ item.grade }}</div>
-                        <mat-progress-bar
-                          mode="determinate"
-                          [value]="item.percentage"
-                          color="primary"
-                        ></mat-progress-bar>
-                        <div class="stat-value">{{ item.count }}人 ({{ item.percentage }}%)</div>
+        <section class="analytics-section">
+          <mat-tab-group color="primary" dynamicHeight class="modern-tabs">
+            <!-- 学员分析 -->
+            <mat-tab>
+              <ng-template mat-tab-label>
+                <div class="tab-label">
+                  <mat-icon>people</mat-icon>
+                  <span>学员分析</span>
+                </div>
+              </ng-template>
+              <div class="tab-content">
+                <div class="charts-grid">
+                  <mat-card class="chart-card">
+                    <mat-card-header>
+                      <mat-card-title>
+                        <mat-icon>school</mat-icon>
+                        <span>年级分布</span>
+                      </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <div class="stat-list">
+                        <div
+                          *ngFor="
+                            let item of studentStats?.gradeDistribution;
+                            trackBy: trackByGradeFn
+                          "
+                          class="stat-item"
+                        >
+                          <div class="stat-header">
+                            <span class="stat-label">{{ item.grade }}</span>
+                            <span class="stat-percentage">{{ item.percentage }}%</span>
+                          </div>
+                          <mat-progress-bar
+                            mode="determinate"
+                            [value]="item.percentage"
+                            color="primary"
+                          ></mat-progress-bar>
+                          <div class="stat-count">{{ item.count }}人</div>
+                        </div>
                       </div>
-                    </div>
-                  </mat-card-content>
-                </mat-card>
+                    </mat-card-content>
+                  </mat-card>
 
                 <mat-card class="chart-card">
                   <mat-card-header>
-                    <mat-card-title>学员状态</mat-card-title>
+                    <mat-card-title>
+                      <mat-icon>analytics</mat-icon>
+                      <span>学员状态</span>
+                    </mat-card-title>
                   </mat-card-header>
                   <mat-card-content>
                     <div class="status-circles">
@@ -234,21 +279,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
                         <div class="circle-count">{{ item.count }}人</div>
                       </div>
                     </div>
-                  </mat-card-content>
-                </mat-card>
-
-                <mat-card class="chart-card full-width">
-                  <mat-card-header>
-                    <mat-card-title>关键指标</mat-card-title>
-                  </mat-card-header>
-                  <mat-card-content>
-                    <div class="metrics-grid">
-                      <div class="metric-item">
-                        <div class="metric-label">本月新增学员</div>
-                        <div class="metric-value highlight">
-                          {{ studentStats?.newStudentsThisMonth | number }}
-                        </div>
-                      </div>
+                    <div class="metrics-grid" style="margin-top: 24px;">
                       <div class="metric-item">
                         <div class="metric-label">学员增长率</div>
                         <div class="metric-value positive">
@@ -298,7 +329,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
                         <mat-icon>{{
                           teacher.rankChange > 0 ? 'arrow_upward' : 'arrow_downward'
                         }}</mat-icon>
-                        {{ Math.abs(teacher.rankChange) }}
+                        {{ getAbsValue(teacher.rankChange) }}
                       </span>
                     </mat-card-title>
                   </mat-card-header>
@@ -372,7 +403,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
                         <mat-icon>{{
                           course.rankChange > 0 ? 'arrow_upward' : 'arrow_downward'
                         }}</mat-icon>
-                        {{ Math.abs(course.rankChange) }}
+                        {{ getAbsValue(course.rankChange) }}
                       </span>
                     </mat-card-title>
                   </mat-card-header>
@@ -480,792 +511,1119 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
             </div>
           </mat-tab>
         </mat-tab-group>
-      </div>
+      </section>
     </div>
   `,
   styles: [
     `
+      /* ============================================
+         数据看板 - 专业 UI/UX 设计系统
+         Design System: MatuX Analytics Dashboard
+         ============================================ */
+
+      /* 全局容器 */
       .dashboard-container {
-        height: 100%;
-        overflow-y: auto;
-        padding: 24px;
-        background-color: #f5f5f5;
+        min-height: 100%;
+        background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+        padding: 32px;
       }
 
-      .toolbar {
+      /* ============================================
+         页面头部区域
+         ============================================ */
+      .page-header {
+        margin-bottom: 32px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+        border: 1px solid #E2E8F0;
+        overflow: hidden;
+      }
+
+      .header-content {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
-        padding: 16px;
-        background-color: white;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-        h1 {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          font-size: 24px;
-          font-weight: 600;
-          color: #333;
-          margin: 0;
-          flex-shrink: 1;
-          min-width: 0;
-
-          mat-icon {
-            font-size: 32px;
-            width: 32px;
-            height: 32px;
-            color: #1976d2;
-            flex-shrink: 0;
-          }
-        }
-
-        .actions {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-          flex-shrink: 0;
-
-          .time-range-selector {
-            min-width: 150px;
-          }
-
-          button {
-            white-space: nowrap !important;
-            flex-shrink: 0;
-            min-width: auto;
-
-            .mat-mdc-button-persistent-ripple {
-              white-space: nowrap;
-            }
-
-            span {
-              white-space: nowrap;
-            }
-          }
-        }
-      }
-
-      .loading-container {
-        text-align: center;
-        padding: 100px 20px;
-
-        mat-spinner {
-          margin: 0 auto 24px;
-        }
-
-        p {
-          font-size: 16px;
-          color: #666;
-        }
-      }
-
-      .main-content {
-        display: flex;
-        flex-direction: column;
+        padding: 28px 32px;
         gap: 24px;
+      }
+
+      .header-left {
+        flex: 1;
+      }
+
+      .title-section h1 {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 8px 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #0F172A;
+        letter-spacing: -0.5px;
+      }
+
+      .title-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: #0066FF;
+      }
+
+      .subtitle {
+        margin: 0;
+        font-size: 14px;
+        color: #64748B;
+        font-weight: 400;
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+      }
+
+      .time-selector {
+        min-width: 140px;
+      }
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: 0;
+      }
+
+      .primary-btn {
+        background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+        box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
+      }
+
+      .primary-btn:hover {
+        box-shadow: 0 4px 12px rgba(0, 102, 255, 0.3);
+      }
+
+      /* ============================================
+         区块标题
+         ============================================ */
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: #0F172A;
+      }
+
+      .section-title mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+        color: #0066FF;
+      }
+
+      .section-badge {
+        padding: 4px 12px;
+        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
+      }
+
+      /* ============================================
+         KPI 核心指标卡片
+         ============================================ */
+      .kpi-section {
+        margin-bottom: 32px;
       }
 
       .overview-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+      }
+
+      .kpi-card {
+        position: relative;
+        background: white;
+        border-radius: 16px;
+        padding: 24px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+      }
+
+      .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--accent-color) 0%, var(--accent-light) 100%);
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+
+      .kpi-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      .kpi-card:hover::before {
+        opacity: 1;
+      }
+
+      .kpi-card.revenue-card {
+        --accent-color: #10B981;
+        --accent-light: #34D399;
+      }
+
+      .kpi-card.students-card {
+        --accent-color: #0066FF;
+        --accent-light: #3B82F6;
+      }
+
+      .kpi-card.teachers-card {
+        --accent-color: #F59E0B;
+        --accent-light: #FBBF24;
+      }
+
+      .kpi-card.courses-card {
+        --accent-color: #8B5CF6;
+        --accent-light: #A78BFA;
+      }
+
+      .kpi-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+
+      .kpi-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: white;
+      }
+
+      .kpi-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: #64748B;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .kpi-value {
+        font-size: 32px;
+        font-weight: 700;
+        color: #0F172A;
+        line-height: 1;
+        margin-bottom: 12px;
+        letter-spacing: -1px;
+      }
+
+      .kpi-meta {
+        margin-bottom: 12px;
+      }
+
+      .meta-item {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      .kpi-trend {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 8px 12px;
+        border-radius: 8px;
+        background: #F8FAFC;
+      }
+
+      .kpi-trend mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      .kpi-trend.positive {
+        color: #10B981;
+        background: #ECFDF5;
+      }
+
+      .kpi-trend.negative {
+        color: #EF4444;
+        background: #FEF2F2;
+      }
+
+      .kpi-trend.neutral {
+        color: #64748B;
+        background: #F1F5F9;
+      }
+
+      .trend-value {
+        font-weight: 700;
+      }
+
+      .trend-label {
+        font-weight: 400;
+        color: #94A3B8;
+      }
+
+      /* ============================================
+         智能预警中心
+         ============================================ */
+      .alerts-section {
+        margin-bottom: 32px;
+      }
+
+      .alert-badge {
+        margin-left: auto;
+      }
+
+      .alerts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
         gap: 16px;
       }
 
-      .overview-card {
+      .alert-card {
+        background: white;
         border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        transition: transform 0.2s;
-
-        &:hover {
-          transform: translateY(-4px);
-        }
-
-        &.revenue-card {
-          border-left: 4px solid #4caf50;
-        }
-
-        &.students-card {
-          border-left: 4px solid #2196f3;
-        }
-
-        &.teachers-card {
-          border-left: 4px solid #ff9800;
-        }
-
-        &.courses-card {
-          border-left: 4px solid #9c27b0;
-        }
-
-        mat-card-header {
-          padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
-
-          mat-card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 15px;
-            font-weight: 600;
-
-            mat-icon {
-              font-size: 22px;
-              width: 22px;
-              height: 22px;
-            }
-          }
-        }
-
-        mat-card-content {
-          padding: 16px !important;
-
-          .value {
-            font-size: 32px;
-            font-weight: bold;
-            color: #333;
-            line-height: 1.2;
-            margin-bottom: 8px;
-          }
-
-          .sub-value {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-          }
-
-          .trend {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 14px;
-
-            mat-icon {
-              font-size: 18px;
-              width: 18px;
-              height: 18px;
-            }
-
-            &.positive {
-              color: #4caf50;
-            }
-
-            &.negative {
-              color: #f44336;
-            }
-
-            &.neutral {
-              color: #999;
-            }
-
-            .label {
-              font-size: 12px;
-              color: #999;
-              margin-left: 4px;
-            }
-          }
-        }
+        padding: 20px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s;
       }
 
-      .warnings-section {
-        .warnings-card {
-          border-left: 4px solid #ff9800;
+      .alert-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+      }
 
-          mat-card-header {
-            mat-card-title {
-              display: flex;
-              align-items: center;
-              gap: 12px;
-            }
-          }
-        }
+      .alert-card.alert-critical {
+        border-left: 4px solid #DC2626;
+        background: linear-gradient(to right, #FEF2F2 0%, white 100%);
+      }
 
-        .warning-list {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
+      .alert-card.alert-high {
+        border-left: 4px solid #EF4444;
+        background: linear-gradient(to right, #FEF2F2 0%, white 100%);
+      }
 
-        .warning-item {
-          display: flex;
-          gap: 16px;
-          padding: 12px;
-          border-radius: 8px;
-          background-color: #fff;
-          border: 1px solid #e0e0e0;
+      .alert-card.alert-medium {
+        border-left: 4px solid #F59E0B;
+        background: linear-gradient(to right, #FFFBEB 0%, white 100%);
+      }
 
-          &.warning-high {
-            background-color: #ffebee;
-            border-color: #f44336;
-          }
+      .alert-card.alert-low {
+        border-left: 4px solid #3B82F6;
+        background: linear-gradient(to right, #EFF6FF 0%, white 100%);
+      }
 
-          &.warning-medium {
-            background-color: #fff3e0;
-            border-color: #ff9800;
-          }
+      .alert-header {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
 
-          &.warning-low {
-            background-color: #e3f2fd;
-            border-color: #2196f3;
-          }
+      .alert-icon-wrapper {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
 
-          .warning-icon {
-            font-size: 32px;
-            width: 32px;
-            height: 32px;
-            flex-shrink: 0;
-          }
+      .alert-critical .alert-icon-wrapper,
+      .alert-high .alert-icon-wrapper {
+        background: #FEE2E2;
+      }
 
-          .warning-content {
-            flex: 1;
+      .alert-medium .alert-icon-wrapper {
+        background: #FEF3C7;
+      }
 
-            .warning-title {
-              font-size: 15px;
-              font-weight: 600;
-              color: #333;
-              margin-bottom: 4px;
-            }
+      .alert-low .alert-icon-wrapper {
+        background: #DBEAFE;
+      }
 
-            .warning-message {
-              font-size: 14px;
-              color: #666;
-              margin-bottom: 8px;
-            }
+      .alert-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
 
-            .warning-meta {
-              display: flex;
-              gap: 16px;
-              font-size: 13px;
-              color: #999;
+      .alert-critical .alert-icon,
+      .alert-high .alert-icon {
+        color: #DC2626;
+      }
 
-              .threshold {
-                color: #f44336;
-              }
-            }
-          }
-        }
+      .alert-medium .alert-icon {
+        color: #D97706;
+      }
+
+      .alert-low .alert-icon {
+        color: #2563EB;
+      }
+
+      .alert-info {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .alert-title {
+        margin: 0 0 6px 0;
+        font-size: 15px;
+        font-weight: 600;
+        color: #0F172A;
+        line-height: 1.4;
+      }
+
+      .alert-message {
+        margin: 0;
+        font-size: 13px;
+        color: #64748B;
+        line-height: 1.5;
+      }
+
+      .dismiss-btn {
+        flex-shrink: 0;
+      }
+
+      .alert-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 16px;
+        border-top: 1px solid #F1F5F9;
+        gap: 16px;
+      }
+
+      .alert-metric,
+      .alert-threshold {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .metric-label,
+      .threshold-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: #94A3B8;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .metric-value,
+      .threshold-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0F172A;
+      }
+
+      .threshold-value {
+        color: #EF4444;
+      }
+
+      /* ============================================
+         标签页区域
+         ============================================ */
+      .analytics-section {
+        margin-top: 32px;
+      }
+
+      ::ng-deep .modern-tabs {
+        background: transparent;
+      }
+
+      ::ng-deep .modern-tabs .mat-mdc-tab-header {
+        background: white;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid #E2E8F0;
+        border-bottom: none;
+        padding: 0 8px;
+      }
+
+      ::ng-deep .modern-tabs .mat-mdc-tab {
+        min-width: 140px;
+        padding: 0 20px;
+        height: 56px;
+      }
+
+      .tab-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .tab-label mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      ::ng-deep .modern-tabs .mat-mdc-tab-body-wrapper {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 0 0 12px 12px;
+        border-top: none;
       }
 
       .tab-content {
-        padding: 24px 0;
+        padding: 24px;
       }
 
+      /* ============================================
+         图表卡片
+         ============================================ */
       .charts-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+      }
 
-        .full-width {
-          grid-column: 1 / -1;
-        }
+      .chart-card.full-width {
+        grid-column: 1 / -1;
       }
 
       .chart-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-        mat-card-header {
-          padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
-
-          mat-card-title {
-            font-size: 16px;
-            font-weight: 600;
-          }
-        }
-
-        mat-card-content {
-          padding: 16px !important;
-        }
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s;
       }
 
+      .chart-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .chart-card mat-card-header {
+        padding: 20px 24px !important;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .chart-card mat-card-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: 600;
+        color: #0F172A;
+      }
+
+      .chart-card mat-card-title mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+        color: #0066FF;
+      }
+
+      .chart-card mat-card-content {
+        padding: 24px !important;
+      }
+
+      /* ============================================
+         统计列表
+         ============================================ */
       .stat-list {
         display: flex;
         flex-direction: column;
-        gap: 16px;
-
-        .stat-item {
-          .stat-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-          }
-
-          mat-progress-bar {
-            margin-bottom: 4px;
-          }
-
-          .stat-value {
-            font-size: 13px;
-            color: #333;
-          }
-        }
+        gap: 20px;
       }
 
+      .stat-item {
+        padding: 16px;
+        background: #F8FAFC;
+        border-radius: 10px;
+        transition: all 0.2s;
+      }
+
+      .stat-item:hover {
+        background: #F1F5F9;
+      }
+
+      .stat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+
+      .stat-label {
+        font-size: 14px;
+        font-weight: 600;
+        color: #0F172A;
+      }
+
+      .stat-percentage {
+        font-size: 14px;
+        font-weight: 700;
+        color: #0066FF;
+      }
+
+      ::ng-deep .stat-item mat-progress-bar {
+        margin-bottom: 8px;
+        border-radius: 4px;
+      }
+
+      .stat-count {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      /* ============================================
+         状态圆形图
+         ============================================ */
       .status-circles {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
         gap: 16px;
-
-        .status-circle {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          padding: 20px;
-          border: 3px solid;
-          border-radius: 12px;
-          text-align: center;
-
-          .circle-value {
-            font-size: 28px;
-            font-weight: bold;
-            margin-bottom: 8px;
-          }
-
-          .circle-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 4px;
-          }
-
-          .circle-count {
-            font-size: 13px;
-            color: #999;
-          }
-        }
       }
 
+      .status-circle {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 24px 16px;
+        border: 3px solid;
+        border-radius: 16px;
+        text-align: center;
+        transition: all 0.2s;
+      }
+
+      .status-circle:hover {
+        transform: scale(1.05);
+      }
+
+      .circle-value {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 8px;
+        line-height: 1;
+      }
+
+      .circle-label {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+        margin-bottom: 4px;
+      }
+
+      .circle-count {
+        font-size: 12px;
+        color: #94A3B8;
+        font-weight: 600;
+      }
+
+      /* ============================================
+         关键指标网格
+         ============================================ */
       .metrics-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 16px;
-
-        .metric-item {
-          padding: 16px;
-          background-color: #f5f5f5;
-          border-radius: 8px;
-          text-align: center;
-
-          .metric-label {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-          }
-
-          .metric-value {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-
-            &.highlight {
-              color: #2196f3;
-            }
-
-            &.positive {
-              color: #4caf50;
-            }
-          }
-        }
-      }
-
-      .ranking-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 16px;
       }
 
-      .ranking-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-        &.top-3 {
-          border: 2px solid;
-
-          &.gold {
-            border-color: #ffd700;
-            background-color: #fffde7;
-          }
-
-          &.silver {
-            border-color: #c0c0c0;
-            background-color: #f5f5f5;
-          }
-
-          &.bronze {
-            border-color: #cd7f32;
-            background-color: #fff3e0;
-          }
-        }
-
-        mat-card-header {
-          padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
-
-          mat-card-title {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-
-            .rank-badge {
-              display: inline-flex;
-              align-items: center;
-              justify-content: center;
-              width: 32px;
-              height: 32px;
-              border-radius: 50%;
-              font-weight: bold;
-              font-size: 14px;
-
-              &.gold {
-                background: linear-gradient(135deg, #ffd700, #ffed4e);
-                color: #333;
-              }
-
-              &.silver {
-                background: linear-gradient(135deg, #c0c0c0, #e8e8e8);
-                color: #333;
-              }
-
-              &.bronze {
-                background: linear-gradient(135deg, #cd7f32, #e8a87c);
-                color: #fff;
-              }
-            }
-
-            .rank-change {
-              display: flex;
-              align-items: center;
-              gap: 4px;
-              font-size: 13px;
-              font-weight: 600;
-
-              mat-icon {
-                font-size: 18px;
-                width: 18px;
-                height: 18px;
-              }
-
-              &.up {
-                color: #4caf50;
-              }
-
-              &.down {
-                color: #f44336;
-              }
-            }
-          }
-        }
-
-        mat-card-content {
-          padding: 16px !important;
-
-          .teacher-info {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            margin-bottom: 16px;
-
-            .teacher-avatar {
-              mat-icon {
-                font-size: 48px;
-                width: 48px;
-                height: 48px;
-                color: #999;
-              }
-            }
-
-            .teacher-details {
-              .teacher-name {
-                font-size: 16px;
-                font-weight: 600;
-                color: #333;
-                margin-bottom: 4px;
-              }
-
-              .teacher-dept {
-                font-size: 14px;
-                color: #666;
-              }
-            }
-          }
-
-          .teacher-stats {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-
-            .stat-row {
-              display: flex;
-              justify-content: space-between;
-              padding: 8px;
-              background-color: #f5f5f5;
-              border-radius: 4px;
-              font-size: 14px;
-
-              .stat-label {
-                color: #666;
-              }
-
-              .stat-value {
-                font-weight: 600;
-                color: #333;
-
-                &.rating {
-                  color: #ff9800;
-                }
-              }
-
-              &.highlight {
-                background-color: #e8f5e9;
-
-                .stat-value {
-                  color: #2e7d32;
-                }
-              }
-            }
-          }
-        }
+      .metric-item {
+        padding: 20px;
+        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #E2E8F0;
+        transition: all 0.2s;
       }
 
+      .metric-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      }
+
+      .metric-label {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+        margin-bottom: 10px;
+      }
+
+      .metric-value {
+        font-size: 24px;
+        font-weight: 700;
+        color: #0F172A;
+        letter-spacing: -0.5px;
+      }
+
+      .metric-value.highlight {
+        color: #0066FF;
+      }
+
+      .metric-value.positive {
+        color: #10B981;
+      }
+
+      /* ============================================
+         排名卡片
+         ============================================ */
+      .ranking-list,
       .course-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 16px;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 20px;
       }
 
+      .ranking-card,
       .course-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-
-        &.top-3 {
-          border: 2px solid;
-
-          &.gold {
-            border-color: #ffd700;
-            background-color: #fffde7;
-          }
-
-          &.silver {
-            border-color: #c0c0c0;
-            background-color: #f5f5f5;
-          }
-
-          &.bronze {
-            border-color: #cd7f32;
-            background-color: #fff3e0;
-          }
-        }
-
-        mat-card-header {
-          padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
-
-          mat-card-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-        }
-
-        mat-card-content {
-          padding: 16px !important;
-
-          .course-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-
-            .course-name {
-              font-size: 16px;
-              font-weight: 600;
-              color: #333;
-              flex: 1;
-            }
-          }
-
-          .course-stats {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-
-            .stat-item {
-              display: flex;
-              align-items: center;
-              gap: 8px;
-              padding: 8px;
-              background-color: #f5f5f5;
-              border-radius: 4px;
-              font-size: 14px;
-
-              mat-icon {
-                font-size: 18px;
-                width: 18px;
-                height: 18px;
-                color: #999;
-              }
-
-              &.growth {
-                color: #4caf50;
-
-                mat-icon {
-                  color: #4caf50;
-                }
-              }
-
-              &.revenue {
-                color: #2196f3;
-
-                mat-icon {
-                  color: #2196f3;
-                }
-              }
-            }
-          }
-        }
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        transition: all 0.2s;
       }
 
+      .ranking-card:hover,
+      .course-card:hover {
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+      }
+
+      .ranking-card.top-3,
+      .course-card.top-3 {
+        border-width: 2px;
+      }
+
+      .ranking-card.top-3.gold,
+      .course-card.top-3.gold {
+        border-color: #FCD34D;
+        background: linear-gradient(135deg, #FFFBEB 0%, white 100%);
+      }
+
+      .ranking-card.top-3.silver,
+      .course-card.top-3.silver {
+        border-color: #D1D5DB;
+        background: linear-gradient(135deg, #F9FAFB 0%, white 100%);
+      }
+
+      .ranking-card.top-3.bronze,
+      .course-card.top-3.bronze {
+        border-color: #FDBA74;
+        background: linear-gradient(135deg, #FFF7ED 0%, white 100%);
+      }
+
+      .ranking-card mat-card-header,
+      .course-card mat-card-header {
+        padding: 20px 24px !important;
+        border-bottom: 1px solid #F1F5F9;
+      }
+
+      .ranking-card mat-card-title,
+      .course-card mat-card-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .rank-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        font-weight: 700;
+        font-size: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      .rank-badge.gold {
+        background: linear-gradient(135deg, #FCD34D 0%, #FDE68A 100%);
+        color: #78350F;
+      }
+
+      .rank-badge.silver {
+        background: linear-gradient(135deg, #D1D5DB 0%, #E5E7EB 100%);
+        color: #374151;
+      }
+
+      .rank-badge.bronze {
+        background: linear-gradient(135deg, #FDBA74 0%, #FED7AA 100%);
+        color: #9A3412;
+      }
+
+      .rank-change {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .rank-change mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      .rank-change.up {
+        color: #10B981;
+      }
+
+      .rank-change.down {
+        color: #EF4444;
+      }
+
+      .ranking-card mat-card-content,
+      .course-card mat-card-content {
+        padding: 24px !important;
+      }
+
+      /* ============================================
+         教师信息
+         ============================================ */
+      .teacher-info {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .teacher-avatar mat-icon {
+        font-size: 56px;
+        width: 56px;
+        height: 56px;
+        color: #CBD5E1;
+      }
+
+      .teacher-details .teacher-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0F172A;
+        margin-bottom: 4px;
+      }
+
+      .teacher-details .teacher-dept {
+        font-size: 13px;
+        color: #64748B;
+      }
+
+      .teacher-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #F8FAFC;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .stat-row:hover {
+        background: #F1F5F9;
+      }
+
+      .stat-row .stat-label {
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      .stat-row .stat-value {
+        font-weight: 600;
+        color: #0F172A;
+      }
+
+      .stat-row .stat-value.rating {
+        color: #F59E0B;
+      }
+
+      .stat-row.highlight {
+        background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+        border: 1px solid #A7F3D0;
+      }
+
+      .stat-row.highlight .stat-value {
+        color: #059669;
+      }
+
+      /* ============================================
+         课程卡片
+         ============================================ */
+      .course-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 12px;
+      }
+
+      .course-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0F172A;
+        flex: 1;
+      }
+
+      .course-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+
+      .course-stats .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        background: #F8FAFC;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        color: #64748B;
+      }
+
+      .course-stats .stat-item mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        color: #94A3B8;
+      }
+
+      .course-stats .stat-item.growth {
+        color: #10B981;
+        background: #ECFDF5;
+      }
+
+      .course-stats .stat-item.growth mat-icon {
+        color: #10B981;
+      }
+
+      .course-stats .stat-item.revenue {
+        color: #0066FF;
+        background: #EFF6FF;
+      }
+
+      .course-stats .stat-item.revenue mat-icon {
+        color: #0066FF;
+      }
+
+      /* ============================================
+         财务概览
+         ============================================ */
       .finance-overview {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-        gap: 16px;
+        gap: 20px;
       }
 
       .finance-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
 
-        mat-card-header {
-          padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
+      .finance-card mat-card-header {
+        padding: 20px 24px !important;
+        border-bottom: 1px solid #F1F5F9;
+      }
 
-          mat-card-title {
-            font-size: 16px;
-            font-weight: 600;
-          }
-        }
+      .finance-card mat-card-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: #0F172A;
+      }
 
-        mat-card-content {
-          padding: 16px !important;
+      .finance-card mat-card-content {
+        padding: 24px !important;
+      }
 
-          .finance-metrics {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+      .finance-metrics {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
 
-            .finance-item {
-              text-align: center;
+      .finance-item {
+        text-align: center;
+        padding: 16px;
+        background: #F8FAFC;
+        border-radius: 10px;
+      }
 
-              .label {
-                font-size: 14px;
-                color: #666;
-                margin-bottom: 8px;
-              }
+      .finance-item .label {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+        margin-bottom: 8px;
+      }
 
-              .value {
-                font-size: 24px;
-                font-weight: bold;
+      .finance-item .value {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
 
-                &.revenue {
-                  color: #4caf50;
-                }
+      .finance-item .value.revenue {
+        color: #10B981;
+      }
 
-                &.expense {
-                  color: #ff9800;
-                }
+      .finance-item .value.expense {
+        color: #F59E0B;
+      }
 
-                &.profit {
-                  color: #2196f3;
-                }
+      .finance-item .value.profit {
+        color: #0066FF;
+      }
 
-                &.receivable {
-                  color: #f44336;
-                }
-              }
+      .finance-item .value.receivable {
+        color: #EF4444;
+      }
 
-              .rate {
-                font-size: 13px;
-                color: #999;
-                margin-top: 4px;
-              }
+      .finance-item .rate {
+        font-size: 13px;
+        color: #94A3B8;
+        margin-top: 6px;
+        font-weight: 500;
+      }
 
-              &.warning {
-                .value {
-                  animation: pulse 2s infinite;
-                }
-              }
-            }
-
-            .divider {
-              height: 1px;
-              background-color: #e0e0e0;
-              margin: 8px 0;
-            }
-          }
-
-          .expense-categories {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-
-            .category-item {
-              .category-header {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 8px;
-
-                .category-name {
-                  font-size: 14px;
-                  color: #333;
-                  font-weight: 600;
-                }
-
-                .category-percentage {
-                  font-size: 14px;
-                  color: #666;
-                  font-weight: 600;
-                }
-              }
-
-              mat-progress-bar {
-                margin-bottom: 4px;
-              }
-
-              .category-amount {
-                font-size: 13px;
-                color: #999;
-              }
-            }
-          }
-        }
+      .finance-item.warning .value {
+        animation: pulse 2s infinite;
       }
 
       @keyframes pulse {
-        0%,
-        100% {
+        0%, 100% {
           opacity: 1;
         }
         50% {
-          opacity: 0.6;
+          opacity: 0.7;
         }
       }
 
-      /* 响应式调整 */
-      @media (max-width: 768px) {
-        .toolbar {
-          flex-direction: column;
-          gap: 16px;
-          align-items: flex-start;
+      .divider {
+        height: 1px;
+        background: #E2E8F0;
+        margin: 8px 0;
+      }
 
-          .actions {
-            flex-wrap: wrap;
-            width: 100%;
-          }
+      .expense-categories {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .category-item {
+        padding: 16px;
+        background: #F8FAFC;
+        border-radius: 10px;
+      }
+
+      .category-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .category-name {
+        font-size: 14px;
+        color: #0F172A;
+        font-weight: 600;
+      }
+
+      .category-percentage {
+        font-size: 14px;
+        color: #0066FF;
+        font-weight: 700;
+      }
+
+      ::ng-deep .category-item mat-progress-bar {
+        margin-bottom: 8px;
+        border-radius: 4px;
+      }
+
+      .category-amount {
+        font-size: 13px;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      /* ============================================
+         加载状态
+         ============================================ */
+      .loading-container {
+        text-align: center;
+        padding: 120px 20px;
+      }
+
+      .loading-container mat-spinner {
+        margin: 0 auto 24px;
+      }
+
+      .loading-container p {
+        font-size: 15px;
+        color: #64748B;
+        font-weight: 500;
+      }
+
+      /* ============================================
+         响应式设计
+         ============================================ */
+      @media (max-width: 1024px) {
+        .dashboard-container {
+          padding: 24px;
+        }
+
+        .header-content {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .header-actions {
+          width: 100%;
+          flex-wrap: wrap;
         }
 
         .overview-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .alerts-grid {
           grid-template-columns: 1fr;
         }
 
@@ -1280,6 +1638,36 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
         .finance-overview {
           grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .dashboard-container {
+          padding: 16px;
+        }
+
+        .header-content {
+          padding: 20px;
+        }
+
+        .title-section h1 {
+          font-size: 20px;
+        }
+
+        .overview-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .kpi-value {
+          font-size: 28px;
+        }
+
+        .metrics-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .status-circles {
+          grid-template-columns: repeat(2, 1fr);
         }
       }
     `,
@@ -1405,6 +1793,10 @@ export class DataAnalyticsDashboardComponent implements OnInit, OnDestroy {
     if (category.includes('租金')) return 'accent';
     if (category.includes('设备')) return 'warn';
     return 'primary';
+  }
+
+  getAbsValue(value: number): number {
+    return Math.abs(value);
   }
 
   trackByWarningFn(index: number, warning: DataWarning): number {

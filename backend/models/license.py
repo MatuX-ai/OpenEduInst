@@ -93,6 +93,39 @@ class Organization(Base):
     licenses = relationship(
         "License", back_populates="organization", cascade="all, delete-orphan"
     )
+    leads = relationship(
+        "Lead", back_populates="organization", cascade="all, delete-orphan"
+    )
+    teaching_resources = relationship(
+        "TeachingResource", back_populates="organization", cascade="all, delete-orphan"
+    )
+    competitions = relationship(
+        "Competition", back_populates="organization", cascade="all, delete-orphan"
+    )
+    certifications = relationship(
+        "Certification", back_populates="organization", cascade="all, delete-orphan"
+    )
+    notifications = relationship(
+        "Notification", back_populates="organization", cascade="all, delete-orphan"
+    )
+    campaigns = relationship(
+        "MarketingCampaign", back_populates="organization", cascade="all, delete-orphan"
+    )
+    social_accounts = relationship(
+        "SocialMediaAccount", back_populates="organization", cascade="all, delete-orphan"
+    )
+    coupons = relationship(
+        "Coupon", back_populates="organization", cascade="all, delete-orphan"
+    )
+    feedbacks = relationship(
+        "ClassFeedback", back_populates="organization", cascade="all, delete-orphan"
+    )
+    achievements = relationship(
+        "StudentAchievement", back_populates="organization", cascade="all, delete-orphan"
+    )
+    parent_messages = relationship(
+        "ParentMessage", back_populates="organization", cascade="all, delete-orphan"
+    )
     # courses = relationship(
     #     "Course", back_populates="organization", cascade="all, delete-orphan"
     # )  # 暂时注释，Course在base_models中定义

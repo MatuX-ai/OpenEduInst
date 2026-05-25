@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { environment } from '../../environments/environment';
 
 export interface HardwareDevice {
   id: string;
@@ -11,6 +11,16 @@ export interface HardwareDevice {
   location: string;
   lastUsed: string;
   condition: number;
+  assignedTo?: string;
+}
+
+export interface DeviceCategory {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+  available: number;
+  color: string;
 }
 
 export interface TokenTransaction {
@@ -19,7 +29,27 @@ export interface TokenTransaction {
   amount: number;
   description: string;
   date: string;
+  service?: string;
   balanceAfter: number;
+}
+
+export interface TokenService {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  costPerUse: number;
+  totalUses: number;
+  color: string;
+}
+
+export interface TokenPackage {
+  id: string;
+  name: string;
+  tokens: number;
+  price: number;
+  bonus: number;
+  popular?: boolean;
 }
 
 export interface STEMProject {
@@ -30,6 +60,20 @@ export interface STEMProject {
   progress: number;
   students: number;
   mentor: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+  technologies?: string[];
+  showcase?: boolean;
+}
+
+export interface ProjectCategory {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+  available?: number;
+  color: string;
 }
 
 export interface SpaceRoom {
@@ -38,6 +82,32 @@ export interface SpaceRoom {
   type: string;
   capacity: number;
   status: 'available' | 'occupied' | 'maintenance' | 'reserved';
+  currentActivity?: string;
+  nextBooking?: string;
+  equipment?: string[];
+  image?: string;
+}
+
+export interface Booking {
+  id: string;
+  roomId: string;
+  roomName: string;
+  user: string;
+  purpose: string;
+  startTime: string;
+  endTime: string;
+  date: string;
+  status: 'confirmed' | 'pending' | 'cancelled';
+  participants: number;
+}
+
+export interface SpaceCategory {
+  id: string;
+  name: string;
+  icon: string;
+  count: number;
+  available: number;
+  color: string;
 }
 
 @Injectable({

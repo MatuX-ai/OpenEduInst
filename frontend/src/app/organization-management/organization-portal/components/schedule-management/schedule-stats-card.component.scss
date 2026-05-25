@@ -1,8 +1,8 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .stats-container {
-  padding: tokens.$spacing-lg;
-  background-color: tokens.$color-neutral-100;
+  padding: $spacing-lg;
+  background-color: $color-neutral-100;
   min-height: 100%;
 }
 
@@ -11,20 +11,20 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-lg;
+  margin-bottom: $spacing-lg;
   flex-wrap: wrap;
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   .section-title {
-    font-size: tokens.$font-size-2xl;
+    font-size: $font-size-2xl;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
+    color: $color-neutral-900;
     margin: 0;
   }
 
   .actions {
     display: flex;
-    gap: tokens.$spacing-md;
+    gap: $spacing-md;
     align-items: center;
     flex-wrap: wrap;
 
@@ -34,22 +34,22 @@
 
     button {
       mat-icon {
-        margin-right: tokens.$spacing-sm;
+        margin-right: $spacing-sm;
       }
     }
   }
 }
 
 mat-progress-bar {
-  margin-bottom: tokens.$spacing-lg;
+  margin-bottom: $spacing-lg;
 }
 
 /* 总体统计卡片 */
 .overview-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: tokens.$spacing-md;
-  margin-bottom: tokens.$spacing-xl;
+  gap: $spacing-md;
+  margin-bottom: $spacing-xl;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -57,34 +57,34 @@ mat-progress-bar {
 }
 
 .stat-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-  transition: transform tokens.$transition-fast;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: tokens.$shadow-md;
+    box-shadow: $shadow-md;
   }
 
   mat-card-content {
     display: flex;
     align-items: center;
-    gap: tokens.$spacing-md;
-    padding: tokens.$spacing-lg !important;
+    gap: $spacing-md;
+    padding: $spacing-lg !important;
   }
 
   .stat-icon {
     width: 60px;
     height: 60px;
-    border-radius: tokens.$radius-lg;
+    border-radius: $radius-lg;
     display: flex;
     align-items: center;
     justify-content: center;
 
     mat-icon {
-      font-size: tokens.$font-size-2xl;
-      width: tokens.$font-size-2xl;
-      height: tokens.$font-size-2xl;
+      font-size: $font-size-2xl;
+      width: $font-size-2xl;
+      height: $font-size-2xl;
     }
   }
 
@@ -93,16 +93,16 @@ mat-progress-bar {
   }
 
   .stat-value {
-    font-size: tokens.$font-size-2xl;
+    font-size: $font-size-2xl;
     font-weight: bold;
-    color: tokens.$color-neutral-900;
+    color: $color-neutral-900;
     line-height: 1;
-    margin-bottom: tokens.$spacing-xs;
+    margin-bottom: $spacing-xs;
   }
 
   .stat-label {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
   }
 
   &.total .stat-icon {
@@ -124,13 +124,13 @@ mat-progress-bar {
 
 /* 统计区域 */
 .stats-section {
-  margin-bottom: tokens.$spacing-xl;
+  margin-bottom: $spacing-xl;
 
   .subsection-title {
-    font-size: tokens.$font-size-lg;
+    font-size: $font-size-lg;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-md 0;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-md 0;
   }
 }
 
@@ -138,7 +138,7 @@ mat-progress-bar {
 .classroom-stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -146,55 +146,55 @@ mat-progress-bar {
 }
 
 .classroom-stat-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 
   mat-card-header {
-    padding: tokens.$spacing-md !important;
-    border-bottom: 1px solid tokens.$color-neutral-100;
+    padding: $spacing-md !important;
+    border-bottom: 1px solid $color-neutral-100;
 
     mat-card-title {
-      font-size: tokens.$font-size-base;
+      font-size: $font-size-base;
       font-weight: 600;
     }
 
     mat-card-subtitle {
-      font-size: tokens.$font-size-sm;
-      color: tokens.$color-neutral-600;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
     }
   }
 
   mat-card-content {
-    padding: tokens.$spacing-md !important;
+    padding: $spacing-md !important;
   }
 
   mat-progress-bar {
-    margin-bottom: tokens.$spacing-md;
-    border-radius: tokens.$radius-sm;
+    margin-bottom: $spacing-md;
+    border-radius: $radius-sm;
   }
 }
 
 .stat-details {
   display: flex;
   justify-content: space-between;
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 }
 
 .detail-item {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-xs;
+  gap: $spacing-xs;
   flex: 1;
 
   .label {
-    font-size: tokens.$font-size-xs;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-xs;
+    color: $color-neutral-600;
   }
 
   .value {
-    font-size: tokens.$font-size-sm;
+    font-size: $font-size-sm;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
+    color: $color-neutral-900;
   }
 }
 
@@ -202,7 +202,7 @@ mat-progress-bar {
 .teacher-stats-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -210,11 +210,11 @@ mat-progress-bar {
 }
 
 .teacher-stat-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
 
   mat-card-content {
-    padding: tokens.$spacing-md !important;
+    padding: $spacing-md !important;
   }
 }
 
@@ -222,27 +222,27 @@ mat-progress-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-md;
-  padding-bottom: tokens.$spacing-md;
-  border-bottom: 1px solid tokens.$color-neutral-100;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid $color-neutral-100;
 }
 
 .teacher-info {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   mat-icon {
-    font-size: tokens.$font-size-xl;
-    width: tokens.$font-size-xl;
-    height: tokens.$font-size-xl;
-    color: tokens.$color-brand-primary;
+    font-size: $font-size-xl;
+    width: $font-size-xl;
+    height: $font-size-xl;
+    color: $color-brand-primary;
   }
 
   .teacher-name {
-    font-size: tokens.$font-size-base;
+    font-size: $font-size-base;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
+    color: $color-neutral-900;
   }
 }
 
@@ -251,49 +251,49 @@ mat-progress-bar {
 
   .hours-value {
     display: block;
-    font-size: tokens.$font-size-xl;
+    font-size: $font-size-xl;
     font-weight: bold;
-    color: tokens.$color-brand-primary;
+    color: $color-brand-primary;
     line-height: 1;
   }
 
   .hours-label {
     display: block;
-    font-size: tokens.$font-size-xs;
-    color: tokens.$color-neutral-600;
-    margin-top: tokens.$spacing-xs;
+    font-size: $font-size-xs;
+    color: $color-neutral-600;
+    margin-top: $spacing-xs;
   }
 }
 
 .course-list {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
 }
 
 .course-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: tokens.$spacing-sm tokens.$spacing-md;
-  background-color: tokens.$color-neutral-100;
-  border-radius: tokens.$radius-sm;
+  padding: $spacing-sm $spacing-md;
+  background-color: $color-neutral-100;
+  border-radius: $radius-sm;
 
   .course-name {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-900;
+    font-size: $font-size-sm;
+    color: $color-neutral-900;
   }
 
   .course-hours {
-    font-size: tokens.$font-size-xs;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-xs;
+    color: $color-neutral-600;
     font-weight: 500;
   }
 }
 
 .more-courses {
-  font-size: tokens.$font-size-xs;
-  color: tokens.$color-neutral-500;
+  font-size: $font-size-xs;
+  color: $color-neutral-500;
   font-style: italic;
-  padding: tokens.$spacing-xs tokens.$spacing-md;
+  padding: $spacing-xs $spacing-md;
 }

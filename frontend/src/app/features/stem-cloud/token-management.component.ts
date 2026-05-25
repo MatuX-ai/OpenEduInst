@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,36 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { StemCloudService } from '../../services/stem-cloud.service';
+import { StemCloudService, TokenTransaction, TokenService, TokenPackage } from '../../services/stem-cloud.service';
 
-export interface TokenTransaction {
-  id: string;
-  type: 'purchase' | 'usage' | 'refund' | 'bonus';
-  amount: number;
-  description: string;
-  date: string;
-  service?: string;
-  balanceAfter: number;
-}
-
-export interface TokenService {
-  id: string;
-  name: string;
-  description: string;
-  icon: string;
-  costPerUse: number;
-  totalUses: number;
-  color: string;
-}
-
-export interface TokenPackage {
-  id: string;
-  name: string;
-  tokens: number;
-  price: number;
-  bonus: number;
-  popular?: boolean;
-}
+// Re-export for template compatibility
+export { TokenTransaction, TokenService, TokenPackage };
 
 @Component({
   selector: 'app-token-management',
@@ -328,9 +303,11 @@ export interface TokenPackage {
 
     .page-header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 48px;
       font-weight: 700;
       color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
@@ -430,14 +407,14 @@ export interface TokenPackage {
     .detail-item {
       text-align: center;
       padding: 12px;
-      background: #f8f9fa;
+      background: rgba(15, 23, 42, 0.6);
       border-radius: 8px;
     }
 
     .detail-item .label {
       display: block;
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
       margin-bottom: 4px;
     }
 
@@ -445,7 +422,7 @@ export interface TokenPackage {
       display: block;
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .balance-trend {
@@ -456,7 +433,7 @@ export interface TokenPackage {
 
     .trend-label {
       font-size: 14px;
-      color: #666;
+      color: #94a3b8;
       white-space: nowrap;
     }
 
@@ -521,13 +498,13 @@ export interface TokenPackage {
       margin: 0 0 4px 0;
       font-size: 14px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .service-info p {
       margin: 0 0 8px 0;
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .usage-bar {
@@ -537,7 +514,7 @@ export interface TokenPackage {
     .usage-text {
       display: block;
       font-size: 11px;
-      color: #999;
+      color: #94a3b8;
       margin-top: 4px;
     }
 
@@ -545,7 +522,7 @@ export interface TokenPackage {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -617,13 +594,13 @@ export interface TokenPackage {
       margin: 0 0 8px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .service-description {
       margin: 0 0 16px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
       line-height: 1.4;
     }
 
@@ -645,13 +622,13 @@ export interface TokenPackage {
       display: block;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .mini-label {
       display: block;
       font-size: 10px;
-      color: #999;
+      color: #94a3b8;
     }
 
     .service-action-btn {
@@ -786,7 +763,7 @@ export interface TokenPackage {
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .popular-badge {
@@ -809,13 +786,13 @@ export interface TokenPackage {
       display: block;
       font-size: 32px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .token-label {
       display: block;
       font-size: 14px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .package-price {
@@ -842,7 +819,7 @@ export interface TokenPackage {
 
     .value-text {
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .purchase-btn {
@@ -954,9 +931,16 @@ export class TokenManagementComponent implements OnInit {
   typeFilter = '';
   dateFilter = '';
 
-  constructor(private stemService: StemCloudService) {}
+  orgId!: number;
+
+  constructor(
+    private stemService: StemCloudService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.orgId = +this.route.parent?.snapshot.params['id'] || 1;
     this.loadTokenData();
   }
 
@@ -1059,18 +1043,20 @@ export class TokenManagementComponent implements OnInit {
 
   // Event handlers
   onPurchaseTokens(): void {
-    console.log('Purchase tokens');
+    this.router.navigate(['/organization', this.orgId, 'tokens', 'purchase']);
   }
 
   onViewUsageReport(): void {
-    console.log('View usage report');
+    this.router.navigate(['/organization', this.orgId, 'tokens', 'report']);
   }
 
   onUseService(service: TokenService): void {
-    console.log('Use service:', service);
+    this.router.navigate(['/organization', this.orgId, 'tokens', 'service', service.id]);
   }
 
   onPurchasePackage(packageItem: TokenPackage): void {
-    console.log('Purchase package:', packageItem);
+    this.router.navigate(['/organization', this.orgId, 'tokens', 'purchase'], {
+      queryParams: { packageId: packageItem.id }
+    });
   }
 }

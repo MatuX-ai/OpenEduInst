@@ -1,8 +1,8 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .day-view-container {
-  padding: tokens.$spacing-lg;
-  background-color: tokens.$color-neutral-100;
+  padding: $spacing-lg;
+  background-color: $color-neutral-100;
   min-height: 100%;
 }
 
@@ -11,8 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-lg;
-  gap: tokens.$spacing-md;
+  margin-bottom: $spacing-lg;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -23,20 +23,20 @@
 .nav-controls {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
 }
 
 .current-date {
-  font-size: tokens.$font-size-lg;
+  font-size: $font-size-lg;
   font-weight: 600;
-  color: tokens.$color-neutral-900;
-  margin: 0 tokens.$spacing-md;
+  color: $color-neutral-900;
+  margin: 0 $spacing-md;
   white-space: nowrap;
 }
 
 .view-controls {
   display: flex;
-  gap: tokens.$spacing-sm;
+  gap: $spacing-sm;
   align-items: center;
 
   .date-picker {
@@ -50,24 +50,24 @@
   grid-template-columns: 80px 1fr;
   gap: 0;
   background-color: white;
-  border-radius: tokens.$radius-md;
+  border-radius: $radius-md;
   overflow: hidden;
-  box-shadow: tokens.$shadow-sm;
+  box-shadow: $shadow-sm;
 }
 
 /* 时间刻度�?*/
 .time-column {
-  border-right: 2px solid tokens.$color-neutral-300;
+  border-right: 2px solid $color-neutral-300;
 }
 
 .hour-label {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  font-size: tokens.$font-size-xs;
-  color: tokens.$color-neutral-600;
-  border-bottom: 1px solid tokens.$color-neutral-200;
-  padding-top: tokens.$spacing-xs;
+  font-size: $font-size-xs;
+  color: $color-neutral-600;
+  border-bottom: 1px solid $color-neutral-200;
+  padding-top: $spacing-xs;
 }
 
 /* 课程内容区域 */
@@ -77,7 +77,7 @@
 }
 
 .hour-grid-line {
-  border-bottom: 1px solid tokens.$color-neutral-200;
+  border-bottom: 1px solid $color-neutral-200;
   width: 100%;
 }
 
@@ -95,13 +95,13 @@
     top: -6px;
     width: 12px;
     height: 12px;
-    background-color: tokens.$color-error;
-    border-radius: tokens.$radius-full;
+    background-color: $color-error;
+    border-radius: $radius-full;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .time-line {
-    border-top: 2px solid tokens.$color-error;
+    border-top: 2px solid $color-error;
     width: 100%;
   }
 }
@@ -109,13 +109,13 @@
 /* 课程卡片 */
 .schedule-card {
   position: absolute;
-  left: tokens.$spacing-xs;
-  right: tokens.$spacing-xs;
-  border-radius: tokens.$radius-md;
-  padding: tokens.$spacing-md;
+  left: $spacing-xs;
+  right: $spacing-xs;
+  border-radius: $radius-md;
+  padding: $spacing-md;
   color: white;
   cursor: pointer;
-  transition: transform tokens.$transition-fast, box-shadow tokens.$transition-fast;
+  transition: transform $transition-fast, box-shadow $transition-fast;
   overflow: hidden;
   z-index: 10;
 
@@ -126,14 +126,14 @@
 }
 
 .card-content {
-  font-size: tokens.$font-size-xs;
+  font-size: $font-size-xs;
   line-height: 1.5;
 }
 
 .course-name {
   font-weight: bold;
-  font-size: tokens.$font-size-sm;
-  margin-bottom: tokens.$spacing-sm;
+  font-size: $font-size-sm;
+  margin-bottom: $spacing-sm;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -141,45 +141,45 @@
 
 .teacher-name {
   opacity: 0.95;
-  margin-bottom: tokens.$spacing-xs;
-  font-size: tokens.$font-size-xs;
+  margin-bottom: $spacing-xs;
+  font-size: $font-size-xs;
 }
 
 .classroom {
   opacity: 0.85;
-  font-size: tokens.$font-size-xs;
-  margin-bottom: tokens.$spacing-xs;
+  font-size: $font-size-xs;
+  margin-bottom: $spacing-xs;
 }
 
 .time-range {
   opacity: 0.8;
-  font-size: tokens.$font-size-xs;
+  font-size: $font-size-xs;
   font-weight: 600;
-  margin-bottom: tokens.$spacing-sm;
+  margin-bottom: $spacing-sm;
 }
 
 .student-count {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-xs;
-  font-size: tokens.$font-size-xs - 2;
+  gap: $spacing-xs;
+  font-size: $font-size-xs - 2;
   opacity: 0.75;
 
   mat-icon {
-    font-size: tokens.$font-size-lg;
-    width: tokens.$font-size-lg;
-    height: tokens.$font-size-lg;
+    font-size: $font-size-lg;
+    width: $font-size-lg;
+    height: $font-size-lg;
   }
 }
 
 .card-actions {
   position: absolute;
-  top: tokens.$spacing-xs;
-  right: tokens.$spacing-xs;
+  top: $spacing-xs;
+  right: $spacing-xs;
   display: flex;
-  gap: tokens.$spacing-xs;
+  gap: $spacing-xs;
   opacity: 0;
-  transition: opacity tokens.$transition-fast;
+  transition: opacity $transition-fast;
 
   .schedule-card:hover & {
     opacity: 1;
@@ -206,23 +206,23 @@
 /* 空状�?*/
 .empty-state {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  margin-top: tokens.$spacing-lg;
+  border-radius: $radius-md;
+  margin-top: $spacing-lg;
 
   mat-icon {
-    font-size: tokens.$font-size-3xl * 2;
-    width: tokens.$font-size-3xl * 2;
-    height: tokens.$font-size-3xl * 2;
-    color: tokens.$color-neutral-500;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-500;
+    margin-bottom: $spacing-md;
   }
 
   p {
-    font-size: tokens.$font-size-base;
-    color: tokens.$color-neutral-600;
-    margin-bottom: tokens.$spacing-lg;
+    font-size: $font-size-base;
+    color: $color-neutral-600;
+    margin-bottom: $spacing-lg;
   }
 }
 
@@ -230,14 +230,14 @@
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: tokens.$spacing-md;
-  margin-top: tokens.$spacing-lg;
+  gap: $spacing-md;
+  margin-top: $spacing-lg;
 }
 
 .summary-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-  transition: transform tokens.$transition-fast;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast;
 
   &:hover {
     transform: translateY(-4px);
@@ -254,12 +254,12 @@
 .summary-icon {
   width: 56px;
   height: 56px;
-  border-radius: tokens.$radius-lg;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: tokens.$spacing-md;
-  font-size: tokens.$font-size-xl + 4;
+  margin-right: $spacing-md;
+  font-size: $font-size-xl + 4;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -268,15 +268,15 @@
 }
 
 .summary-value {
-  font-size: tokens.$font-size-2xl;
+  font-size: $font-size-2xl;
   font-weight: bold;
-  color: tokens.$color-neutral-900;
-  margin-bottom: tokens.$spacing-xs;
+  color: $color-neutral-900;
+  margin-bottom: $spacing-xs;
 }
 
 .summary-label {
-  font-size: tokens.$font-size-sm;
-  color: tokens.$color-neutral-600;
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
 }
 
 /* 响应式调�?*/

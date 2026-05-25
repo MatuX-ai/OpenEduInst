@@ -30,6 +30,8 @@ import { Subject, Subscription } from 'rxjs';
 import { StudentService } from '../../../../core/services/student.service';
 import { OrganizationContextService } from '../../../../core/services/organization-context.service';
 import { Student, AttendanceRecord, Enrollment } from '../../../../models/education-management.models';
+import { StudentDetailDialogComponent } from './student-detail-dialog.component';
+import { StudentEditDialogComponent } from './student-edit-dialog.component';
 
 // 本地类型定义以适配现有 UI
 interface Grade {
@@ -57,9 +59,6 @@ interface StudentFilter {
 }
 
 type StudentStatus = 'active' | 'inactive' | 'graduated' | 'dropped_out' | 'suspended' | 'transferred';
-
-import { StudentDetailDialogComponent } from './student-detail-dialog.component';
-import { StudentEditDialogComponent } from './student-edit-dialog.component';
 
 @Component({
   selector: 'app-student-list',
@@ -118,13 +117,11 @@ export class StudentListComponent implements OnInit, OnDestroy {
 
   // 表格列定义
   displayedColumns: string[] = [
-    'select',
-    'avatar',
     'name',
-    'grade',
-    'enrolledCourses',
-    'progress',
-    'attendanceRate',
+    'courses',
+    'hours',
+    'projects',
+    'lastClass',
     'status',
     'actions',
   ];
@@ -443,23 +440,28 @@ export class StudentListComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * 获取状态标签颜色
+   * 获取状态徽章样式类
    */
-  getStatusChipColor(status: StudentStatus): string {
+  getStatusBadgeClass(status: StudentStatus): string {
     switch (status) {
       case 'active':
-        return 'primary';
+        return 'status-active';
       case 'inactive':
-        return 'warn';
+        return 'status-warning';
       case 'graduated':
-        return 'accent';
-      case 'suspended':
-        return '';
-      case 'transferred':
-        return ''; // 使用默认颜色
+        return 'status-default';
       default:
-        return '';
+        return 'status-default';
     }
+  }
+
+  /**
+   * 获取课时进度条样式类
+   */
+  getHoursBarClass(hours: number | undefined): string {
+    if (!hours || hours === 0) return 'bar-empty';
+    if (hours <= 10) return 'bar-warning';
+    return 'bar-success';
   }
 
   /**

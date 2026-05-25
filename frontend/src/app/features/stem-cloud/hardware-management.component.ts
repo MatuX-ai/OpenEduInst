@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -9,27 +10,10 @@ import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
-import { StemCloudService } from '../../services/stem-cloud.service';
+import { StemCloudService, HardwareDevice, DeviceCategory } from '../../services/stem-cloud.service';
 
-export interface HardwareDevice {
-  id: string;
-  name: string;
-  type: string;
-  status: 'available' | 'in_use' | 'maintenance' | 'damaged';
-  location: string;
-  lastUsed: string;
-  condition: number; // 0-100
-  assignedTo?: string;
-}
-
-export interface DeviceCategory {
-  id: string;
-  name: string;
-  icon: string;
-  count: number;
-  available: number;
-  color: string;
-}
+// Re-export for template compatibility
+export { HardwareDevice, DeviceCategory };
 
 @Component({
   selector: 'app-hardware-management',
@@ -337,9 +321,11 @@ export interface DeviceCategory {
 
     .page-header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 48px;
       font-weight: 700;
       color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
@@ -437,7 +423,7 @@ export interface DeviceCategory {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -493,13 +479,13 @@ export interface DeviceCategory {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .category-count {
       margin: 4px 0 8px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .availability-bar {
@@ -509,7 +495,7 @@ export interface DeviceCategory {
     .availability-text {
       display: block;
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
       margin-top: 4px;
     }
 
@@ -680,20 +666,20 @@ export interface DeviceCategory {
       margin: 0 0 4px 0;
       font-size: 15px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .maintenance-info p {
       margin: 0 0 8px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .maintenance-meta {
       display: flex;
       gap: 16px;
       font-size: 12px;
-      color: #999;
+      color: #64748b;
     }
 
     .maintenance-status-chip {
@@ -763,6 +749,9 @@ export class HardwareManagementComponent implements OnInit {
 
   // Device categories
   deviceCategories: DeviceCategory[] = [];
+  
+  // Device types for filter
+  deviceTypes: string[] = ['Arduino', '传感器', '机器人', '3D打印机', '激光切割机'];
 
   // Sample devices data (will be replaced by API)
   devices: HardwareDevice[] = [];
@@ -789,9 +778,16 @@ export class HardwareManagementComponent implements OnInit {
   statusFilter = '';
   typeFilter = '';
 
-  constructor(private stemService: StemCloudService) {}
+  orgId!: number;
+
+  constructor(
+    private stemService: StemCloudService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.orgId = +this.route.parent?.snapshot.params['id'] || 1;
     this.loadHardwareData();
   }
 
@@ -916,26 +912,28 @@ export class HardwareManagementComponent implements OnInit {
 
   // Event handlers
   onAddDevice(): void {
-    console.log('Add new device');
+    this.router.navigate(['/organization', this.orgId, 'devices', 'add']);
   }
 
   onExportData(): void {
     console.log('Export device data');
+    // TODO: Implement export functionality
   }
 
   onCategorySelect(category: DeviceCategory): void {
     console.log('Category selected:', category);
+    // Filter devices by category
   }
 
   onViewDevice(device: HardwareDevice): void {
-    console.log('View device:', device);
+    this.router.navigate(['/organization', this.orgId, 'devices', device.id]);
   }
 
   onEditDevice(device: HardwareDevice): void {
-    console.log('Edit device:', device);
+    this.router.navigate(['/organization', this.orgId, 'devices', device.id, 'edit']);
   }
 
   onMaintainDevice(device: HardwareDevice): void {
-    console.log('Maintain device:', device);
+    this.router.navigate(['/organization', this.orgId, 'devices', device.id, 'maintenance']);
   }
 }

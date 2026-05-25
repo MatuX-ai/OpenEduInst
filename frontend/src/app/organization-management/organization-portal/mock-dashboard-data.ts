@@ -13,18 +13,6 @@ export const mockOrganizations: Organization[] = [
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
   },
-  {
-    id: 2,
-    name: '北京市第一中学',
-    contact_email: 'admin@bj1school.edu.cn',
-    phone: '010-66668888',
-    address: '北京市朝阳区建国路1号',
-    website: 'https://www.bj1school.edu.cn',
-    max_users: 2000,
-    is_active: true,
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z',
-  },
 ];
 
 export const mockDashboardData: Record<number, DashboardData> = {
@@ -110,77 +98,6 @@ export const mockDashboardData: Record<number, DashboardData> = {
         message: '硬件设备使用接近上限',
         severity: 'low',
         createdAt: new Date(Date.now() - 172800000).toISOString(),
-      },
-    ],
-  },
-  2: {
-    organization: mockOrganizations[1],
-    statistics: {
-      activeLicenses: 142,
-      totalProjects: 187,
-      totalUsers: 986,
-      hardwareConsumption: 890,
-      licenseRemaining: 8,
-    },
-    charts: {
-      userGrowthData: [
-        { date: '2024-01', value: 800 },
-        { date: '2024-02', value: 840 },
-        { date: '2024-03', value: 890 },
-        { date: '2024-04', value: 930 },
-        { date: '2024-05', value: 960 },
-        { date: '2024-06', value: 986 },
-      ],
-      projectTrendData: [
-        { date: '2024-01', value: 140 },
-        { date: '2024-02', value: 152 },
-        { date: '2024-03', value: 165 },
-        { date: '2024-04', value: 172 },
-        { date: '2024-05', value: 180 },
-        { date: '2024-06', value: 187 },
-      ],
-      hardwareUsageData: [
-        { category: 'Arduino', value: 38, date: '' },
-        { category: 'Raspberry Pi', value: 28, date: '' },
-        { category: '传感器', value: 22, date: '' },
-        { category: '其他设备', value: 2, date: '' },
-      ],
-      licenseUsageData: [
-        { date: '', value: 142 },
-        { date: '', value: 8 },
-        { date: '', value: 150 },
-      ],
-    },
-    recentActivities: [
-      {
-        id: 1,
-        type: 'user_login',
-        description: '教师登录系统',
-        timestamp: new Date().toISOString(),
-        severity: 'info',
-      },
-      {
-        id: 2,
-        type: 'project_created',
-        description: '创建了STEM创客教育项目',
-        timestamp: new Date(Date.now() - 5400000).toISOString(),
-        severity: 'info',
-      },
-      {
-        id: 3,
-        type: 'license_used',
-        description: '激活了3个新许可证',
-        timestamp: new Date(Date.now() - 10800000).toISOString(),
-        severity: 'info',
-      },
-    ],
-    alerts: [
-      {
-        id: 1,
-        type: 'license_expiring',
-        message: '许可证将在30天后到期',
-        severity: 'low',
-        createdAt: new Date(Date.now() - 259200000).toISOString(),
       },
     ],
   },

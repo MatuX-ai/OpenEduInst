@@ -4,6 +4,8 @@ from typing import List
 
 from utils.database import get_db
 from models.schedule import Lead, LeadStatus
+from models.user_organization import UserOrganization
+from models.license import Organization
 from pydantic import BaseModel
 from datetime import datetime
 
@@ -38,3 +40,21 @@ def get_pending_settlements(org_id: int, db: Session = Depends(get_db)):
         Settlement.org_id == org_id, 
         Settlement.is_confirmed == False
     ).all()
+
+@router.get("/organizations/my")
+def get_my_organizations(db: Session = Depends(get_db)):
+    """获取当前用户所属的组织列表（简化版，返回所有组织）"""
+    # 暂时返回所有活跃组织，后续可以根据 token 中的用户 ID 过滤
+    organizations = db.query(Organization).filter(Organization.is_active == True).all()
+    
+    result = []
+    for org in organizations:
+        result.append({
+            "id": org.id,
+            "name": org.name,
+            "org_type": org.org_type,
+            "contact_email": org.contact_email,
+            "is_active": org.is_active
+        })
+    
+    return result

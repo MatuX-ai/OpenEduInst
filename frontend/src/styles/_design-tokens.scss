@@ -1,5 +1,8 @@
-// Design tokens placeholder file
-// This file is temporarily empty to prevent build errors
+// Design tokens
+// Color palette
+$color-brand-primary: #1976d2;
+$color-brand-primary-light: #e3f2fd;
+$color-brand-secondary: #424242;
 
 $spacing-xs: 4px;
 $spacing-sm: 8px;
@@ -7,6 +10,7 @@ $spacing-md: 16px;
 $spacing-lg: 24px;
 $spacing-xl: 32px;
 $spacing-xxl: 48px;
+$spacing-3xl: 64px;
 
 $color-neutral-50: #f8f9fa;
 $color-neutral-100: #f1f3f5;
@@ -22,9 +26,13 @@ $color-warning: #ff9800;
 $color-warning-light: #fff3e0;
 $color-error: #f44336;
 $color-error-light: #ffebee;
+$color-success: #4caf50;
+$color-success-light: #e8f5e9;
+$color-success-dark: #2e7d32;
 
 $radius-lg: 12px;
 $radius-md: 8px;
+$radius-sm: 4px;
 $radius-full: 50%;
 
 $shadow-md: 0 4px 6px rgba(0,0,0,0.1);

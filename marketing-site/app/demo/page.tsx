@@ -61,12 +61,20 @@ function DemoEntryContent() {
           <Link href="/" className="text-xl font-bold text-slate-100">
             OpenMT
           </Link>
-          <Link
-            href="/"
-            className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
-          >
-            返回首页
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              href="/demo/login"
+              className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
+            >
+              登录
+            </Link>
+            <Link
+              href="/"
+              className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
+            >
+              返回首页
+            </Link>
+          </div>
         </div>
       </header>
 

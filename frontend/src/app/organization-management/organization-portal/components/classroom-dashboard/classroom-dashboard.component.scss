@@ -1,35 +1,35 @@
-@use '../../../../../styles/design-tokens' as tokens;
+@use '../../../../../styles/design-tokens' as *;
 
 .classroom-dashboard {
   height: 100%;
   overflow-y: auto;
-  padding: tokens.$spacing-lg;
-  background-color: tokens.$color-neutral-100;
+  padding: $spacing-lg;
+  background-color: $color-neutral-100;
 }
 
 .dashboard-header {
-  margin-bottom: tokens.$spacing-lg;
+  margin-bottom: $spacing-lg;
 
   h1 {
     display: flex;
     align-items: center;
-    gap: tokens.$spacing-md;
-    font-size: tokens.$font-size-2xl;
+    gap: $spacing-md;
+    font-size: $font-size-2xl;
     font-weight: 600;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-sm 0;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-sm 0;
 
     mat-icon {
-      font-size: tokens.$font-size-2xl;
-      width: tokens.$font-size-2xl;
-      height: tokens.$font-size-2xl;
-      color: tokens.$color-brand-primary;
+      font-size: $font-size-2xl;
+      width: $font-size-2xl;
+      height: $font-size-2xl;
+      color: $color-brand-primary;
     }
   }
 
   p {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
     margin: 0;
   }
 }
@@ -38,8 +38,8 @@
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: tokens.$spacing-md;
-  margin-bottom: tokens.$spacing-lg;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -47,35 +47,35 @@
 }
 
 .stat-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-  transition: transform tokens.$transition-fast;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: tokens.$shadow-md;
+    box-shadow: $shadow-md;
   }
 
   mat-card-content {
     display: flex;
     align-items: center;
-    gap: tokens.$spacing-md;
-    padding: tokens.$spacing-lg !important;
+    gap: $spacing-md;
+    padding: $spacing-lg !important;
   }
 }
 
 .stat-icon {
   width: 60px;
   height: 60px;
-  border-radius: tokens.$radius-lg;
+  border-radius: $radius-lg;
   display: flex;
   align-items: center;
   justify-content: center;
 
   mat-icon {
-    font-size: tokens.$font-size-2xl;
-    width: tokens.$font-size-2xl;
-    height: tokens.$font-size-2xl;
+    font-size: $font-size-2xl;
+    width: $font-size-2xl;
+    height: $font-size-2xl;
     color: white;
   }
 
@@ -100,16 +100,16 @@
   flex: 1;
 
   .stat-value {
-    font-size: tokens.$font-size-3xl;
+    font-size: $font-size-3xl;
     font-weight: bold;
-    color: tokens.$color-neutral-900;
+    color: $color-neutral-900;
     line-height: 1;
-    margin-bottom: tokens.$spacing-xs;
+    margin-bottom: $spacing-xs;
   }
 
   .stat-label {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
     margin: 0;
   }
 }
@@ -119,21 +119,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: tokens.$spacing-lg;
-  padding: tokens.$spacing-md;
+  margin-bottom: $spacing-lg;
+  padding: $spacing-md;
   background-color: white;
-  border-radius: tokens.$radius-md;
-  box-shadow: tokens.$shadow-sm;
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    gap: tokens.$spacing-md;
+    gap: $spacing-md;
   }
 }
 
 .filters {
   display: flex;
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
   flex-wrap: wrap;
   align-items: center;
 
@@ -146,7 +146,7 @@
 .classroom-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -154,14 +154,14 @@
 }
 
 .classroom-card {
-  border-radius: tokens.$radius-lg;
-  box-shadow: tokens.$shadow-sm;
-  transition: transform tokens.$transition-fast, box-shadow tokens.$transition-fast;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  transition: transform $transition-fast, box-shadow $transition-fast;
   cursor: pointer;
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: tokens.$shadow-md;
+    box-shadow: $shadow-md;
   }
 
   &.unavailable {
@@ -174,115 +174,115 @@
   }
 
   mat-card-header {
-    padding: tokens.$spacing-md !important;
-    border-bottom: 1px solid tokens.$color-neutral-100;
+    padding: $spacing-md !important;
+    border-bottom: 1px solid $color-neutral-100;
 
     mat-card-title {
       display: flex;
       align-items: center;
-      gap: tokens.$spacing-sm;
-      font-size: tokens.$font-size-lg;
+      gap: $spacing-sm;
+      font-size: $font-size-lg;
       font-weight: 600;
 
       mat-icon {
-        font-size: tokens.$font-size-xl;
-        width: tokens.$font-size-xl;
-        height: tokens.$font-size-xl;
+        font-size: $font-size-xl;
+        width: $font-size-xl;
+        height: $font-size-xl;
       }
     }
 
     mat-card-subtitle {
-      font-size: tokens.$font-size-sm;
-      color: tokens.$color-neutral-600;
-      margin-top: tokens.$spacing-xs;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
+      margin-top: $spacing-xs;
     }
   }
 
   mat-card-content {
-    padding: tokens.$spacing-md !important;
+    padding: $spacing-md !important;
   }
 }
 
 .classroom-details {
   display: flex;
   flex-direction: column;
-  gap: tokens.$spacing-md;
+  gap: $spacing-md;
 }
 
 .detail-row {
   display: flex;
   align-items: center;
-  gap: tokens.$spacing-sm;
-  font-size: tokens.$font-size-sm;
-  color: tokens.$color-neutral-600;
+  gap: $spacing-sm;
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
 
   mat-icon {
-    font-size: tokens.$font-size-base;
-    width: tokens.$font-size-base;
-    height: tokens.$font-size-base;
-    color: tokens.$color-neutral-500;
+    font-size: $font-size-base;
+    width: $font-size-base;
+    height: $font-size-base;
+    color: $color-neutral-500;
   }
 }
 
 .equipment-list {
   display: flex;
   flex-wrap: wrap;
-  gap: tokens.$spacing-xs;
-  margin-left: tokens.$spacing-xs;
+  gap: $spacing-xs;
+  margin-left: $spacing-xs;
 
   mat-chip {
     height: 24px;
-    font-size: tokens.$font-size-xs;
-    background-color: tokens.$color-neutral-100;
+    font-size: $font-size-xs;
+    background-color: $color-neutral-100;
   }
 }
 
 .description {
-  font-size: tokens.$font-size-sm;
-  color: tokens.$color-neutral-600;
+  font-size: $font-size-sm;
+  color: $color-neutral-600;
   line-height: 1.6;
-  margin-top: tokens.$spacing-md;
-  padding-top: tokens.$spacing-md;
-  border-top: 1px solid tokens.$color-neutral-100;
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid $color-neutral-100;
 }
 
 /* 加载状�?*/
 .loading-container {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
 
   mat-spinner {
-    margin: 0 auto tokens.$spacing-md;
+    margin: 0 auto $spacing-md;
   }
 
   p {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
   }
 }
 
 /* 空状�?*/
 .empty-state {
   text-align: center;
-  padding: tokens.$spacing-3xl tokens.$spacing-lg;
+  padding: $spacing-3xl $spacing-lg;
 
   mat-icon {
-    font-size: tokens.$font-size-3xl * 2;
-    width: tokens.$font-size-3xl * 2;
-    height: tokens.$font-size-3xl * 2;
-    color: tokens.$color-neutral-400;
-    margin-bottom: tokens.$spacing-md;
+    font-size: $font-size-3xl * 2;
+    width: $font-size-3xl * 2;
+    height: $font-size-3xl * 2;
+    color: $color-neutral-400;
+    margin-bottom: $spacing-md;
   }
 
   h3 {
-    font-size: tokens.$font-size-lg;
-    color: tokens.$color-neutral-900;
-    margin: 0 0 tokens.$spacing-sm 0;
+    font-size: $font-size-lg;
+    color: $color-neutral-900;
+    margin: 0 0 $spacing-sm 0;
   }
 
   p {
-    font-size: tokens.$font-size-sm;
-    color: tokens.$color-neutral-600;
+    font-size: $font-size-sm;
+    color: $color-neutral-600;
     margin: 0;
   }
 }

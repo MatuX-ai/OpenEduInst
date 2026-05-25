@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -10,30 +11,10 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatExpansionModule } from '@angular/material/expansion';
-import { StemCloudService } from '../../services/stem-cloud.service';
+import { StemCloudService, STEMProject, ProjectCategory } from '../../services/stem-cloud.service';
 
-export interface STEMProject {
-  id: string;
-  name: string;
-  category: string;
-  status: 'planning' | 'in_progress' | 'completed' | 'showcase';
-  progress: number;
-  students: number;
-  mentor: string;
-  startDate: string;
-  endDate?: string;
-  description: string;
-  technologies: string[];
-  showcase?: boolean;
-}
-
-export interface ProjectCategory {
-  id: string;
-  name: string;
-  icon: string;
-  count: number;
-  color: string;
-}
+// Re-export for template compatibility if needed, but we'll use the service ones directly
+export { STEMProject, ProjectCategory };
 
 @Component({
   selector: 'app-project-management',
@@ -347,8 +328,9 @@ export interface ProjectCategory {
   styles: [`
     .project-management {
       padding: 24px;
-      background: #f5f7fa;
+      background: #0f172a;
       min-height: 100%;
+      color: #e2e8f0;
     }
 
     /* Page Header */
@@ -361,9 +343,11 @@ export interface ProjectCategory {
 
     .page-header h1 {
       margin: 0;
-      font-size: 28px;
+      font-size: 48px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.5px;
     }
 
     .subtitle {
@@ -440,12 +424,12 @@ export interface ProjectCategory {
     .stat-value {
       font-size: 32px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: #ffffff;
       margin: 8px 0;
     }
 
     .stat-label {
-      color: #666;
+      color: #94a3b8;
       font-size: 14px;
       font-weight: 500;
     }
@@ -454,7 +438,7 @@ export interface ProjectCategory {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -510,13 +494,13 @@ export interface ProjectCategory {
       margin: 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .category-count {
       margin: 4px 0 0 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     /* Project List Card */
@@ -679,13 +663,13 @@ export interface ProjectCategory {
       margin: 0 0 8px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: #ffffff;
     }
 
     .project-description {
       margin: 0 0 16px 0;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
       line-height: 1.4;
     }
 
@@ -701,14 +685,14 @@ export interface ProjectCategory {
       align-items: center;
       gap: 8px;
       font-size: 13px;
-      color: #666;
+      color: #94a3b8;
     }
 
     .meta-item mat-icon {
       font-size: 16px;
       width: 16px;
       height: 16px;
-      color: #999;
+      color: #64748b;
     }
 
     .project-progress {
@@ -719,7 +703,7 @@ export interface ProjectCategory {
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      color: #666;
+      color: #94a3b8;
       margin-bottom: 4px;
     }
 
@@ -732,8 +716,8 @@ export interface ProjectCategory {
 
     .tech-chip {
       font-size: 11px;
-      background: #f5f5f5;
-      color: #666;
+      background: rgba(30, 41, 59, 0.6);
+      color: #94a3b8;
     }
 
     .project-actions {
@@ -818,9 +802,16 @@ export class ProjectManagementComponent implements OnInit {
   statusFilter = '';
   categoryFilter = '';
 
-  constructor(private stemService: StemCloudService) {}
+  orgId!: number;
+
+  constructor(
+    private stemService: StemCloudService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
+    this.orgId = +this.route.parent?.snapshot.params['id'] || 1;
     this.loadProjectData();
   }
 
@@ -859,7 +850,7 @@ export class ProjectManagementComponent implements OnInit {
     return this.projects.filter(project => {
       const matchesSearch = !this.searchTerm || 
         project.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        project.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+        (project.description && project.description.toLowerCase().includes(this.searchTerm.toLowerCase()));
       
       const matchesStatus = !this.statusFilter || project.status === this.statusFilter;
       const matchesCategory = !this.categoryFilter || project.category === this.categoryFilter;
@@ -905,26 +896,27 @@ export class ProjectManagementComponent implements OnInit {
 
   // Event handlers
   onCreateProject(): void {
-    console.log('Create new project');
+    this.router.navigate(['/organization', this.orgId, 'projects', 'create']);
   }
 
   onViewShowcase(): void {
-    console.log('View project showcase');
+    this.router.navigate(['/organization', this.orgId, 'projects', 'showcase']);
   }
 
   onCategorySelect(category: ProjectCategory): void {
     console.log('Category selected:', category);
+    // Filter projects by category
   }
 
   onViewProject(project: STEMProject): void {
-    console.log('View project:', project);
+    this.router.navigate(['/organization', this.orgId, 'projects', project.id]);
   }
 
   onEditProject(project: STEMProject): void {
-    console.log('Edit project:', project);
+    this.router.navigate(['/organization', this.orgId, 'projects', project.id, 'edit']);
   }
 
   onViewShowcaseItem(project: STEMProject): void {
-    console.log('View showcase item:', project);
+    this.router.navigate(['/organization', this.orgId, 'projects', project.id, 'showcase']);
   }
 }

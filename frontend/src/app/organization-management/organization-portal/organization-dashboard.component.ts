@@ -32,18 +32,10 @@ import { OrganizationContextService, OrganizationType } from '../../core/service
 import { UnifiedCourseService } from '../../core/services/unified-course.service';
 import { UnifiedCourse } from '../../models/unified-course.models';
 
-import { ActivityAlertPanelComponent } from './components/activity-alert-panel/activity-alert-panel.component';
-import { CourseManagementPanelComponent } from './components/course-management-panel/course-management-panel.component';
-import { MatuxCoreMetricsComponent, DashboardMetrics } from './components/dashboard-overview/matux-core-metrics.component';
-import { MatuxCommonFunctionsComponent, CommonFunctionItem } from './components/dashboard-overview/matux-common-functions.component';
-import { MatuxQuickActionsComponent, QuickActionItem } from './components/dashboard-overview/matux-quick-actions.component';
-import { MatuxResourceCenterComponent, ResourceItem } from './components/dashboard-overview/matux-resource-center.component';
-import { TrainingDashboardComponent } from './components/dashboard-overview/training-dashboard.component';
-import { K12DashboardComponent } from './components/dashboard-overview/k12-dashboard.component';
-import { VocationalDashboardComponent } from './components/dashboard-overview/vocational-dashboard.component';
-import { BureauDashboardComponent } from './components/dashboard-overview/bureau-dashboard.component';
-import { EducationStatsPanelComponent } from './components/education-stats-panel/education-stats-panel.component';
-import { TeacherStudentPanelComponent } from './components/teacher-student-panel/teacher-student-panel.component';
+import { TrainingDashboardV2Component, QuickActionItem, ResourceItem } from './components/dashboard-overview/training-dashboard-v2.component';
+import { DashboardMetrics } from './components/dashboard-overview/matux-core-metrics.component';
+import { CommonFunctionItem } from './components/dashboard-overview/matux-common-functions.component';
+import { DataAnalyticsDashboardComponent } from './components/data-analytics/data-analytics-dashboard.component';
 import {
   DashboardData,
   Organization,
@@ -65,59 +57,39 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       <!-- 主要内容区域 -->
       <div *ngIf="!loading && dashboardData" class="dashboard-content">
         <!-- 根据组织类型动态渲染驾驶舱 -->
-        <app-training-dashboard 
-          *ngIf="orgContext.isType('training_institution')"
-          [metrics]="{ activeStudents: matuxMetrics.activeStudents, monthlyRevenue: matuxMetrics.monthlyRevenue, courseCompletionRate: matuxMetrics.courseCompletionRate, equipmentUsageRate: '85%' }">
-        </app-training-dashboard>
+        <mat-tab-group color="primary" dynamicHeight class="unified-dashboard-tabs">
+          <!-- Tab 1: 经营概览 -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <div class="tab-label">
+                <mat-icon>space_dashboard</mat-icon>
+                <span>经营概览</span>
+              </div>
+            </ng-template>
+            <div class="tab-content">
+              <app-training-dashboard-v2 
+                *ngIf="orgContext.isType('training_institution')"
+                [metrics]="{ activeStudents: matuxMetrics.activeStudents, monthlyRevenue: matuxMetrics.monthlyRevenue.replace('¥', '').replace('万', ''), courseCompletionRate: matuxMetrics.courseCompletionRate.replace('%', ''), equipmentUsageRate: '78' }"
+                [quickActions]="quickActions"
+                [stemFeatures]="[]"
+                [resources]="resourceItems">
+              </app-training-dashboard-v2>
+            </div>
+          </mat-tab>
 
-        <app-k12-dashboard 
-          *ngIf="orgContext.isType('k12_school')"
-          [metrics]="{ totalStudents: matuxMetrics.activeStudents, courseCompletionRate: '98%', activeClasses: 12 }">
-        </app-k12-dashboard>
-
-        <app-vocational-dashboard 
-          *ngIf="orgContext.isType('vocational_school')"
-          [metrics]="{ totalStudents: matuxMetrics.activeStudents, equipmentUsageRate: '85%', employmentRate: '96%', coopProjects: 24 }">
-        </app-vocational-dashboard>
-
-        <app-bureau-dashboard 
-          *ngIf="orgContext.isType('education_bureau')"
-          [metrics]="{ schoolCount: 45, teacherTrainingRate: '78%', studentParticipationRate: '85%', budgetExec: '78%' }">
-        </app-bureau-dashboard>
-
-        <!-- 常用功能矩阵 (仅培训机构显示) -->
-        <app-matux-common-functions 
-          *ngIf="orgContext.isType('training_institution')"
-          [items]="commonFunctions" 
-          (select)="onFunctionSelect($event)">
-        </app-matux-common-functions>
-
-        <!-- 快捷操作栏 -->
-        <app-matux-quick-actions 
-          [actions]="quickActions" 
-          (actionClick)="onQuickAction($event)">
-        </app-matux-quick-actions>
-
-        <!-- 教学资源中心 -->
-        <app-matux-resource-center 
-          [items]="resourceItems" 
-          (select)="onResourceSelect($event)">
-        </app-matux-resource-center>
-
-        <!-- 图表区域（暂未启用） -->
-        <div class="charts-placeholder">
-          <mat-card>
-            <mat-card-content>
-              <p>图表功能正在开发中...</p>
-            </mat-card-content>
-          </mat-card>
-        </div>
-
-        <!-- 最近活动和警报 -->
-        <app-activity-alert-panel
-          [activities]="dashboardData.recentActivities"
-          [alerts]="dashboardData.alerts"
-        ></app-activity-alert-panel>
+          <!-- Tab 2: 数据分析 -->
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <div class="tab-label">
+                <mat-icon>insights</mat-icon>
+                <span>数据分析</span>
+              </div>
+            </ng-template>
+            <div class="tab-content">
+              <app-data-analytics-dashboard></app-data-analytics-dashboard>
+            </div>
+          </mat-tab>
+        </mat-tab-group>
       </div>
 
       <!-- 错误状态 -->
@@ -128,47 +100,7 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         <button mat-raised-button color="primary" (click)="refreshData()">重试</button>
       </div>
 
-      <!-- 教育场景模块：机构概览 -->
-      <app-education-stats-panel
-        *ngIf="!loading && !educationLoading && orgOverview"
-        [overview]="orgOverview"
-        [enrollmentStats]="enrollmentStats"
-        [courseStats]="courseStats"
-        (refresh)="loadEducationData()"
-        (goToFinance)="goToFinance()"
-        (goToClassrooms)="goToClassrooms()"
-        (goToWechatCS)="goToWechatCS()"
-      ></app-education-stats-panel>
 
-      <!-- 教育模块加载状态 -->
-      <div *ngIf="educationLoading" class="education-loading">
-        <mat-spinner diameter="40"></mat-spinner>
-        <p>正在加载教育模块数据...</p>
-      </div>
-
-      <!-- 教育场景模块：课程运营与师生管理 -->
-      <app-course-management-panel
-        *ngIf="!loading && !educationLoading && !educationError"
-        [popularCourses$]="popularCourses$"
-        [courses]="courses"
-        (viewCourseDetail)="onViewCourseDetail($event)"
-        (addCourse)="onAddCourse()"
-        (viewCourse)="onViewCourse($event)"
-        (editCourse)="onEditCourse($event)"
-        (deleteCourse)="onDeleteCourse($event)"
-      ></app-course-management-panel>
-
-      <app-teacher-student-panel
-        *ngIf="!loading && !educationLoading && !educationError"
-        [teachers]="teachers"
-        [students]="students"
-        (addTeacher)="onAddTeacher()"
-        (viewTeacher)="onViewTeacher($event)"
-        (editTeacher)="onEditTeacher($event)"
-        (addStudent)="onAddStudent()"
-        (viewStudent)="onViewStudent($event)"
-        (editStudent)="onEditStudent($event)"
-      ></app-teacher-student-panel>
     </div>
   `,
   styles: [
@@ -181,6 +113,51 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         padding: tokens.$spacing-lg; 
         max-width: 1600px;
         margin: 0 auto;
+      }
+
+      /* 统一仪表盘标签页样式 */
+      ::ng-deep .unified-dashboard-tabs {
+        background: transparent;
+      }
+
+      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-header {
+        background: white;
+        border-radius: 12px 12px 0 0;
+        border: 1px solid #E2E8F0;
+        border-bottom: none;
+        padding: 0 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      }
+
+      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab {
+        min-width: 140px;
+        padding: 0 20px;
+        height: 56px;
+      }
+
+      .tab-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .tab-label mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-body-wrapper {
+        background: white;
+        border: 1px solid #E2E8F0;
+        border-radius: 0 0 12px 12px;
+        border-top: none;
+      }
+
+      .tab-content {
+        padding: 24px;
       }
 
       .dashboard-header {
@@ -613,18 +590,8 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
     MatChipsModule,
     MatTabsModule,
     MatTooltipModule,
-    MatuxCoreMetricsComponent,
-    MatuxCommonFunctionsComponent,
-    MatuxQuickActionsComponent,
-    MatuxResourceCenterComponent,
-    TrainingDashboardComponent,
-    K12DashboardComponent,
-    VocationalDashboardComponent,
-    BureauDashboardComponent,
-    EducationStatsPanelComponent,
-    CourseManagementPanelComponent,
-    TeacherStudentPanelComponent,
-    ActivityAlertPanelComponent,
+    TrainingDashboardV2Component,
+    DataAnalyticsDashboardComponent,
   ],
 })
 export class OrganizationDashboardComponent implements OnInit, OnDestroy {
@@ -676,17 +643,17 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
     { id: 'live', title: '直播授课', icon: 'videocam', count: '在线教室3间', color: '#9c27b0' }
   ];
   quickActions: QuickActionItem[] = [
-    { id: 'enroll', label: '快速报名', icon: 'how_to_reg' },
-    { id: 'leave', label: '请假处理', icon: 'event_busy' },
-    { id: 'homework', label: '作业批改', icon: 'assignment_turned_in' },
-    { id: 'checkin', label: '签到打卡', icon: 'check_circle' },
-    { id: 'renew', label: '续费提醒', icon: 'repeat' }
+    { id: 'enroll', label: '快速报名', icon: 'how_to_reg', color: 'blue' },
+    { id: 'leave', label: '请假处理', icon: 'event_busy', color: 'amber' },
+    { id: 'homework', label: '作业批改', icon: 'assignment_turned_in', color: 'emerald' },
+    { id: 'checkin', label: '签到打卡', icon: 'check_circle', color: 'purple' },
+    { id: 'renew', label: '续费提醒', icon: 'repeat', color: 'rose' }
   ];
   resourceItems: ResourceItem[] = [
-    { id: 'courseware', title: '课件发布', description: '同步教学资源', icon: 'cloud_upload' },
-    { id: 'promotion', title: '活动推广', description: '朋友圈海报生成', icon: 'share' },
-    { id: 'report', title: '学情报告', description: '一键发送家长', icon: 'description' },
-    { id: 'material', title: '素材库', description: '教案与习题集', icon: 'library_books' }
+    { id: 'courseware', icon: 'edit_note', title: 'Arduino课件库', description: '32套教学方案' },
+    { id: 'dataset', icon: 'sensors', title: '传感器数据集', description: '15组实验数据' },
+    { id: 'competition', icon: 'campaign', title: '竞赛通知', description: '3场赛事报名中' },
+    { id: 'iot-template', icon: 'wifi', title: 'IoT代码模板', description: 'ESP32/MQTT等' }
   ];
 
   /**
@@ -829,8 +796,8 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
       // Mock 模式下使用默认指标
       this.matuxMetrics = {
         activeStudents: 328,
-        monthlyRevenue: '¥12.5W',
-        courseCompletionRate: '92%',
+        monthlyRevenue: '12.5',
+        courseCompletionRate: '92',
       };
       this.setupCharts();
       this.loading = false;
