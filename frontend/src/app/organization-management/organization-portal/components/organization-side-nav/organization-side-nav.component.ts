@@ -6,9 +6,11 @@ import { MatListModule } from '@angular/material/list';
 import { RouterModule } from '@angular/router';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { OrganizationContextService } from '../../../../core/services/organization-context.service';
+import { OrganizationContextService, OrganizationType } from '../../../../core/services/organization-context.service';
 import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-menu.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-organization-side-nav',
@@ -175,7 +177,8 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     public orgContext: OrganizationContextService,
-    private tenantMenuService: TenantMenuService
+    private tenantMenuService: TenantMenuService,
+    private http: HttpClient
   ) {
     // 默认展开第一个组
     this.expandedGroups.add('overview');
@@ -197,10 +200,47 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
       this.tenantMenuService.getMenu(this.orgId).subscribe({
         next: (res) => {
           this.menuItems = res.menu;
+          // 设置组织上下文
+          this.loadOrganizationInfo();
         },
         error: (err) => console.error('Failed to load menu:', err)
       })
     );
+  }
+
+  /**
+   * 加载机构信息并设置组织上下文
+   */
+  private loadOrganizationInfo(): void {
+    // 调用API获取机构详细信息
+    this.http.get<any>(`${environment.apiUrl}/api/v1/organizations/${this.orgId}`).subscribe({
+      next: (org) => {
+        // 映射组织类型
+        let orgType: OrganizationType = 'training_institution';
+        if (org.org_type === 'k12_school') {
+          orgType = 'k12_school';
+        } else if (org.org_type === 'vocational_school') {
+          orgType = 'vocational_school';
+        } else if (org.org_type === 'education_bureau') {
+          orgType = 'education_bureau';
+        }
+
+        this.orgContext.setContext({
+          id: this.orgId,
+          name: org.name || '机构名称',
+          type: orgType
+        });
+      },
+      error: (err) => {
+        console.error('Failed to load organization info:', err);
+        // 失败时使用默认值
+        this.orgContext.setContext({
+          id: this.orgId,
+          name: '机构名称',
+          type: 'training_institution'
+        });
+      }
+    });
   }
 
   /**

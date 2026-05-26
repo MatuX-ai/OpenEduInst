@@ -176,13 +176,10 @@ export class StudentListComponent implements OnInit, OnDestroy {
    * 加载学员列表
    */
   loadStudents(): void {
-    const orgId = this.orgContext.currentContext?.id;
-    if (!orgId) return;
-
     console.log('[StudentList] 开始加载学员列表...');
     this.loading = true;
     const subscription = this.studentService
-      .getStudents(orgId, this.pageIndex + 1, this.pageSize, this.filter.keyword)
+      .getStudents(0, this.pageIndex + 1, this.pageSize, this.filter.keyword)
       .subscribe({
         next: (response) => {
           console.log('[StudentList] 加载成功，数据条数:', response.data?.length);
@@ -204,13 +201,10 @@ export class StudentListComponent implements OnInit, OnDestroy {
    * 加载统计数据
    */
   loadStats(): void {
-    const orgId = this.orgContext.currentContext?.id;
-    if (!orgId) return;
-
     console.log('[StudentList] 开始加载统计数据...');
     this.statsLoading = true;
     const subscription = this.studentService
-      .getStatsSummary(orgId)
+      .getStatsSummary()
       .subscribe({
         next: (response) => {
           console.log('[StudentList] 统计数据加载成功:', response.data);

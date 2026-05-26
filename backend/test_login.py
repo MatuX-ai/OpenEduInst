@@ -1,30 +1,40 @@
 import requests
+import base64
+import json
 
-# 测试登录 API
-url = "http://127.0.0.1:8000/api/v1/auth/token"
+# 登录获取token
+response = requests.post(
+    "http://127.0.0.1:8000/api/v1/auth/token",
+    data={"username": "admin", "password": "admin123"}
+)
 
-# 准备表单数据（OAuth2PasswordRequestForm 需要 form-data 格式）
-data = {
-    "username": "zhao_admin",
-    "password": "demo123456"
-}
+print(f"Status: {response.status_code}")
+print(f"Response: {response.json()}")
 
-print("正在测试登录 API...")
-print(f"URL: {url}")
-print(f"用户名: zhao_admin")
-print(f"密码: demo123456")
-print()
-
-try:
-    response = requests.post(url, data=data)
-    print(f"状态码: {response.status_code}")
-    print(f"响应内容: {response.text}")
+if response.status_code == 200:
+    token = response.json()["access_token"]
     
-    if response.status_code == 200:
-        print("\n✓ 登录成功！")
-        token_data = response.json()
-        print(f"Access Token: {token_data['access_token'][:50]}...")
+    # 解码JWT payload
+    parts = token.split('.')
+    payload = parts[1]
+    # 添加padding
+    payload += '=' * (4 - len(payload) % 4) if len(payload) % 4 else ''
+    decoded = base64.urlsafe_b64decode(payload)
+    payload_data = json.loads(decoded)
+    
+    print(f"\nDecoded JWT Payload:")
+    print(json.dumps(payload_data, indent=2))
+    
+    # 测试学生API
+    headers = {"Authorization": f"Bearer {token}"}
+    student_response = requests.get(
+        "http://127.0.0.1:8000/api/v1/students/",
+        params={"page": 1, "page_size": 10},
+        headers=headers
+    )
+    
+    print(f"\nStudent API Status: {student_response.status_code}")
+    if student_response.status_code == 200:
+        print(f"Students: {student_response.json()}")
     else:
-        print(f"\n✗ 登录失败")
-except Exception as e:
-    print(f"请求出错: {e}")
+        print(f"Error: {student_response.text}")

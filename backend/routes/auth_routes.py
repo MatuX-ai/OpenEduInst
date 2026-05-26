@@ -74,9 +74,17 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
             headers={"WWW-Authenticate": "Bearer"},
         )
     
+    # 获取用户所属的组织ID
+    from models.user_organization import UserOrganization
+    user_org = db.query(UserOrganization).filter(
+        UserOrganization.user_id == user.id
+    ).first()
+    
+    org_id = user_org.org_id if user_org else None
+    
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token_sync(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.username, "org_id": org_id}, expires_delta=access_token_expires
     )
     
     return {"access_token": access_token, "token_type": "bearer"}

@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 
 import { environment } from '../../environments/environment';
 import { OrganizationContextService, OrganizationType } from '../core/services/organization-context.service';
+import { AuthService } from '../core/services/auth.service';
 
 /**
  * 机构管理权限守卫
@@ -16,7 +17,8 @@ import { OrganizationContextService, OrganizationType } from '../core/services/o
 export class OrgAdminGuard implements CanActivate {
   constructor(
     private router: Router,
-    private orgContext: OrganizationContextService
+    private orgContext: OrganizationContextService,
+    private authService: AuthService
   ) {}
 
   canActivate(
@@ -42,14 +44,10 @@ export class OrgAdminGuard implements CanActivate {
       return of(true);
     }
 
-    // TODO: 真实 API 模式下验证用户权限并获取组织详情
-    // eslint-disable-next-line no-console
-    console.log('[Real API] 验证机构管理权限并加载上下文...', orgId);
+    // 真实 API 模式下验证用户权限并获取组织详情
+    const isAuthenticated = this.authService.isAuthenticated();
 
-    const isAuthenticated = true;
-    const hasPermission = true;
-
-    if (isAuthenticated && hasPermission) {
+    if (isAuthenticated) {
       // 这里应该从 API 获取真实的组织类型和配置
       this.orgContext.setContext({
         id: orgId,
@@ -59,7 +57,7 @@ export class OrgAdminGuard implements CanActivate {
       });
       return of(true);
     } else {
-      void this.router.navigate(['/auth/login']);
+      void this.router.navigate(['/login']);
       return of(false);
     }
   }

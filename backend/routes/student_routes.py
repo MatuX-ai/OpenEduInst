@@ -30,11 +30,12 @@ router = APIRouter(prefix="/api/v1/students", tags=["学员管理"])
 
 # ==================== 学员管理 ====================
 
-@router.get("/", response_model=List[StudentResponse])
+@router.get("/", response_model=dict)
 def get_students(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    keyword: Optional[str] = None,
     status: Optional[StudentStatus] = None,
-    skip: int = Query(0, ge=0),
-    limit: int = Query(100, ge=1, le=1000),
     db: Session = Depends(get_db),
     org_id: int = Depends(get_current_org_id)  # 从 Token 中提取并校验
 ):
@@ -45,8 +46,28 @@ def get_students(
         if status:
             query = query.filter(Student.status == status)
         
-        students = query.offset(skip).limit(limit).all()
-        return students
+        if keyword:
+            query = query.filter(
+                (Student.name.like(f"%{keyword}%")) |
+                (Student.student_number.like(f"%{keyword}%"))
+            )
+        
+        # 计算总数
+        total = query.count()
+        
+        # 分页
+        skip = (page - 1) * page_size
+        students = query.offset(skip).limit(page_size).all()
+        
+        return {
+            "data": students,
+            "pagination": {
+                "total": total,
+                "page": page,
+                "page_size": page_size,
+                "total_pages": (total + page_size - 1) // page_size
+            }
+        }
     except Exception as e:
         import traceback
         print(f"错误详情: {e}")
@@ -239,8 +260,8 @@ def create_attendance_record(
 
 @router.get("/stats/summary")
 def get_student_stats(
-    org_id: int = Query(..., description="机构ID"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    org_id: int = Depends(get_current_org_id)  # 从 Token 中提取并校验
 ):
     """获取学员统计信息"""
     total_students = db.query(Student).filter(Student.org_id == org_id).count()

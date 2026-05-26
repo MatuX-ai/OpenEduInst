@@ -82,7 +82,12 @@ def get_current_org_id(token: str = Depends(oauth2_scheme)) -> int:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         org_id = payload.get("org_id")
         if org_id is None:
-            raise credentials_exception
+            # 提供更详细的错误信息
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token 中缺少组织 ID。请确保用户已关联到组织。",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
         return org_id
     except JWTError:
         raise credentials_exception

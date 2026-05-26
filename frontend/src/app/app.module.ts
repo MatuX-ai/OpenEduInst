@@ -12,6 +12,10 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 const routes: Routes = [
   { path: '', redirectTo: '/organization', pathMatch: 'full' },
   { 
+    path: 'login', 
+    loadComponent: () => import('./pages/login/login.component').then(m => m.LoginComponent)
+  },
+  { 
     path: 'create-org', 
     loadComponent: () => import('./pages/create-org/create-org.component').then(m => m.CreateOrgComponent)
   },
