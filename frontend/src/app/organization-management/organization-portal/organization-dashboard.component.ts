@@ -71,7 +71,6 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
                 *ngIf="orgContext.isType('training_institution')"
                 [metrics]="{ activeStudents: matuxMetrics.activeStudents, monthlyRevenue: matuxMetrics.monthlyRevenue.replace('¥', '').replace('万', ''), courseCompletionRate: matuxMetrics.courseCompletionRate.replace('%', ''), equipmentUsageRate: '78' }"
                 [quickActions]="quickActions"
-                [stemFeatures]="[]"
                 [resources]="resourceItems">
               </app-training-dashboard-v2>
             </div>
@@ -121,12 +120,12 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       }
 
       ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-header {
-        background: white;
+        background: tokens.$card-bg;
         border-radius: 12px 12px 0 0;
-        border: 1px solid #E2E8F0;
+        border: tokens.$card-border;
         border-bottom: none;
         padding: 0 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        box-shadow: tokens.$shadow-sm;
       }
 
       ::ng-deep .unified-dashboard-tabs .mat-mdc-tab {
@@ -150,8 +149,8 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       }
 
       ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-body-wrapper {
-        background: white;
-        border: 1px solid #E2E8F0;
+        background: tokens.$card-bg;
+        border: tokens.$card-border;
         border-radius: 0 0 12px 12px;
         border-top: none;
       }
@@ -216,12 +215,12 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: tokens.$spacing-xl tokens.$spacing-lg; 
-        margin: tokens.$spacing-xl 0; 
-        border-radius: tokens.$radius-lg; 
-        background-color: #fff3cd;
-        border: 1px solid #ffeaa7;
-        color: #856404;
+        padding: tokens.$spacing-xl tokens.$spacing-lg;
+        margin: tokens.$spacing-xl 0;
+        border-radius: tokens.$radius-lg;
+        background-color: tokens.$color-warning-light;
+        border: tokens.$card-border;
+        color: tokens.$color-warning;
       }
 
       .education-error mat-icon {
@@ -291,50 +290,50 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       }
 
       .stat-icon.active {
-        background: linear-gradient(135deg, #4caf50, #2e7d32);
+        background: tokens.$color-stem-green;
       }
       .stat-icon.projects {
-        background: linear-gradient(135deg, #2196f3, #1565c0);
+        background: tokens.$color-brand-primary;
       }
       .stat-icon.users {
-        background: linear-gradient(135deg, #ff9800, #ef6c00);
+        background: tokens.$color-warning;
       }
       .stat-icon.hardware {
-        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+        background: tokens.$color-brand-primary;
       }
 
       .stat-icon.students {
-        background: linear-gradient(135deg, #00bcd4, #00838f);
+        background: tokens.$color-stem-green;
       }
       .stat-icon.teachers {
-        background: linear-gradient(135deg, #ff9800, #ef6c00);
+        background: tokens.$color-warning;
       }
       .stat-icon.courses {
-        background: linear-gradient(135deg, #4caf50, #2e7d32);
+        background: tokens.$color-stem-green;
       }
       .stat-icon.members {
-        background: linear-gradient(135deg, #3f51b5, #283593);
+        background: tokens.$color-brand-primary;
       }
       .stat-icon.enrollment {
-        background: linear-gradient(135deg, #e91e63, #ad1457);
+        background: tokens.$color-error;
       }
       .stat-icon.completion {
-        background: linear-gradient(135deg, #673ab7, #4527a0);
+        background: tokens.$color-brand-primary;
       }
       .stat-icon.revenue {
-        background: linear-gradient(135deg, #ffc107, #ff8f00);
+        background: tokens.$color-warning;
       }
       .stat-icon.satisfaction {
-        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+        background: tokens.$color-brand-primary;
       }
       .stat-icon.finance {
-        background: linear-gradient(135deg, #009688, #00796b);
+        background: tokens.$color-stem-green;
       }
       .stat-icon.classroom {
-        background: linear-gradient(135deg, #ff5722, #e64a19);
+        background: tokens.$color-warning;
       }
       .stat-icon.wechat-cs {
-        background: linear-gradient(135deg, #07c160, #05a050);
+        background: tokens.$color-stem-green;
       }
 
       .finance-quick-access {
@@ -495,16 +494,16 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
       }
 
       .stat-icon.students {
-        background: linear-gradient(135deg, #4caf50, #2e7d32);
+        background: tokens.$color-stem-green;
       }
       .stat-icon.teachers {
-        background: linear-gradient(135deg, #2196f3, #1565c0);
+        background: tokens.$color-brand-primary;
       }
       .stat-icon.courses {
-        background: linear-gradient(135deg, #ff9800, #ef6c00);
+        background: tokens.$color-warning;
       }
       .stat-icon.members {
-        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+        background: tokens.$color-brand-primary;
       }
 
       .tab-content {
@@ -639,8 +638,8 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
   commonFunctions: CommonFunctionItem[] = [
     { id: 'leads', title: '招生线索', icon: 'person_add', count: '15位待跟进', color: '#2196f3' },
     { id: 'schedule', title: '智能排课', icon: 'calendar_today', count: '本周42节课', color: '#4caf50' },
-    { id: 'settlement', title: '课时结算', icon: 'payments', count: '待确认8单', color: '#ff9800' },
-    { id: 'live', title: '直播授课', icon: 'videocam', count: '在线教室3间', color: '#9c27b0' }
+    { id: 'settlement', title: '课时结算', icon: 'payments', count: '待确认8单', color: '#FF6600' },
+    { id: 'live', title: '直播授课', icon: 'videocam', count: '在线教室3间', color: '#0066FF' }
   ];
   quickActions: QuickActionItem[] = [
     { id: 'enroll', label: '快速报名', icon: 'how_to_reg', color: 'blue' },

@@ -24,9 +24,10 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .safety-panel { padding: 20px; }
-    .high { color: #f44336; }
-    .time { font-size: 12px; color: #999; }
+    .high { color: $color-error; }
+    .time { font-size: $font-size-xs; color: $color-neutral-500; }
   `]
 })
 export class SafetyAlertPanelComponent implements OnInit {

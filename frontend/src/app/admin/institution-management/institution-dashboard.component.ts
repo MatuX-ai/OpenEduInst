@@ -241,6 +241,7 @@ import {
   `,
   styles: [
     `
+      @use '../../../styles/design-tokens' as tokens;
       .dashboard-container {
         padding: 24px;
       }
@@ -254,20 +255,20 @@ import {
           gap: 12px;
           margin: 0 0 8px 0;
           font-size: 28px;
-          color: #333;
+          color: tokens.$color-neutral-900;
 
           mat-icon {
             font-size: 32px;
             width: 32px;
             height: 32px;
-            color: #1976d2;
+            color: tokens.$color-brand-primary;
           }
         }
 
         .subtitle {
           margin: 0;
-          color: #666;
-          font-size: 14px;
+          color: tokens.$color-neutral-600;
+          font-size: tokens.$font-size-sm;
         }
       }
 
@@ -303,19 +304,19 @@ import {
           }
 
           &.users {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, tokens.$color-brand-primary, tokens.$color-brand-primary-dark);
           }
 
           &.projects {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, tokens.$color-error, #c62828);
           }
 
           &.licenses {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, tokens.$color-brand-primary, #0099FF);
           }
 
           &.hardware {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            background: linear-gradient(135deg, tokens.$color-stem-green, #00A84D);
           }
         }
 
@@ -323,15 +324,15 @@ import {
           flex: 1;
 
           .stat-label {
-            font-size: 14px;
-            color: #666;
+            font-size: tokens.$font-size-sm;
+            color: tokens.$color-neutral-600;
             margin-bottom: 4px;
           }
 
           .stat-value {
             font-size: 28px;
             font-weight: bold;
-            color: #333;
+            color: tokens.$color-neutral-900;
           }
         }
       }
@@ -343,11 +344,11 @@ import {
           margin-bottom: 16px;
 
           mat-icon {
-            color: #ff9800;
+            color: tokens.$color-warning;
           }
 
           mat-card-title {
-            color: #ff9800;
+            color: tokens.$color-warning;
           }
         }
 
@@ -357,7 +358,7 @@ import {
 
           li {
             margin-bottom: 8px;
-            color: #666;
+            color: tokens.$color-neutral-600;
           }
         }
 
@@ -366,7 +367,7 @@ import {
         }
       }
 
-      // 图表区域样式
+      /* 图表区域样式 */
       .dashboard-content {
         animation: fadeIn 0.5s ease-in;
       }
@@ -392,11 +393,11 @@ import {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 18px;
-            color: #333;
+            font-size: tokens.$font-size-lg;
+            color: tokens.$color-neutral-900;
 
             mat-icon {
-              color: #1976d2;
+              color: tokens.$color-brand-primary;
             }
           }
         }
@@ -411,7 +412,7 @@ import {
 
       .chart-placeholder {
         text-align: center;
-        color: #999;
+        color: tokens.$color-neutral-500;
 
         mat-icon {
           font-size: 64px;
@@ -423,7 +424,7 @@ import {
 
         p {
           margin: 0;
-          font-size: 16px;
+          font-size: tokens.$font-size-base;
         }
       }
 
@@ -445,7 +446,7 @@ import {
           align-items: flex-start;
           gap: 12px;
           padding: 12px 0;
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid tokens.$color-neutral-100;
 
           &:last-child {
             border-bottom: none;
@@ -458,15 +459,15 @@ import {
             flex-shrink: 0;
 
             &.severity-info {
-              color: #2196f3;
+              color: tokens.$color-brand-primary;
             }
 
             &.severity-warning {
-              color: #ff9800;
+              color: tokens.$color-warning;
             }
 
             &.severity-error {
-              color: #f44336;
+              color: tokens.$color-error;
             }
           }
 
@@ -476,22 +477,22 @@ import {
 
             .activity-title,
             .alert-title {
-              font-size: 14px;
-              color: #333;
+              font-size: tokens.$font-size-sm;
+              color: tokens.$color-neutral-900;
               margin-bottom: 4px;
             }
 
             .activity-time,
             .alert-time {
-              font-size: 12px;
-              color: #999;
+              font-size: tokens.$font-size-xs;
+              color: tokens.$color-neutral-500;
             }
           }
         }
 
         .alert-item {
           &.alert-warning {
-            background: rgba(255, 152, 0, 0.1);
+            background: tokens.$color-warning-light;
             padding: 8px;
             border-radius: 4px;
             margin: 0 -8px;
@@ -508,7 +509,7 @@ import {
         .empty-state {
           text-align: center;
           padding: 32px 16px;
-          color: #999;
+          color: tokens.$color-neutral-500;
 
           mat-icon {
             font-size: 48px;
@@ -519,7 +520,7 @@ import {
 
           p {
             margin: 0;
-            font-size: 14px;
+            font-size: tokens.$font-size-sm;
           }
         }
       }

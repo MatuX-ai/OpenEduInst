@@ -263,9 +263,10 @@ interface LeadStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .leads-container {
       padding: 24px;
-      background: #F8FAFC;
+      background: $color-bg-primary;
       min-height: calc(100vh - 64px);
     }
 
@@ -279,18 +280,18 @@ interface LeadStats {
     .page-title {
       font-size: 24px;
       font-weight: 600;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
       font-size: 14px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
     }
 
     .add-btn {
-      background: #0066FF !important;
+      background: $color-primary !important;
       color: white !important;
     }
 
@@ -305,8 +306,8 @@ interface LeadStats {
       background: white;
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      border: 1px solid #E2E8F0;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-border;
     }
 
     .stat-content {
@@ -317,14 +318,14 @@ interface LeadStats {
 
     .stat-label {
       font-size: 12px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0 0 8px 0;
     }
 
     .stat-value {
       font-size: 28px;
       font-weight: 700;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
@@ -336,9 +337,9 @@ interface LeadStats {
       gap: 4px;
     }
 
-    .stat-trend.positive { color: #00CC66; }
-    .stat-trend.warning { color: #F59E0B; }
-    .stat-trend.info { color: #0066FF; }
+    .stat-trend.positive { color: $color-secondary; }
+    .stat-trend.warning { color: $color-warning; }
+    .stat-trend.info { color: $color-primary; }
 
     .trend-icon {
       font-size: 14px !important;
@@ -362,23 +363,23 @@ interface LeadStats {
     }
 
     .stat-icon-wrapper.blue {
-      background: #EBF5FF;
-      color: #0066FF;
+      background: rgba($color-primary, 0.1);
+      color: $color-primary;
     }
 
     .stat-icon-wrapper.amber {
-      background: #FEF3C7;
-      color: #F59E0B;
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
     }
 
     .stat-icon-wrapper.purple {
-      background: #F3E8FF;
-      color: #9333EA;
+      background: rgba($color-primary-dark, 0.1);
+      color: $color-primary-dark;
     }
 
     .stat-icon-wrapper.green {
-      background: #ECFDF5;
-      color: #00CC66;
+      background: rgba($color-secondary, 0.1);
+      color: $color-secondary;
     }
 
     .content-grid {
@@ -390,13 +391,13 @@ interface LeadStats {
     .leads-table-card {
       background: white;
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      border: 1px solid #E2E8F0;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-border;
     }
 
     .card-header {
       padding: 20px;
-      border-bottom: 1px solid #F1F5F9;
+      border-bottom: 1px solid $color-bg-primary;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -411,15 +412,15 @@ interface LeadStats {
     .card-title {
       font-size: 16px;
       font-weight: 600;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0;
     }
 
     .badge {
       font-size: 12px;
       padding: 4px 12px;
-      background: #F1F5F9;
-      color: #64748B;
+      background: $color-bg-primary;
+      color: $color-text-secondary;
       border-radius: 12px;
     }
 
@@ -447,7 +448,7 @@ interface LeadStats {
       width: 40px;
       height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #0066FF, #00CCFF);
+      background: linear-gradient(135deg, $color-primary, $color-primary-light);
       color: white;
       display: flex;
       align-items: center;
@@ -459,13 +460,13 @@ interface LeadStats {
     .parent-name {
       font-size: 14px;
       font-weight: 500;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .parent-phone {
       font-size: 12px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
       display: flex;
       align-items: center;
@@ -480,13 +481,13 @@ interface LeadStats {
 
     .interest-course {
       font-size: 14px;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 2px 0;
     }
 
     .interest-grade {
       font-size: 12px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -499,27 +500,27 @@ interface LeadStats {
     }
 
     .status-badge.pending {
-      background: #FEF3C7;
-      color: #D97706;
-      border-color: #FDE68A;
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
+      border-color: rgba($color-warning, 0.3);
     }
 
     .status-badge.appointed {
-      background: #DBEAFE;
-      color: #2563EB;
-      border-color: #BFDBFE;
+      background: rgba($color-primary, 0.1);
+      color: $color-primary;
+      border-color: rgba($color-primary, 0.3);
     }
 
     .status-badge.enrolled {
-      background: #ECFDF5;
-      color: #059669;
-      border-color: #A7F3D0;
+      background: rgba($color-secondary, 0.1);
+      color: $color-secondary;
+      border-color: rgba($color-secondary, 0.3);
     }
 
     .status-badge.unreachable {
-      background: #F1F5F9;
-      color: #475569;
-      border-color: #E2E8F0;
+      background: $color-bg-primary;
+      color: $color-text-secondary;
+      border-color: $color-border;
     }
 
     .action-btn {
@@ -529,7 +530,7 @@ interface LeadStats {
 
     .pagination {
       padding: 16px 20px;
-      border-top: 1px solid #F1F5F9;
+      border-top: 1px solid $color-bg-primary;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -537,7 +538,7 @@ interface LeadStats {
 
     .pagination-info {
       font-size: 13px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -549,24 +550,24 @@ interface LeadStats {
 
     .sidebar-card {
       border-radius: 12px;
-      border: 1px solid #E2E8F0;
+      border: 1px solid $color-border;
     }
 
     .card-header-small {
       padding: 16px 20px;
-      border-bottom: 1px solid #F1F5F9;
+      border-bottom: 1px solid $color-bg-primary;
     }
 
     .card-title-small {
       font-size: 15px;
       font-weight: 600;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .card-subtitle {
       font-size: 12px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -579,40 +580,40 @@ interface LeadStats {
       justify-content: space-between;
       align-items: center;
       padding: 12px;
-      background: #F8FAFC;
+      background: $color-bg-primary;
       border-radius: 8px;
       margin-bottom: 8px;
       transition: background 0.2s;
     }
 
     .source-item:hover {
-      background: #F1F5F9;
+      background: $color-bg-primary;
     }
 
     .source-name {
       font-size: 14px;
       font-weight: 500;
-      color: #1E293B;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .source-count {
       font-size: 12px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
     }
 
     .rate-value {
       font-size: 14px;
       font-weight: 600;
-      color: #00CC66;
+      color: $color-secondary;
       margin: 0 0 2px 0;
       text-align: right;
     }
 
     .rate-label {
       font-size: 11px;
-      color: #64748B;
+      color: $color-text-secondary;
       margin: 0;
       text-align: right;
     }

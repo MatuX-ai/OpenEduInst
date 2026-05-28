@@ -52,7 +52,7 @@ import { WechatCustomerServiceService } from '../../services/wechat-customer-ser
               <mat-icon>forum</mat-icon>
             </div>
             <div class="stat-info">
-              <h3 class="stat-value">{{ statistics?.total_sessions }}</h3>
+              <h3 class="stat-value">{{ statistics.total_sessions }}</h3>
               <p class="stat-label">总会话数</p>
             </div>
           </mat-card-content>
@@ -64,7 +64,7 @@ import { WechatCustomerServiceService } from '../../services/wechat-customer-ser
               <mat-icon>people</mat-icon>
             </div>
             <div class="stat-info">
-              <h3 class="stat-value">{{ statistics?.active_sessions }}</h3>
+              <h3 class="stat-value">{{ statistics.active_sessions }}</h3>
               <p class="stat-label">进行中会话</p>
             </div>
           </mat-card-content>
@@ -78,7 +78,7 @@ import { WechatCustomerServiceService } from '../../services/wechat-customer-ser
             <div class="stat-info">
               <h3 class="stat-value">
                 {{
-                  statistics?.ai_replied_count && statistics?.total_messages
+                  statistics.ai_replied_count && statistics.total_messages
                     ? ((statistics.ai_replied_count! / statistics.total_messages!) * 100
                       | number: '1.0-0')
                     : 0
@@ -95,7 +95,7 @@ import { WechatCustomerServiceService } from '../../services/wechat-customer-ser
               <mat-icon>sentiment_satisfied_alt</mat-icon>
             </div>
             <div class="stat-info">
-              <h3 class="stat-value">{{ statistics?.satisfaction_rate }}%</h3>
+              <h3 class="stat-value">{{ statistics.satisfaction_rate }}%</h3>
               <p class="stat-label">满意度</p>
             </div>
           </mat-card-content>

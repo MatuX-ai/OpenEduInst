@@ -42,67 +42,66 @@ type ViewMode = 'day' | 'week' | 'month';
   ],
   template: `
     <div class="schedule-container">
-      <!-- 工具栏 -->
-      <mat-card class="toolbar-card">
-        <mat-card-content>
-          <div class="toolbar">
-            <!-- 视图切换 -->
-            <div class="view-toggle">
-              <mat-button-toggle-group
-                [(ngModel)]="currentView"
-                (change)="onViewChange()"
-                aria-label="视图模式">
-                <mat-button-toggle value="day">
-                  <mat-icon>view_day</mat-icon>
-                  日视图
-                </mat-button-toggle>
-                <mat-button-toggle value="week">
-                  <mat-icon>view_week</mat-icon>
-                  周视图
-                </mat-button-toggle>
-                <mat-button-toggle value="month">
-                  <mat-icon>calendar_month</mat-icon>
-                  月视图
-                </mat-button-toggle>
-              </mat-button-toggle-group>
-            </div>
+      <!-- 页面标题（对齐原型） -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">排课管理</h1>
+          <p class="page-subtitle">日/周/月多视图课表管理与批量排课</p>
+        </div>
+        <div class="header-actions">
+          <button class="cd-btn cd-btn-primary" (click)="openBatchSchedule()">
+            <mat-icon>add_circle</mat-icon>
+            批量排课
+          </button>
+          <button class="cd-btn cd-btn-secondary" (click)="openEquipmentSchedule()">
+            <mat-icon>precision_manufacturing</mat-icon>
+            设备排期
+          </button>
+          <button class="cd-btn cd-btn-secondary" [matMenuTriggerFor]="moreMenu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #moreMenu="matMenu">
+            <button mat-menu-item (click)="exportSchedule()">
+              <mat-icon>download</mat-icon>
+              <span>导出课表</span>
+            </button>
+            <button mat-menu-item (click)="printSchedule()">
+              <mat-icon>print</mat-icon>
+              <span>打印课表</span>
+            </button>
+            <button mat-menu-item (click)="openStats()">
+              <mat-icon>analytics</mat-icon>
+              <span>统计数据</span>
+            </button>
+          </mat-menu>
+        </div>
+      </div>
 
-            <!-- 操作按钮 -->
-            <div class="actions">
-              <button
-                mat-flat-button
-                color="primary"
-                (click)="openBatchSchedule()"
-                matTooltip="批量排课">
-                <mat-icon>add_circle</mat-icon>
-                批量排课
-              </button>
-
-              <button
-                mat-stroked-button
-                [matMenuTriggerFor]="moreMenu"
-                matTooltip="更多操作">
-                <mat-icon>more_vert</mat-icon>
-              </button>
-
-              <mat-menu #moreMenu="matMenu">
-                <button mat-menu-item (click)="exportSchedule()">
-                  <mat-icon>download</mat-icon>
-                  <span>导出课表</span>
-                </button>
-                <button mat-menu-item (click)="printSchedule()">
-                  <mat-icon>print</mat-icon>
-                  <span>打印课表</span>
-                </button>
-                <button mat-menu-item (click)="openStats()">
-                  <mat-icon>analytics</mat-icon>
-                  <span>统计数据</span>
-                </button>
-              </mat-menu>
-            </div>
+      <!-- 视图切换工具栏（对齐原型卡片样式） -->
+      <div class="toolbar-card">
+        <div class="toolbar-inner">
+          <div class="view-toggle">
+            <mat-button-toggle-group
+              [(ngModel)]="currentView"
+              (change)="onViewChange()"
+              aria-label="视图模式">
+              <mat-button-toggle value="day">
+                <mat-icon>view_day</mat-icon>
+                日视图
+              </mat-button-toggle>
+              <mat-button-toggle value="week">
+                <mat-icon>view_week</mat-icon>
+                周视图
+              </mat-button-toggle>
+              <mat-button-toggle value="month">
+                <mat-icon>calendar_month</mat-icon>
+                月视图
+              </mat-button-toggle>
+            </mat-button-toggle-group>
           </div>
-        </mat-card-content>
-      </mat-card>
+          <span class="current-date-label">{{ currentDateLabel }}</span>
+        </div>
+      </div>
 
       <!-- 统计卡片 -->
       @if (showStats) {
@@ -124,24 +123,91 @@ type ViewMode = 'day' | 'week' | 'month';
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .schedule-container {
       height: 100%;
       overflow-y: auto;
-      padding: 16px;
-      background-color: #f5f5f5;
     }
 
+    /* 页面标题（对齐原型） */
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: $spacing-lg;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: $font-size-xl;
+      font-weight: 700;
+      color: $color-neutral-900;
+    }
+
+    .page-subtitle {
+      margin: $spacing-xs 0 0 0;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: $spacing-sm;
+      align-items: center;
+    }
+
+    /* 按钮样式（对齐原型） */
+    .cd-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all $transition-fast ease;
+      line-height: 1;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+
+      &.cd-btn-primary {
+        background: $btn-primary-bg;
+        color: $btn-primary-color;
+        &:hover { background: $btn-primary-bg-hover; }
+      }
+
+      &.cd-btn-secondary {
+        background: $btn-secondary-bg;
+        color: $color-neutral-600;
+        border: 1px solid $color-neutral-200;
+        padding: 8px 12px;
+        &:hover { background: $color-neutral-50; }
+      }
+    }
+
+    /* 工具栏卡片（对齐原型） */
     .toolbar-card {
-      margin-bottom: 16px;
-      border-radius: 8px;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
+      padding: $spacing-md $spacing-lg;
+      margin-bottom: $spacing-lg;
     }
 
-    .toolbar {
+    .toolbar-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: $spacing-md;
     }
 
     .view-toggle {
@@ -151,23 +217,22 @@ type ViewMode = 'day' | 'week' | 'month';
 
     ::ng-deep .mat-button-toggle-group {
       border: none;
-      border-radius: 8px;
+      border-radius: $radius-md;
       overflow: hidden;
     }
 
     ::ng-deep .mat-button-toggle {
-      background-color: #f5f5f5;
+      background-color: $color-neutral-100;
     }
 
     ::ng-deep .mat-button-toggle-checked {
-      background-color: #1976d2;
+      background-color: $color-brand-primary;
       color: white;
     }
 
-    .actions {
-      display: flex;
-      gap: 8px;
-      align-items: center;
+    .current-date-label {
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
     }
 
     .view-content {
@@ -175,13 +240,18 @@ type ViewMode = 'day' | 'week' | 'month';
     }
 
     @media (max-width: 768px) {
-      .toolbar {
+      .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: $spacing-md;
+      }
+
+      .toolbar-inner {
         flex-direction: column;
         align-items: stretch;
       }
 
-      .view-toggle,
-      .actions {
+      .view-toggle {
         justify-content: center;
       }
     }
@@ -190,9 +260,20 @@ type ViewMode = 'day' | 'week' | 'month';
 export class ScheduleMainComponent implements OnInit {
   currentView: ViewMode = 'week';
   showStats = false;
+  currentDateLabel: string = '';
 
   ngOnInit(): void {
-    // 默认显示周视图
+    this.updateDateLabel();
+  }
+
+  private updateDateLabel(): void {
+    const now = new Date();
+    this.currentDateLabel = now.toLocaleDateString('zh-CN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long'
+    });
   }
 
   /**
@@ -208,6 +289,14 @@ export class ScheduleMainComponent implements OnInit {
   openBatchSchedule(): void {
     // TODO: 打开批量排课对话框或导航到批量排课页面
     window.location.href = '/organization/1/schedule/batch';
+  }
+
+  /**
+   * 打开设备排期
+   */
+  openEquipmentSchedule(): void {
+    // TODO: 打开设备排期对话框或导航到设备排期页面
+    console.log('打开设备排期');
   }
 
   /**

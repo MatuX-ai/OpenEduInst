@@ -8,6 +8,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { OrganizationContextService, OrganizationType } from '../../../../core/services/organization-context.service';
 import { TenantMenuService, MenuItem } from '../../../../core/services/tenant-menu.service';
+import { AuthService } from '../../../../core/services/auth.service';
 import { trigger, state, style, animate, transition } from '@angular/animations';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
@@ -32,137 +33,276 @@ import { environment } from '../../../../../environments/environment';
     ])
   ],
   template: `
-    <mat-nav-list>
-      <ng-container *ngFor="let group of menuItems">
-        <!-- 分组标题（可点击折叠） -->
-        <div class="menu-group-title" (click)="toggleGroup(group.id)">
-          <span>{{ group.title }}</span>
-          <mat-icon class="expand-icon" [class.expanded]="isGroupExpanded(group.id)">
-            {{ isGroupExpanded(group.id) ? 'expand_less' : 'expand_more' }}
-          </mat-icon>
+    <div class="side-nav-container">
+      <!-- Logo 区域（对齐原型） -->
+      <div class="logo-section">
+        <div class="logo-icon">
+          <mat-icon>memory</mat-icon>
         </div>
-        
-        <!-- 有子菜单的组 -->
-        <ng-container *ngIf="group.children && group.children.length > 0">
-          <div [@expandCollapse]="isGroupExpanded(group.id) ? 'expanded' : 'collapsed'">
-            <a mat-list-item *ngFor="let item of group.children" [routerLink]="getNavLink(item.path || '')" 
-               routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
-              <mat-icon matListItemIcon>{{ item.icon || 'circle' }}</mat-icon>
-              <span matListItemTitle>{{ item.title }}</span>
-            </a>
-          </div>
-        </ng-container>
+        <div class="logo-text">
+          <h1 class="org-name">{{ orgName }}</h1>
+          <p class="org-subtitle">{{ orgSubtitle }}</p>
+        </div>
+      </div>
 
-        <!-- 没有子菜单的单点（兼容旧逻辑） -->
-        <a mat-list-item *ngIf="!group.children || group.children.length === 0" [routerLink]="getNavLink(group.path || '')"
-           routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
-          <mat-icon matListItemIcon>{{ group.icon }}</mat-icon>
-          <span matListItemTitle>{{ group.title }}</span>
-        </a>
-      </ng-container>
-    </mat-nav-list>
+      <!-- 用户信息（对齐原型） -->
+      <div class="user-section">
+        <div class="user-avatar">{{ userInitial }}</div>
+        <div class="user-info">
+          <p class="user-name">{{ userName }}</p>
+          <p class="user-role">{{ userRole }}</p>
+        </div>
+      </div>
+
+      <!-- 导航菜单 -->
+      <nav class="nav-section">
+        <ng-container *ngFor="let group of menuItems">
+          <!-- 直接链接 -->
+          <ng-container *ngIf="group.path">
+            <a class="nav-item"
+               [routerLink]="getNavLink(group.path)"
+               routerLinkActive="nav-active"
+               [routerLinkActiveOptions]="{exact: true}">
+              <mat-icon class="nav-icon">{{ group.icon || 'circle' }}</mat-icon>
+              <span class="nav-label">{{ group.title }}</span>
+            </a>
+          </ng-container>
+
+          <!-- 分组标题 -->
+          <ng-container *ngIf="group.children && group.children.length > 0">
+            <div class="nav-group-header" (click)="toggleGroup(group.id)">
+              <mat-icon class="nav-icon">{{ group.icon || 'folder' }}</mat-icon>
+              <span class="nav-group-label">{{ group.title }}</span>
+              <mat-icon class="nav-expand" [class.expanded]="isGroupExpanded(group.id)">
+                {{ isGroupExpanded(group.id) ? 'expand_less' : 'expand_more' }}
+              </mat-icon>
+            </div>
+            <div [@expandCollapse]="isGroupExpanded(group.id) ? 'expanded' : 'collapsed'">
+              <a class="nav-item nav-sub-item"
+                 *ngFor="let item of group.children"
+                 [routerLink]="getNavLink(item.path || '')"
+                 routerLinkActive="nav-active"
+                 [routerLinkActiveOptions]="{exact: true}">
+                <mat-icon class="nav-icon">{{ item.icon || 'circle' }}</mat-icon>
+                <span class="nav-label">{{ item.title }}</span>
+              </a>
+            </div>
+          </ng-container>
+        </ng-container>
+      </nav>
+    </div>
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       :host {
         display: block;
         height: 100%;
         background: #0F172A;
       }
 
-      mat-nav-list {
-        padding: 8px 0;
-      }
-
-      mat-divider {
-        margin: 8px 0;
-        border-top-color: rgba(255, 255, 255, 0.1);
-      }
-
-      ::ng-deep .mat-mdc-list-item {
-        color: #F1F5F9 !important;
-        min-height: 40px !important;
-        padding: 0 16px !important;
-        margin: 2px 8px !important;
-        border-radius: 8px !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item:hover {
-        background-color: rgba(255, 255, 255, 0.08) !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item-active,
-      .active-link {
-        background-color: rgba(0, 102, 255, 0.15) !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item .mdc-list-item__primary-text {
-        color: #F1F5F9 !important;
-        font-size: 13px !important;
-        font-weight: 500 !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item mat-icon {
-        color: #94A3B8 !important;
-        font-size: 18px !important;
-        width: 18px !important;
-        height: 18px !important;
-        margin-right: 12px !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item:hover mat-icon {
-        color: #F1F5F9 !important;
-      }
-
-      ::ng-deep .mat-mdc-list-item-active mat-icon,
-      .active-link mat-icon {
-        color: #0066FF !important;
-      }
-
-      .menu-group-title {
-        padding: 16px 24px 8px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        color: #64748B;
-        letter-spacing: 0.8px;
-        user-select: none;
-        cursor: pointer;
+      .side-nav-container {
         display: flex;
-        justify-content: space-between;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      /* === Logo 区域（对齐原型） === */
+      .logo-section {
+        display: flex;
         align-items: center;
-        transition: color 0.2s;
+        gap: 12px;
+        padding: 20px;
+        border-bottom: 1px solid $color-neutral-800;
       }
 
-      .menu-group-title:hover {
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #3B82F6, #22C55E);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .logo-icon mat-icon {
+        color: white;
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .logo-text {
+        min-width: 0;
+      }
+
+      .org-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .org-subtitle {
+        font-size: 11px;
         color: #94A3B8;
+        margin: 0;
       }
 
-      .expand-icon {
+      /* === 用户信息（对齐原型） === */
+      .user-section {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid $color-neutral-800;
+      }
+
+      .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: #2563EB;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+      }
+
+      .user-info {
+        min-width: 0;
+      }
+
+      .user-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #E2E8F0;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .user-role {
+        font-size: 12px;
+        color: #94A3B8;
+        margin: 0;
+      }
+
+      /* === 导航菜单 === */
+      .nav-section {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+      }
+
+      .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        margin: 1px 0;
+        border-radius: 8px;
+        text-decoration: none;
+        transition: all 0.15s ease;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .nav-item:hover {
+        background-color: rgba(30, 41, 59, 1);
+      }
+
+      .nav-item:hover .nav-label {
+        color: #E2E8F0;
+      }
+
+      .nav-item:hover .nav-icon {
+        color: #E2E8F0;
+      }
+
+      .nav-active {
+        background-color: rgba(37, 99, 235, 0.2) !important;
+      }
+
+      .nav-active .nav-label {
+        color: #60A5FA !important;
+        font-weight: 500;
+      }
+
+      .nav-active .nav-icon {
+        color: #3B82F6 !important;
+      }
+
+      .nav-icon {
+        font-size: 16px !important;
+        width: 16px !important;
+        height: 16px !important;
+        color: #94A3B8;
+        flex-shrink: 0;
+      }
+
+      .nav-label {
+        font-size: 14px;
+        color: #94A3B8;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        transition: color 0.15s;
+      }
+
+      .nav-sub-item {
+        padding-left: 42px !important;
+      }
+
+      /* 分组标题 */
+      .nav-group-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px 12px;
+        margin-top: 4px;
+        cursor: pointer;
+        user-select: none;
+        border-radius: 8px;
+        transition: background 0.15s;
+      }
+
+      .nav-group-header:hover {
+        background-color: rgba(255, 255, 255, 0.04);
+      }
+
+      .nav-group-header:hover .nav-group-label {
+        color: $color-text-muted;
+      }
+
+      .nav-group-label {
+        font-size: 13px;
+        font-weight: 500;
+        color: $color-text-secondary;
+        flex: 1;
+      }
+
+      .nav-expand {
         font-size: 18px !important;
         width: 18px !important;
         height: 18px !important;
+        color: $color-text-secondary;
         transition: transform 0.2s;
       }
 
-      .expand-icon.expanded {
+      .nav-expand.expanded {
         transform: rotate(180deg);
-      }
-
-      .active-link {
-        position: relative;
-      }
-
-      .active-link::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 3px;
-        height: 60%;
-        background: #0066FF;
-        border-radius: 0 2px 2px 0;
       }
     `,
   ],
@@ -170,6 +310,12 @@ import { environment } from '../../../../../environments/environment';
 export class OrganizationSideNavComponent implements OnInit, OnDestroy {
   orgId!: number;
   menuItems: MenuItem[] = [];
+  orgName: string = '星海机器人';
+  orgSubtitle: string = '培训中心管理';
+  userName: string = '管理员';
+  userRole: string = '机构负责人';
+  userInitial: string = '管';
+
   private subs = new Subscription();
   private expandedGroups: Set<string> = new Set();
 
@@ -178,10 +324,16 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     private router: Router,
     public orgContext: OrganizationContextService,
     private tenantMenuService: TenantMenuService,
+    private authService: AuthService,
     private http: HttpClient
   ) {
-    // 默认展开第一个组
-    this.expandedGroups.add('overview');
+    // 从 AuthService 获取用户信息
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.userName = user.full_name || user.username;
+      this.userRole = user.role === 'admin' ? '机构负责人' : '管理员';
+      this.userInitial = (user.full_name || user.username).charAt(0);
+    }
   }
 
   ngOnInit(): void {
@@ -200,7 +352,11 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
       this.tenantMenuService.getMenu(this.orgId).subscribe({
         next: (res) => {
           this.menuItems = res.menu;
-          // 设置组织上下文
+          // 默认展开第一个分组
+          const firstGroup = res.menu.find(m => m.children && m.children.length > 0);
+          if (firstGroup) {
+            this.expandedGroups.add(firstGroup.id);
+          }
           this.loadOrganizationInfo();
         },
         error: (err) => console.error('Failed to load menu:', err)
@@ -208,14 +364,9 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     );
   }
 
-  /**
-   * 加载机构信息并设置组织上下文
-   */
   private loadOrganizationInfo(): void {
-    // 调用API获取机构详细信息
     this.http.get<any>(`${environment.apiUrl}/api/v1/organizations/${this.orgId}`).subscribe({
       next: (org) => {
-        // 映射组织类型
         let orgType: OrganizationType = 'training_institution';
         if (org.org_type === 'k12_school') {
           orgType = 'k12_school';
@@ -230,10 +381,19 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
           name: org.name || '机构名称',
           type: orgType
         });
+
+        // 更新侧边栏机构信息
+        this.orgName = org.name || this.orgName;
+        const subtitleMap: Record<string, string> = {
+          'training_institution': '培训中心管理',
+          'k12_school': '科创中心管理',
+          'vocational_school': '实训基地管理',
+          'education_bureau': '监管平台管理'
+        };
+        this.orgSubtitle = subtitleMap[orgType] || '管理中心';
       },
       error: (err) => {
         console.error('Failed to load organization info:', err);
-        // 失败时使用默认值
         this.orgContext.setContext({
           id: this.orgId,
           name: '机构名称',
@@ -243,9 +403,6 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     });
   }
 
-  /**
-   * 切换分组展开/折叠状态
-   */
   toggleGroup(groupId: string): void {
     if (this.isGroupExpanded(groupId)) {
       this.expandedGroups.delete(groupId);
@@ -254,16 +411,10 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * 检查分组是否展开
-   */
   isGroupExpanded(groupId: string): boolean {
     return this.expandedGroups.has(groupId);
   }
 
-  /**
-   * 获取导航链接
-   */
   getNavLink(page: string): string[] {
     if (!this.orgId || isNaN(this.orgId)) {
       console.warn('[SideNav] orgId 无效,返回空数组');
@@ -272,19 +423,13 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     return ['/organization', String(this.orgId), page];
   }
 
-  /**
-   * 提取机构 ID
-   */
   private extractOrgId(): void {
-    // 方法1: 从父路由获取
     const parentId = this.route.parent?.snapshot.params['id'] as string | undefined;
     if (parentId && !isNaN(+parentId)) {
       this.orgId = +parentId;
-      console.log('[SideNav] 从 parent 获取 orgId:', this.orgId);
       return;
     }
 
-    // 方法2: 从当前路由的根路径获取
     let currentRoute: ActivatedRoute | null = this.route;
     while (currentRoute?.parent) {
       currentRoute = currentRoute.parent;
@@ -294,19 +439,16 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
       const rootId = currentRoute.snapshot.firstChild?.params['id'] as string | undefined;
       if (rootId && !isNaN(+rootId)) {
         this.orgId = +rootId;
-        console.log('[SideNav] 从 root 获取 orgId:', this.orgId);
         return;
       }
     }
 
-    // 方法3: 从 URL 解析
     const urlSegments = this.router.url.split('/');
     const orgIndex = urlSegments.findIndex((seg) => seg === 'organization');
     if (orgIndex >= 0 && urlSegments[orgIndex + 1]) {
       const urlId = +urlSegments[orgIndex + 1];
       if (!isNaN(urlId)) {
         this.orgId = urlId;
-        console.log('[SideNav] 从 URL 获取 orgId:', this.orgId);
         return;
       }
     }

@@ -62,7 +62,7 @@ mat-progress-bar {
   width: 100px;
   height: 100px;
   border-radius: $radius-full;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, $color-brand-primary 0%, $color-brand-primary-dark 100%);
   color: white;
   display: flex;
   align-items: center;

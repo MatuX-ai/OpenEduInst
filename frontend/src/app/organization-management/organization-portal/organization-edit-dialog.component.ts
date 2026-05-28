@@ -81,6 +81,7 @@ import { Organization } from './organization-dashboard.service';
   `,
   styles: [
     `
+      @use '../../styles/design-tokens' as *;
       .dialog-container {
         min-width: 500px;
         max-width: 600px;
@@ -120,7 +121,7 @@ import { Organization } from './organization-dashboard.service';
         gap: 12px;
         margin-top: 24px;
         padding-top: 16px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid $color-border;
       }
 
       @media (max-width: 600px) {

@@ -135,6 +135,7 @@ import { UnifiedCourseCardComponent } from '../../../../shared/components/unifie
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .course-management-section {
         margin-bottom: 24px;
       }
@@ -165,7 +166,7 @@ import { UnifiedCourseCardComponent } from '../../../../shared/components/unifie
       .empty-state {
         text-align: center;
         padding: 40px;
-        color: rgba(0, 0, 0, 0.5);
+        color: $color-text-muted;
       }
 
       .empty-state mat-icon {
@@ -204,18 +205,18 @@ import { UnifiedCourseCardComponent } from '../../../../shared/components/unifie
       }
 
       .status-active {
-        background-color: #e8f5e9;
-        color: #2e7d32;
+        background-color: rgba($color-secondary, 0.1);
+        color: $color-secondary-dark;
       }
 
       .status-inactive {
-        background-color: #ffebee;
-        color: #c62828;
+        background-color: rgba($color-error, 0.1);
+        color: $color-error;
       }
 
       .status-pending {
-        background-color: #fff3e0;
-        color: #ef6c00;
+        background-color: rgba($color-warning, 0.1);
+        color: $color-warning;
       }
     `,
   ],

@@ -262,6 +262,7 @@ interface CompetitionStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .competitions-container {
       padding: 24px;
       max-width: 1400px;
@@ -279,18 +280,18 @@ interface CompetitionStats {
     .page-title {
       font-size: 24px;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
       font-size: 14px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .add-btn {
-      background: #3b82f6 !important;
+      background: $color-brand-primary !important;
     }
 
     /* Stats Grid */
@@ -302,11 +303,11 @@ interface CompetitionStats {
     }
 
     .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
     }
 
     .stat-content {
@@ -321,20 +322,20 @@ interface CompetitionStats {
 
     .stat-label {
       font-size: 12px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
       font-size: 28px;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
       font-size: 12px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0;
     }
 
@@ -347,7 +348,7 @@ interface CompetitionStats {
     }
 
     .stat-trend.positive {
-      color: #10b981;
+      color: $color-stem-green;
     }
 
     .trend-icon {
@@ -370,24 +371,24 @@ interface CompetitionStats {
       height: 24px;
     }
 
-    .stat-icon-wrapper.blue { background: #eff6ff; color: #3b82f6; }
-    .stat-icon-wrapper.amber { background: #fffbeb; color: #f59e0b; }
-    .stat-icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
-    .stat-icon-wrapper.emerald { background: #ecfdf5; color: #10b981; }
+    .stat-icon-wrapper.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon-wrapper.amber { background: $color-warning-light; color: $color-warning; }
+    .stat-icon-wrapper.purple { background: $color-brand-primary-subtle; color: $color-brand-primary; }
+    .stat-icon-wrapper.emerald { background: $color-stem-green-bg; color: $color-stem-green; }
 
     /* Section Card */
     .section-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
       margin-bottom: 20px;
       overflow: hidden;
     }
 
     .section-header {
       padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -405,21 +406,21 @@ interface CompetitionStats {
       height: 20px;
     }
 
-    .section-icon.amber { color: #f59e0b; }
-    .section-icon.purple { color: #8b5cf6; }
+    .section-icon.amber { color: $color-warning; }
+    .section-icon.purple { color: $color-brand-primary; }
 
     .section-title {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1e293b;
+      color: $color-neutral-700;
       margin: 0;
     }
 
     .count-badge {
       font-size: 12px;
       padding: 4px 12px;
-      background: #f1f5f9;
-      color: #475569;
+      background: $color-neutral-100;
+      color: $color-neutral-600;
       border-radius: 12px;
     }
 
@@ -495,7 +496,7 @@ interface CompetitionStats {
     .comp-name {
       font-size: 16px;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0;
     }
 
@@ -520,7 +521,7 @@ interface CompetitionStats {
 
     .status-badge.closed {
       background: #f8fafc;
-      color: #64748b;
+      color: $color-neutral-500;
       border-color: #e2e8f0;
     }
 
@@ -563,14 +564,14 @@ interface CompetitionStats {
 
     .detail-label {
       font-size: 11px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .detail-value {
       font-size: 14px;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0;
     }
 
@@ -634,7 +635,7 @@ interface CompetitionStats {
     .cert-name {
       font-size: 15px;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
@@ -659,7 +660,7 @@ interface CompetitionStats {
 
     .section-label {
       font-size: 11px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0 0 8px 0;
     }
 
@@ -692,14 +693,14 @@ interface CompetitionStats {
 
     .stat-row .stat-label {
       font-size: 11px;
-      color: #64748b;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-row .stat-value {
       font-size: 14px;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0;
     }
 

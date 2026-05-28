@@ -74,66 +74,64 @@ import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .stem-features-container {
       padding: 24px;
-      background: #0f172a; /* Dark Slate Background */
-      color: #e2e8f0;
+      background: $color-neutral-50;
+      color: $color-neutral-700;
       min-height: 100%;
     }
 
     /* Page Header */
     .page-header {
-      margin-bottom: 32px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 20px;
+      border-bottom: 1px solid $color-neutral-200;
       padding-bottom: 16px;
     }
 
     .page-header h1 {
       margin: 0;
-      font-size: 32px;
+      font-size: 20px;
       font-weight: 700;
-      color: #ffffff;
-      letter-spacing: -0.5px;
+      color: $color-neutral-900;
     }
 
     .subtitle {
-      margin: 8px 0 0 0;
-      color: #94a3b8;
-      font-size: 15px;
+      margin: 4px 0 0 0;
+      color: $color-neutral-500;
+      font-size: 14px;
     }
 
-    /* Tab Group Styling - Dark Mode */
+    /* Tab Group Styling - Light Mode */
     ::ng-deep .mat-mdc-tab-group {
       background: transparent;
     }
 
     ::ng-deep .mat-mdc-tab-header {
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(10px);
-      border-radius: 16px 16px 0 0;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: $card-bg;
+      border-radius: $radius-lg $radius-lg 0 0;
+      border: $card-border;
       border-bottom: none;
     }
 
     ::ng-deep .mat-mdc-tab-label {
-      color: #94a3b8 !important;
+      color: $color-neutral-500 !important;
       font-weight: 600;
     }
 
     ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-active {
-      color: #38bdf8 !important; /* Sky Blue */
+      color: $color-brand-primary !important;
     }
 
     ::ng-deep .mat-mdc-ink-bar {
-      background-color: #38bdf8 !important;
-      height: 3px;
+      background-color: $color-brand-primary !important;
+      height: 2px;
     }
 
     ::ng-deep .mat-mdc-tab-body-wrapper {
-      background: #1e293b;
-      border-radius: 0 0 16px 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: $card-bg;
+      border-radius: 0 0 $radius-lg $radius-lg;
+      border: $card-border;
       border-top: none;
     }
   `]

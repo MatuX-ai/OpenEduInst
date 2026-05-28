@@ -54,6 +54,7 @@ export interface DashboardMetrics {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .metrics-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -83,12 +84,12 @@ export interface DashboardMetrics {
       margin-right: 16px;
       color: white;
     }
-    .primary .metric-icon { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .revenue .metric-icon { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .rate .metric-icon { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .primary .metric-icon { background: linear-gradient(135deg, $color-brand-primary, $color-brand-primary-dark); }
+    .revenue .metric-icon { background: linear-gradient(135deg, $color-stem-green, #00A84D); }
+    .rate .metric-icon { background: linear-gradient(135deg, $color-warning, #E65C00); }
     .metric-icon mat-icon { font-size: 28px; width: 28px; height: 28px; }
-    .metric-info h3 { margin: 0; font-size: 14px; color: #666; font-weight: 500; }
-    .metric-info .value { font-size: 28px; font-weight: 700; color: #333; margin-top: 4px; }
+    .metric-info h3 { margin: 0; font-size: $font-size-sm; color: $color-neutral-600; font-weight: 500; }
+    .metric-info .value { font-size: 28px; font-weight: 700; color: $color-neutral-900; margin-top: 4px; }
   `]
 })
 export class MatuxCoreMetricsComponent {

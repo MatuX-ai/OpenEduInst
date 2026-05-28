@@ -33,18 +33,19 @@ export interface ResourceItem {
     </div>
   `,
   styles: [`
-    .resource-section { margin-top: 24px; }
-    .section-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; }
+    @use '../../../../styles/design-tokens' as *;
+    .resource-section { margin-top: $spacing-lg; }
+    .section-title { font-size: $font-size-base; font-weight: 600; color: $color-neutral-900; margin-bottom: $spacing-md; }
     .resource-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
-    .resource-card { cursor: pointer; border-radius: 12px; transition: all 0.2s; }
+    .resource-card { cursor: pointer; border-radius: $radius-lg; transition: all $transition-fast; }
     .resource-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
     mat-card-content { display: flex; align-items: center; padding: 16px !important; }
     .icon-box { 
-      width: 40px; height: 40px; border-radius: 8px; background: #f5f7fa; 
-      display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #4a90e2;
+      width: 40px; height: 40px; border-radius: $radius-sm; background: $color-neutral-100; 
+      display: flex; align-items: center; justify-content: center; margin-right: $spacing-sm; color: $color-brand-primary;
     }
-    .text-info h4 { margin: 0; font-size: 14px; color: #333; font-weight: 600; }
-    .text-info p { margin: 4px 0 0; font-size: 12px; color: #888; }
+    .text-info h4 { margin: 0; font-size: $font-size-sm; color: $color-neutral-900; font-weight: 600; }
+    .text-info p { margin: 4px 0 0; font-size: $font-size-xs; color: $color-neutral-500; }
   `]
 })
 export class MatuxResourceCenterComponent {

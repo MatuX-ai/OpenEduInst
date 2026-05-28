@@ -29,6 +29,9 @@ export interface Classroom {
   room_number?: string; // 房间号
   has_projector?: boolean; // 是否有投影仪
   has_computer?: boolean; // 是否有电脑
+  has_audio_system?: boolean; // 是否有音响
+  has_whiteboard?: boolean; // 是否有白板
+  floor?: number; // 楼层
 }
 
 /**

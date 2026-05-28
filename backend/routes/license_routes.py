@@ -9,6 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 
+from models.base_models import User
 from models.license import (
     LicenseCreate,
     LicenseResponse,
@@ -19,6 +20,7 @@ from models.license import (
     OrganizationUpdate,
 )
 from services.license_service import LicenseService
+from utils.auth_utils import get_current_user_sync
 from utils.database import get_db
 
 router = APIRouter(prefix="/api/v1", tags=["许可证管理"])
@@ -89,7 +91,7 @@ async def get_organization(
     license_service: LicenseService = Depends(get_license_service),
     db: Session = Depends(get_db),
 ):
-    """根据ID获取组织详情"""
+    """根据ID获取组织详情（开发阶段无需认证）"""
     from models.license import Organization
 
     organization = db.query(Organization).filter(Organization.id == org_id).first()

@@ -293,9 +293,11 @@ export interface ResourceItem {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .training-dashboard {
-      padding: 24px;
-      background: #F5F7FA;
+      padding: $spacing-lg;
+      background: #F1F5F9;
       min-height: 100%;
     }
 
@@ -304,21 +306,21 @@ export interface ResourceItem {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .kpi-card {
-      background: white;
+      background: #FFFFFF;
       border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      padding: 20px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       border: 1px solid #E2E8F0;
       transition: all 0.3s ease;
       cursor: pointer;
     }
 
     .kpi-card:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
       transform: translateY(-2px);
     }
 
@@ -344,14 +346,14 @@ export interface ResourceItem {
       height: 20px;
     }
 
-    .kpi-icon-wrapper.blue { background: #EBF5FF; }
-    .kpi-icon-wrapper.blue mat-icon { color: #0066FF; }
-    .kpi-icon-wrapper.green { background: #E6FFF0; }
-    .kpi-icon-wrapper.green mat-icon { color: #00CC66; }
-    .kpi-icon-wrapper.purple { background: #F3E5F5; }
-    .kpi-icon-wrapper.purple mat-icon { color: #9C27B0; }
-    .kpi-icon-wrapper.orange { background: #FFF3E0; }
-    .kpi-icon-wrapper.orange mat-icon { color: #FF9800; }
+    .kpi-icon-wrapper.blue { background: #EFF6FF; }
+    .kpi-icon-wrapper.blue mat-icon { color: #3B82F6; }
+    .kpi-icon-wrapper.green { background: #F0FDF4; }
+    .kpi-icon-wrapper.green mat-icon { color: #10B981; }
+    .kpi-icon-wrapper.purple { background: #F3E8FF; }
+    .kpi-icon-wrapper.purple mat-icon { color: #A855F7; }
+    .kpi-icon-wrapper.orange { background: #FFF7ED; }
+    .kpi-icon-wrapper.orange mat-icon { color: #F97316; }
 
     .kpi-trend {
       font-size: 12px;
@@ -360,14 +362,14 @@ export interface ResourceItem {
       border-radius: 4px;
     }
 
-    .kpi-trend.up { color: #00CC66; background: #E6FFF0; }
-    .kpi-trend.down { color: #FF3333; background: #FFEBEE; }
+    .kpi-trend.up { color: #10B981; background: #F0FDF4; }
+    .kpi-trend.down { color: #EF4444; background: #FEF2F2; }
 
     .kpi-value {
       font-size: 28px;
       font-weight: 700;
-      color: #1E293B;
-      margin: 8px 0;
+      color: #0F172A;
+      margin: 4px 0 0 0;
     }
 
     .kpi-unit {
@@ -388,19 +390,19 @@ export interface ResourceItem {
       display: grid;
       grid-template-columns: 2fr 1fr;
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
 
     .chart-card {
-      background: white;
+      background: #FFFFFF;
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       border: 1px solid #E2E8F0;
       overflow: hidden;
     }
 
     .chart-header {
-      padding: 24px;
+      padding: 20px;
       border-bottom: 1px solid #F1F5F9;
       display: flex;
       justify-content: space-between;
@@ -425,13 +427,13 @@ export interface ResourceItem {
       font-size: 12px;
       border: 1px solid #E2E8F0;
       border-radius: 8px;
-      background: #F8FAFC;
+      background: #F1F5F9;
       color: #64748B;
       cursor: pointer;
     }
 
     .chart-body {
-      padding: 24px;
+      padding: 20px;
     }
 
     .chart-placeholder {
@@ -448,9 +450,9 @@ export interface ResourceItem {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font-size: 12px;
-      color: #94A3B8;
-      padding-right: 8px;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
+      padding-right: $spacing-sm;
     }
 
     .chart-area {
@@ -467,9 +469,9 @@ export interface ResourceItem {
     .chart-x-axis {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      color: #94A3B8;
-      margin-top: 8px;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
+      margin-top: $spacing-sm;
       padding: 0 12px;
     }
 
@@ -526,19 +528,19 @@ export interface ResourceItem {
       margin-right: 8px;
     }
 
-    .legend-dot.blue { background: #0066FF; }
+    .legend-dot.blue { background: $color-brand-primary; }
     .legend-dot.purple { background: #9C27B0; }
-    .legend-dot.green { background: #00CC66; }
+    .legend-dot.green { background: $color-stem-green; }
     .legend-dot.orange { background: #FF9800; }
 
     .legend-label {
       flex: 1;
-      color: #64748B;
+      color: $color-neutral-500;
     }
 
     .legend-value {
       font-weight: 600;
-      color: #1E293B;
+      color: $color-neutral-800;
     }
 
     /* 底部网格 */
@@ -555,14 +557,14 @@ export interface ResourceItem {
     }
 
     .section-card {
-      background: white;
+      background: #FFFFFF;
       border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
       border: 1px solid #E2E8F0;
     }
 
     .section-header {
-      padding: 24px;
+      padding: 20px;
       border-bottom: 1px solid #F1F5F9;
     }
 
@@ -570,7 +572,7 @@ export interface ResourceItem {
       font-size: 16px;
       font-weight: 600;
       color: #1E293B;
-      margin: 0 0 8px 0;
+      margin: 0 0 4px 0;
     }
 
     .section-subtitle {
@@ -580,21 +582,21 @@ export interface ResourceItem {
     }
 
     .section-body {
-      padding: 24px;
+      padding: 20px;
     }
 
     /* STEM 特色功能列表 */
     .feature-list {
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 12px;
     }
 
     .feature-item {
       display: flex;
       align-items: center;
       gap: 16px;
-      padding: 16px;
+      padding: 14px;
       border-radius: 8px;
       border: 1px solid #F1F5F9;
       transition: all 0.2s ease;
@@ -602,15 +604,15 @@ export interface ResourceItem {
     }
 
     .feature-item:hover {
-      border-color: #0066FF;
-      background: #F8FAFF;
+      border-color: #BFDBFE;
+      background: rgba(59, 130, 246, 0.03);
     }
 
     .feature-icon-wrapper {
       width: 40px;
       height: 40px;
       border-radius: 8px;
-      background: #EBF5FF;
+      background: #EFF6FF;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -620,7 +622,7 @@ export interface ResourceItem {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: #0066FF;
+      color: #3B82F6;
     }
 
     .feature-info {
@@ -629,7 +631,7 @@ export interface ResourceItem {
 
     .feature-label {
       font-size: 14px;
-      font-weight: 600;
+      font-weight: 500;
       color: #1E293B;
       margin: 0 0 4px 0;
     }
@@ -641,7 +643,7 @@ export interface ResourceItem {
     }
 
     .feature-status {
-      font-size: 12px;
+      font-size: 11px;
       padding: 4px 8px;
       border-radius: 12px;
       font-weight: 500;
@@ -652,7 +654,7 @@ export interface ResourceItem {
     .actions-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
+      gap: 12px;
     }
 
     .action-button {
@@ -660,7 +662,7 @@ export interface ResourceItem {
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      padding: 16px;
+      padding: 12px;
       border: none;
       background: transparent;
       border-radius: 8px;
@@ -687,16 +689,16 @@ export interface ResourceItem {
       height: 20px;
     }
 
-    .action-blue { background: #EBF5FF; }
-    .action-blue mat-icon { color: #0066FF; }
-    .action-amber { background: #FFF3E0; }
-    .action-amber mat-icon { color: #FF9800; }
-    .action-emerald { background: #E6FFF0; }
-    .action-emerald mat-icon { color: #00CC66; }
-    .action-purple { background: #F3E5F5; }
-    .action-purple mat-icon { color: #9C27B0; }
-    .action-rose { background: #FFEBEE; }
-    .action-rose mat-icon { color: #FF3333; }
+    .action-blue { background: #EFF6FF; }
+    .action-blue mat-icon { color: #3B82F6; }
+    .action-amber { background: #FFF7ED; }
+    .action-amber mat-icon { color: #F97316; }
+    .action-emerald { background: #F0FDF4; }
+    .action-emerald mat-icon { color: #10B981; }
+    .action-purple { background: #F3E8FF; }
+    .action-purple mat-icon { color: #A855F7; }
+    .action-rose { background: #FEF2F2; }
+    .action-rose mat-icon { color: #EF4444; }
     .action-slate { background: #F1F5F9; }
     .action-slate mat-icon { color: #64748B; }
 
@@ -708,7 +710,7 @@ export interface ResourceItem {
 
     /* 教学资源中心 */
     .resources-section .section-body {
-      padding: 16px;
+      padding: 20px;
     }
 
     .resources-grid {
@@ -722,17 +724,17 @@ export interface ResourceItem {
       align-items: flex-start;
       gap: 12px;
       padding: 12px;
-      border: 1px solid #E2E8F0;
+      border: 1px solid #F1F5F9;
       border-radius: 8px;
-      background: white;
+      background: #FFFFFF;
       cursor: pointer;
       transition: all 0.2s ease;
       text-align: left;
     }
 
     .resource-item:hover {
-      border-color: #0066FF;
-      background: #EBF5FF;
+      border-color: #BFDBFE;
+      background: rgba(59, 130, 246, 0.03);
     }
 
     .resource-icon-wrapper {
@@ -760,7 +762,7 @@ export interface ResourceItem {
     }
 
     .resource-item:hover .resource-icon-wrapper mat-icon {
-      color: #0066FF;
+      color: #3B82F6;
     }
 
     .resource-info {
@@ -769,19 +771,19 @@ export interface ResourceItem {
     }
 
     .resource-label {
-      font-size: 13px;
-      font-weight: 600;
-      color: #1E293B;
+      font-size: 14px;
+      font-weight: 500;
+      color: #334155;
       margin: 0 0 2px 0;
       transition: color 0.2s ease;
     }
 
     .resource-item:hover .resource-label {
-      color: #0066FF;
+      color: #3B82F6;
     }
 
     .resource-desc {
-      font-size: 11px;
+      font-size: 12px;
       color: #94A3B8;
       margin: 0;
     }

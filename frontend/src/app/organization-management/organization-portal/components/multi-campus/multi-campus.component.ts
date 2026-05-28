@@ -69,8 +69,10 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .multi-campus-container {
-      padding: 24px;
+      padding: $spacing-lg;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -78,11 +80,11 @@ import { MatButtonModule } from '@angular/material/button';
     }
 
     .content-card {
-      background: white;
-      border-radius: 16px;
-      padding: 48px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $card-border-radius;
+      padding: $spacing-xxl;
+      box-shadow: $card-shadow;
+      border: $card-border;
       max-width: 700px;
       width: 100%;
       text-align: center;
@@ -91,12 +93,12 @@ import { MatButtonModule } from '@angular/material/button';
     .icon-wrapper {
       width: 80px;
       height: 80px;
-      background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
+      background: linear-gradient(135deg, $color-brand-primary 0%, $color-stem-green 100%);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 24px;
+      margin: 0 auto $spacing-lg;
     }
 
     .main-icon {
@@ -109,20 +111,20 @@ import { MatButtonModule } from '@angular/material/button';
     .title {
       font-size: 28px;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 12px 0;
     }
 
     .description {
       font-size: 16px;
-      color: #64748b;
-      margin: 0 0 32px 0;
+      color: $color-neutral-500;
+      margin: 0 0 $spacing-xl 0;
       line-height: 1.6;
     }
 
     .contact-box {
-      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-      border: 2px solid #3b82f6;
+      background: linear-gradient(135deg, $color-brand-primary-bg 0%, #dbeafe 100%);
+      border: 2px solid $color-brand-primary;
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 32px;
@@ -132,10 +134,10 @@ import { MatButtonModule } from '@angular/material/button';
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: $spacing-sm;
       margin-bottom: 12px;
-      font-size: 14px;
-      color: #1e40af;
+      font-size: $font-size-sm;
+      color: $color-brand-primary-dark;
       font-weight: 500;
     }
 
@@ -149,9 +151,9 @@ import { MatButtonModule } from '@angular/material/button';
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: $spacing-sm;
       font-size: 18px;
-      color: #1e40af;
+      color: $color-brand-primary-dark;
       font-weight: 600;
       font-family: monospace;
     }
@@ -169,8 +171,8 @@ import { MatButtonModule } from '@angular/material/button';
     .features-title {
       font-size: 18px;
       font-weight: 600;
-      color: #0f172a;
-      margin: 0 0 16px 0;
+      color: $color-neutral-900;
+      margin: 0 0 $spacing-md 0;
       text-align: center;
     }
 
@@ -183,15 +185,15 @@ import { MatButtonModule } from '@angular/material/button';
     .feature-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: $spacing-sm;
       padding: 12px;
-      background: #f8fafc;
-      border-radius: 8px;
-      border: 1px solid #e2e8f0;
+      background: $color-neutral-50;
+      border-radius: $radius-md;
+      border: $card-border;
     }
 
     .feature-item mat-icon {
-      color: #10b981;
+      color: $color-stem-green;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -199,7 +201,7 @@ import { MatButtonModule } from '@angular/material/button';
 
     .feature-item span {
       font-size: 13px;
-      color: #334155;
+      color: $color-neutral-700;
     }
 
     @media (max-width: 640px) {

@@ -149,6 +149,7 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .education-section {
         margin-bottom: 24px;
       }
@@ -209,29 +210,29 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
       }
 
       .square-card .stat-icon.students {
-        background: linear-gradient(135deg, #4caf50, #2e7d32);
+        background: linear-gradient(135deg, $color-secondary, $color-secondary-dark);
       }
       .square-card .stat-icon.teachers {
-        background: linear-gradient(135deg, #2196f3, #1565c0);
+        background: linear-gradient(135deg, $color-primary-light, $color-primary-dark);
       }
       .square-card .stat-icon.courses {
-        background: linear-gradient(135deg, #ff9800, #ef6c00);
+        background: linear-gradient(135deg, $color-warning, $color-warning);
       }
       .square-card .stat-icon.members {
-        background: linear-gradient(135deg, #9c27b0, #6a1b9a);
+        background: linear-gradient(135deg, $color-warning, $color-warning);
       }
 
       .square-card .stat-value {
         font-size: 32px;
         font-weight: 700;
-        color: #212121;
+        color: $color-text-primary;
         margin-bottom: 4px;
         line-height: 1.2;
       }
 
       .square-card .stat-label {
         font-size: 14px;
-        color: #757575;
+        color: $color-text-secondary;
         font-weight: 500;
       }
 
@@ -256,7 +257,7 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
       .finance-quick-access:hover,
       .classroom-quick-access:hover,
       .wechat-cs-quick-access:hover {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, $color-primary 0%, $color-primary-dark 100%);
         color: white;
       }
 
@@ -280,7 +281,7 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
         margin: 0;
         font-size: 14px;
         font-weight: 500;
-        color: rgba(0, 0, 0, 0.6);
+        color: $color-text-secondary;
       }
 
       .stat-icon {
@@ -290,37 +291,37 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
       }
 
       .stat-icon.enrollment {
-        color: #00bcd4;
+        color: $color-primary-light;
       }
       .stat-icon.completion {
-        color: #8bc34a;
+        color: $color-secondary-light;
       }
       .stat-icon.revenue {
-        color: #f44336;
+        color: $color-error;
       }
       .stat-icon.satisfaction {
-        color: #ffc107;
+        color: $color-warning;
       }
       .stat-icon.finance {
-        color: #3f51b5;
+        color: $color-primary;
       }
       .stat-icon.classroom {
-        color: #009688;
+        color: $color-secondary;
       }
       .stat-icon.wechat-cs {
-        color: #4caf50;
+        color: $color-secondary;
       }
 
       .stat-value {
         font-size: 28px;
         font-weight: 600;
-        color: rgba(0, 0, 0, 0.87);
+        color: $color-text-primary;
         margin-bottom: 8px;
       }
 
       .stat-footer {
         font-size: 12px;
-        color: rgba(0, 0, 0, 0.5);
+        color: $color-text-muted;
       }
 
       /* 响应式适配 */

@@ -3,6 +3,7 @@
  */
 
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
@@ -97,6 +98,7 @@ interface ImportResult {
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .batch-operations-toolbar {
         display: flex;
         gap: 12px;
@@ -105,7 +107,7 @@ interface ImportResult {
 
       .badge {
         margin-left: 8px;
-        background: #f44336;
+        background: $color-error;
         color: white;
         border-radius: 50%;
         padding: 2px 6px;
@@ -117,6 +119,7 @@ interface ImportResult {
   ],
   standalone: true,
   imports: [
+    CommonModule,
     MatButtonModule,
     MatIconModule,
     MatMenuModule,

@@ -48,10 +48,7 @@ interface ResourceStats {
     CommonModule,
     FormsModule,
     MatCardModule,
-    MatButtonModule,
     MatIconModule,
-    MatInputModule,
-    MatFormFieldModule,
     MatChipsModule,
     MatProgressSpinnerModule
   ],
@@ -63,7 +60,7 @@ interface ResourceStats {
           <h1 class="page-title">教学资源库</h1>
           <p class="page-subtitle">课件、代码、视频等教学资源共享平台</p>
         </div>
-        <button mat-raised-button color="primary" class="upload-btn">
+        <button class="btn-primary upload-btn">
           <mat-icon>add</mat-icon>
           上传资源
         </button>
@@ -129,13 +126,11 @@ interface ResourceStats {
 
       <!-- Search and Filter -->
       <div class="search-bar">
-        <mat-form-field appearance="outline" class="search-field">
-          <mat-label>搜索资源</mat-label>
-          <input matInput placeholder="输入资源名称或关键词" [(ngModel)]="searchKeyword" (keyup.enter)="onSearch()">
-          <mat-icon matSuffix>search</mat-icon>
-        </mat-form-field>
-
-        <button mat-stroked-button class="filter-btn">
+        <div class="search-field-wrapper">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input type="text" placeholder="搜索资源名称或关键词..." [(ngModel)]="searchKeyword" (keyup.enter)="onSearch()" class="search-input" />
+        </div>
+        <button class="btn-secondary">
           <mat-icon>filter_list</mat-icon>
           筛选
         </button>
@@ -154,7 +149,7 @@ interface ResourceStats {
             </div>
             <div class="category-actions">
               <span class="resource-count-badge">{{ category.count }} 个资源</span>
-              <button mat-stroked-button class="view-all-btn">
+              <button class="btn-secondary">
                 <mat-icon>folder</mat-icon>
                 查看全部
               </button>
@@ -180,7 +175,7 @@ interface ResourceStats {
 
               <div class="resource-footer">
                 <span class="upload-date">{{ formatDate(resource.upload_time) }}</span>
-                <button mat-button class="download-btn" (click)="onDownload(resource)">
+                <button class="download-btn" (click)="onDownload(resource)">
                   <mat-icon>download</mat-icon>
                   下载
                 </button>
@@ -198,7 +193,7 @@ interface ResourceStats {
           </div>
           <h3 class="upload-title">拖拽文件到此处上传</h3>
           <p class="upload-description">支持 PPT、PDF、视频、代码文件等多种格式</p>
-          <button mat-raised-button color="primary" class="select-file-btn">
+          <button class="btn-primary select-file-btn">
             选择文件
           </button>
         </div>
@@ -206,8 +201,9 @@ interface ResourceStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .resources-container {
-      padding: 24px;
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -217,40 +213,54 @@ interface ResourceStats {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: $spacing-lg;
     }
 
     .page-title {
-      font-size: 24px;
-      font-weight: 600;
-      color: #0f172a;
+      font-size: $font-size-xl;
+      font-weight: 700;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
-      font-size: 14px;
-      color: #64748b;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .upload-btn {
-      background: #3b82f6 !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: $color-primary;
+      color: white;
+      border: none;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      &:hover { background: $color-primary-dark; }
     }
 
     /* Stats Grid */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
     }
 
     .stat-card {
       background: white;
-      border-radius: 12px;
+      border-radius: $radius-lg;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-neutral-200;
     }
 
     .stat-content {
@@ -264,26 +274,26 @@ interface ResourceStats {
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: $font-size-3xl;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .stat-trend {
-      font-size: 12px;
+      font-size: $font-size-xs;
       display: flex;
       align-items: center;
       gap: 4px;
@@ -291,7 +301,7 @@ interface ResourceStats {
     }
 
     .stat-trend.positive {
-      color: #10b981;
+      color: $color-success;
     }
 
     .trend-icon {
@@ -301,11 +311,11 @@ interface ResourceStats {
     .stat-icon-wrapper {
       width: 48px;
       height: 48px;
-      border-radius: 8px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: 16px;
+      flex-shrink: 0;
     }
 
     .stat-icon-wrapper mat-icon {
@@ -315,59 +325,122 @@ interface ResourceStats {
     }
 
     .stat-icon-wrapper.blue {
-      background: #eff6ff;
-      color: #3b82f6;
+      background: rgba($color-primary, 0.08);
+      color: $color-primary;
     }
 
     .stat-icon-wrapper.purple {
-      background: #f5f3ff;
-      color: #8b5cf6;
+      background: rgba($color-primary, 0.08);
+      color: $color-primary;
     }
 
     .stat-icon-wrapper.amber {
-      background: #fffbeb;
-      color: #f59e0b;
+      background: $color-warning-light;
+      color: $color-warning;
     }
 
     .stat-icon-wrapper.emerald {
-      background: #ecfdf5;
-      color: #10b981;
+      background: $color-success-light;
+      color: $color-success;
     }
 
     /* Search Bar */
     .search-bar {
       display: flex;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: $spacing-sm;
+      margin-bottom: $spacing-lg;
+      align-items: center;
     }
 
-    .search-field {
+    .search-field-wrapper {
+      position: relative;
       flex: 1;
+      max-width: 300px;
     }
 
-    .filter-btn {
-      min-width: 100px;
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+      color: $color-neutral-400;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 8px 16px 8px 36px;
+      border: 1px solid $color-neutral-200;
+      border-radius: 8px;
+      font-size: $font-size-sm;
+      outline: none;
+      background: white;
+      &:focus { border-color: $color-primary; box-shadow: 0 0 0 3px rgba($color-primary, 0.1); }
+      &::placeholder { color: $color-neutral-400; }
+    }
+
+    /* 按钮对齐原型 */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: $color-primary;
+      color: white;
+      border: none;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s;
+      line-height: 1;
+      mat-icon { font-size: 18px; width: 18px; height: 18px; }
+      &:hover { background: $color-primary-dark; }
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: white;
+      color: $color-neutral-600;
+      border: 1px solid $color-neutral-200;
+      border-radius: 8px;
+      font-size: $font-size-sm;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      line-height: 1;
+      mat-icon { font-size: 16px; width: 16px; height: 16px; }
+      &:hover { background: $color-neutral-50; }
+    }
+
+    .select-file-btn {
+      padding: 10px 24px;
     }
 
     /* Categories Container */
     .categories-container {
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      margin-bottom: 24px;
+      gap: $spacing-lg;
+      margin-bottom: $spacing-lg;
     }
 
     .category-section {
       background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-neutral-200;
       overflow: hidden;
     }
 
     .category-header {
       padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -376,7 +449,7 @@ interface ResourceStats {
     .category-info {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: $spacing-sm;
     }
 
     .category-icon {
@@ -384,30 +457,31 @@ interface ResourceStats {
     }
 
     .category-name {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1e293b;
+      color: $color-neutral-800;
       margin: 0 0 2px 0;
     }
 
     .category-description {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .category-actions {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: $spacing-sm;
     }
 
     .resource-count-badge {
-      font-size: 12px;
+      font-size: $font-size-xs;
       padding: 4px 12px;
-      background: #eff6ff;
-      color: #3b82f6;
-      border-radius: 12px;
+      background: rgba($color-primary, 0.08);
+      color: $color-primary;
+      border-radius: $radius-full;
+      line-height: 1.4;
     }
 
     .view-all-btn {
@@ -416,32 +490,32 @@ interface ResourceStats {
 
     /* Resources Grid */
     .resources-grid {
-      padding: 20px;
+      padding: $spacing-lg;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: 16px;
+      gap: $spacing-md;
     }
 
     .resource-card {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 16px;
+      border: 1px solid $color-neutral-200;
+      border-radius: $radius-md;
+      padding: $spacing-md;
       transition: all 0.2s;
       cursor: pointer;
     }
 
     .resource-card:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: $shadow-md;
     }
 
     .resource-header {
-      margin-bottom: 12px;
+      margin-bottom: $spacing-sm;
     }
 
     .resource-icon-title {
       display: flex;
       align-items: flex-start;
-      gap: 8px;
+      gap: $spacing-sm;
     }
 
     .format-icon {
@@ -449,9 +523,9 @@ interface ResourceStats {
     }
 
     .resource-name {
-      font-size: 14px;
+      font-size: $font-size-sm;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 2px 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -459,17 +533,17 @@ interface ResourceStats {
     }
 
     .resource-meta {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .resource-details {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 12px;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
+      margin-bottom: $spacing-sm;
     }
 
     .detail-item {
@@ -484,16 +558,23 @@ interface ResourceStats {
     }
 
     .upload-date {
-      font-size: 12px;
-      color: #94a3b8;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
     }
 
     .download-btn {
-      font-size: 12px;
-      background: #eff6ff;
-      color: #3b82f6;
+      font-size: $font-size-xs;
+      font-weight: 500;
+      background: rgba($color-primary, 0.08);
+      border: none;
+      color: $color-primary;
+      border-radius: 8px;
+      padding: 6px 12px;
       opacity: 0;
       transition: opacity 0.2s;
+      cursor: pointer;
+      line-height: 1;
+      mat-icon { font-size: 14px; width: 14px; height: 14px; }
     }
 
     .resource-card:hover .download-btn {
@@ -502,10 +583,10 @@ interface ResourceStats {
 
     /* Upload Area */
     .upload-area {
-      background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
-      border: 2px dashed #93c5fd;
-      border-radius: 12px;
-      padding: 32px;
+      background: linear-gradient(135deg, rgba($color-primary, 0.04) 0%, rgba($color-primary, 0.08) 100%);
+      border: 2px dashed $color-primary-light;
+      border-radius: $radius-lg;
+      padding: $spacing-xl;
       text-align: center;
     }
 
@@ -522,28 +603,28 @@ interface ResourceStats {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 16px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      margin: 0 auto $spacing-md;
+      box-shadow: $shadow-sm;
     }
 
     .upload-icon-wrapper mat-icon {
       font-size: 32px;
       width: 32px;
       height: 32px;
-      color: #3b82f6;
+      color: $color-primary;
     }
 
     .upload-title {
-      font-size: 18px;
+      font-size: $font-size-lg;
       font-weight: 600;
-      color: #0f172a;
-      margin: 0 0 8px 0;
+      color: $color-neutral-900;
+      margin: 0 0 $spacing-sm 0;
     }
 
     .upload-description {
-      font-size: 14px;
-      color: #475569;
-      margin: 0 0 16px 0;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
+      margin: 0 0 $spacing-md 0;
     }
 
     .select-file-btn {

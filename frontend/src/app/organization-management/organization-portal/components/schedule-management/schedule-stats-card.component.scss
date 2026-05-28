@@ -106,19 +106,19 @@ mat-progress-bar {
   }
 
   &.total .stat-icon {
-    background-color: #e3f2fd;
+    background-color: rgba($color-brand-primary, 0.08);
   }
 
   &.week .stat-icon {
-    background-color: #f3e5f5;
+    background-color: rgba($color-brand-primary, 0.08);
   }
 
   &.completed .stat-icon {
-    background-color: #e8f5e9;
+    background-color: rgba($color-stem-green, 0.1);
   }
 
   &.rooms .stat-icon {
-    background-color: #fff3e0;
+    background-color: rgba($color-warning, 0.1);
   }
 }
 

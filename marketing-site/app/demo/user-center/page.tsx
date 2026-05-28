@@ -45,12 +45,14 @@ export default function UserCenterPage() {
       // 用户只能有一个组织，直接跳转
       const org = organizations[0];
       
-      // 跳转到 Angular 管理后台
-      window.location.href = `http://localhost:4200/organization/${org.id}/dashboard`;
+      // 带上 token 跳转到 Angular 管理后台
+      const token = localStorage.getItem("access_token");
+      window.location.href = `http://localhost:4200/organization/${org.id}/dashboard?token=${encodeURIComponent(token || "")}`;
     } catch (err) {
       console.error("跳转失败:", err);
       // 失败时跳转到默认组织
-      window.location.href = `http://localhost:4200/organization/1/dashboard`;
+      const token = localStorage.getItem("access_token");
+      window.location.href = `http://localhost:4200/organization/1/dashboard?token=${encodeURIComponent(token || "")}`;
     }
   };
 

@@ -144,16 +144,17 @@ import {
   `,
   styles: [
     `
-      /* @use '../../../styles/design-tokens' as tokens; - COMMENTED OUT FOR ISOLATION FIX */
+      @use '../../../styles/design-tokens' as *;
+
       .organization-list {
-        padding: 24px;
+        padding: $spacing-lg;
       }
 
       .header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 24px;
+        margin-bottom: $spacing-lg;
       }
 
       .header h1 {
@@ -161,8 +162,8 @@ import {
         align-items: center;
         gap: 12px;
         margin: 0;
-        font-size: 1.75rem;
-        color: #333;
+        font-size: $font-size-2xl;
+        color: $color-neutral-900;
       }
 
       .loading-container,
@@ -180,33 +181,33 @@ import {
         font-size: 48px;
         width: 48px;
         height: 48px;
-        color: #f44336;
-        margin-bottom: 16px;
+        color: $color-error;
+        margin-bottom: $spacing-md;
       }
 
       .empty-state {
-        background: #f5f5f5;
-        border-radius: 8px;
+        background: $color-neutral-100;
+        border-radius: $radius-md;
       }
 
       .empty-state mat-icon {
         font-size: 64px;
         width: 64px;
         height: 64px;
-        color: #999;
-        margin-bottom: 16px;
+        color: $color-neutral-400;
+        margin-bottom: $spacing-md;
       }
 
       .organization-table {
         width: 100%;
-        border-radius: 8px;
+        border-radius: $radius-md;
         overflow: hidden;
       }
 
       table th {
-        background: #f5f5f5;
+        background: $color-neutral-100;
         font-weight: 600;
-        color: #333;
+        color: $color-neutral-900;
       }
     `,
   ],

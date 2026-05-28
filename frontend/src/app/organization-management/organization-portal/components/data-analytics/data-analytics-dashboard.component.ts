@@ -516,6 +516,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       /* ============================================
          数据看板 - 专业 UI/UX 设计系统
          Design System: MatuX Analytics Dashboard
@@ -524,7 +525,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       /* 全局容器 */
       .dashboard-container {
         min-height: 100%;
-        background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 100%);
+        background: linear-gradient(180deg, $color-neutral-50 0%, $card-bg 100%);
         padding: 32px;
       }
 
@@ -533,10 +534,10 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
          ============================================ */
       .page-header {
         margin-bottom: 32px;
-        background: white;
+        background: $card-bg;
         border-radius: 16px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         overflow: hidden;
       }
 
@@ -559,7 +560,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         margin: 0 0 8px 0;
         font-size: 24px;
         font-weight: 700;
-        color: #0F172A;
+        color: $color-neutral-900;
         letter-spacing: -0.5px;
       }
 
@@ -567,13 +568,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         font-size: 28px;
         width: 28px;
         height: 28px;
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       .subtitle {
         margin: 0;
         font-size: 14px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 400;
       }
 
@@ -598,7 +599,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .primary-btn {
-        background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+        background: linear-gradient(135deg, $color-brand-primary 0%, $color-brand-primary-dark 100%);
         box-shadow: 0 2px 8px rgba(0, 102, 255, 0.2);
       }
 
@@ -623,21 +624,21 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         margin: 0;
         font-size: 18px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .section-title mat-icon {
         font-size: 22px;
         width: 22px;
         height: 22px;
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       .section-badge {
         padding: 4px 12px;
-        background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+        background: linear-gradient(135deg, $color-stem-green 0%, #00A84D 100%);
         color: white;
-        font-size: 12px;
+        font-size: $font-size-xs;
         font-weight: 600;
         border-radius: 12px;
         box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
@@ -658,10 +659,10 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .kpi-card {
         position: relative;
-        background: white;
+        background: $card-bg;
         border-radius: 16px;
         padding: 24px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow: hidden;
@@ -689,23 +690,23 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .kpi-card.revenue-card {
-        --accent-color: #10B981;
-        --accent-light: #34D399;
+        --accent-color: $color-stem-green;
+        --accent-light: #6EE7B7;
       }
 
       .kpi-card.students-card {
-        --accent-color: #0066FF;
-        --accent-light: #3B82F6;
+        --accent-color: $color-brand-primary;
+        --accent-light: $color-brand-primary;
       }
 
       .kpi-card.teachers-card {
-        --accent-color: #F59E0B;
+        --accent-color: $color-warning;
         --accent-light: #FBBF24;
       }
 
       .kpi-card.courses-card {
-        --accent-color: #8B5CF6;
-        --accent-light: #A78BFA;
+        --accent-color: $color-brand-primary;
+        --accent-light: $color-brand-primary-bg;
       }
 
       .kpi-icon-wrapper {
@@ -730,7 +731,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .kpi-label {
         font-size: 13px;
         font-weight: 500;
-        color: #64748B;
+        color: $color-neutral-500;
         margin-bottom: 8px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -739,7 +740,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .kpi-value {
         font-size: 32px;
         font-weight: 700;
-        color: #0F172A;
+        color: $color-neutral-900;
         line-height: 1;
         margin-bottom: 12px;
         letter-spacing: -1px;
@@ -751,7 +752,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .meta-item {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
       }
 
@@ -763,7 +764,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         font-weight: 600;
         padding: 8px 12px;
         border-radius: 8px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
       }
 
       .kpi-trend mat-icon {
@@ -773,18 +774,18 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .kpi-trend.positive {
-        color: #10B981;
-        background: #ECFDF5;
+        color: $color-stem-green;
+        background: $color-stem-green-bg;
       }
 
       .kpi-trend.negative {
-        color: #EF4444;
-        background: #FEF2F2;
+        color: $color-error;
+        background: $color-error-light;
       }
 
       .kpi-trend.neutral {
-        color: #64748B;
-        background: #F1F5F9;
+        color: $color-neutral-500;
+        background: $color-neutral-100;
       }
 
       .trend-value {
@@ -793,7 +794,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .trend-label {
         font-weight: 400;
-        color: #94A3B8;
+        color: $color-neutral-400;
       }
 
       /* ============================================
@@ -814,10 +815,10 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .alert-card {
-        background: white;
+        background: $card-bg;
         border-radius: 12px;
         padding: 20px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         transition: all 0.2s;
       }
@@ -828,23 +829,23 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .alert-card.alert-critical {
-        border-left: 4px solid #DC2626;
-        background: linear-gradient(to right, #FEF2F2 0%, white 100%);
+        border-left: 4px solid $color-error;
+        background: linear-gradient(to right, $color-error-light 0%, white 100%);
       }
 
       .alert-card.alert-high {
-        border-left: 4px solid #EF4444;
-        background: linear-gradient(to right, #FEF2F2 0%, white 100%);
+        border-left: 4px solid $color-error;
+        background: linear-gradient(to right, $color-error-light 0%, white 100%);
       }
 
       .alert-card.alert-medium {
-        border-left: 4px solid #F59E0B;
-        background: linear-gradient(to right, #FFFBEB 0%, white 100%);
+        border-left: 4px solid $color-warning;
+        background: linear-gradient(to right, $color-warning-light 0%, white 100%);
       }
 
       .alert-card.alert-low {
-        border-left: 4px solid #3B82F6;
-        background: linear-gradient(to right, #EFF6FF 0%, white 100%);
+        border-left: 4px solid $color-brand-primary;
+        background: linear-gradient(to right, $color-brand-primary-bg 0%, white 100%);
       }
 
       .alert-header {
@@ -865,11 +866,11 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .alert-critical .alert-icon-wrapper,
       .alert-high .alert-icon-wrapper {
-        background: #FEE2E2;
+        background: $color-error-light-2;
       }
 
       .alert-medium .alert-icon-wrapper {
-        background: #FEF3C7;
+        background: $color-warning-light;
       }
 
       .alert-low .alert-icon-wrapper {
@@ -884,7 +885,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .alert-critical .alert-icon,
       .alert-high .alert-icon {
-        color: #DC2626;
+        color: $color-error;
       }
 
       .alert-medium .alert-icon {
@@ -904,14 +905,14 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         margin: 0 0 6px 0;
         font-size: 15px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
         line-height: 1.4;
       }
 
       .alert-message {
         margin: 0;
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         line-height: 1.5;
       }
 
@@ -924,7 +925,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         justify-content: space-between;
         align-items: center;
         padding-top: 16px;
-        border-top: 1px solid #F1F5F9;
+        border-top: 1px solid $color-neutral-100;
         gap: 16px;
       }
 
@@ -939,7 +940,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .threshold-label {
         font-size: 11px;
         font-weight: 500;
-        color: #94A3B8;
+        color: $color-neutral-400;
         text-transform: uppercase;
         letter-spacing: 0.5px;
       }
@@ -948,11 +949,11 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .threshold-value {
         font-size: 14px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .threshold-value {
-        color: #EF4444;
+        color: $color-error;
       }
 
       /* ============================================
@@ -967,9 +968,9 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       ::ng-deep .modern-tabs .mat-mdc-tab-header {
-        background: white;
+        background: $card-bg;
         border-radius: 12px 12px 0 0;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         border-bottom: none;
         padding: 0 8px;
       }
@@ -995,8 +996,8 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       ::ng-deep .modern-tabs .mat-mdc-tab-body-wrapper {
-        background: white;
-        border: 1px solid #E2E8F0;
+        background: $card-bg;
+        border: 1px solid $color-neutral-200;
         border-radius: 0 0 12px 12px;
         border-top: none;
       }
@@ -1019,9 +1020,9 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .chart-card {
-        background: white;
+        background: $card-bg;
         border-radius: 12px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         transition: all 0.2s;
       }
@@ -1032,7 +1033,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .chart-card mat-card-header {
         padding: 20px 24px !important;
-        border-bottom: 1px solid #F1F5F9;
+        border-bottom: 1px solid $color-neutral-100;
       }
 
       .chart-card mat-card-title {
@@ -1041,14 +1042,14 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         gap: 10px;
         font-size: 16px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .chart-card mat-card-title mat-icon {
         font-size: 20px;
         width: 20px;
         height: 20px;
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       .chart-card mat-card-content {
@@ -1066,13 +1067,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .stat-item {
         padding: 16px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
         border-radius: 10px;
         transition: all 0.2s;
       }
 
       .stat-item:hover {
-        background: #F1F5F9;
+        background: $color-neutral-100;
       }
 
       .stat-header {
@@ -1085,13 +1086,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .stat-label {
         font-size: 14px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .stat-percentage {
         font-size: 14px;
         font-weight: 700;
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       ::ng-deep .stat-item mat-progress-bar {
@@ -1101,7 +1102,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .stat-count {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
       }
 
@@ -1138,14 +1139,14 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .circle-label {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
         margin-bottom: 4px;
       }
 
       .circle-count {
-        font-size: 12px;
-        color: #94A3B8;
+        font-size: $font-size-xs;
+        color: $color-neutral-400;
         font-weight: 600;
       }
 
@@ -1160,10 +1161,10 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .metric-item {
         padding: 20px;
-        background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+        background: linear-gradient(135deg, $color-neutral-50 0%, $color-neutral-100 100%);
         border-radius: 12px;
         text-align: center;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         transition: all 0.2s;
       }
 
@@ -1174,7 +1175,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .metric-label {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
         margin-bottom: 10px;
       }
@@ -1182,16 +1183,16 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .metric-value {
         font-size: 24px;
         font-weight: 700;
-        color: #0F172A;
+        color: $color-neutral-900;
         letter-spacing: -0.5px;
       }
 
       .metric-value.highlight {
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       .metric-value.positive {
-        color: #10B981;
+        color: $color-stem-green;
       }
 
       /* ============================================
@@ -1206,9 +1207,9 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .ranking-card,
       .course-card {
-        background: white;
+        background: $card-bg;
         border-radius: 12px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         transition: all 0.2s;
       }
@@ -1227,7 +1228,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .ranking-card.top-3.gold,
       .course-card.top-3.gold {
         border-color: #FCD34D;
-        background: linear-gradient(135deg, #FFFBEB 0%, white 100%);
+        background: linear-gradient(135deg, $color-warning-light 0%, white 100%);
       }
 
       .ranking-card.top-3.silver,
@@ -1245,7 +1246,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .ranking-card mat-card-header,
       .course-card mat-card-header {
         padding: 20px 24px !important;
-        border-bottom: 1px solid #F1F5F9;
+        border-bottom: 1px solid $color-neutral-100;
       }
 
       .ranking-card mat-card-title,
@@ -1298,11 +1299,11 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .rank-change.up {
-        color: #10B981;
+        color: $color-stem-green;
       }
 
       .rank-change.down {
-        color: #EF4444;
+        color: $color-error;
       }
 
       .ranking-card mat-card-content,
@@ -1330,13 +1331,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .teacher-details .teacher-name {
         font-size: 16px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
         margin-bottom: 4px;
       }
 
       .teacher-details .teacher-dept {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
       }
 
       .teacher-stats {
@@ -1349,37 +1350,37 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         display: flex;
         justify-content: space-between;
         padding: 12px 16px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
         border-radius: 8px;
         font-size: 14px;
         transition: all 0.2s;
       }
 
       .stat-row:hover {
-        background: #F1F5F9;
+        background: $color-neutral-100;
       }
 
       .stat-row .stat-label {
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
       }
 
       .stat-row .stat-value {
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .stat-row .stat-value.rating {
-        color: #F59E0B;
+        color: $color-warning;
       }
 
       .stat-row.highlight {
-        background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+        background: linear-gradient(135deg, $color-stem-green-bg 0%, #D1FAE5 100%);
         border: 1px solid #A7F3D0;
       }
 
       .stat-row.highlight .stat-value {
-        color: #059669;
+        color: #00A84D;
       }
 
       /* ============================================
@@ -1396,7 +1397,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .course-name {
         font-size: 16px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
         flex: 1;
       }
 
@@ -1411,36 +1412,36 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         align-items: center;
         gap: 8px;
         padding: 12px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
         border-radius: 8px;
         font-size: 14px;
         font-weight: 500;
-        color: #64748B;
+        color: $color-neutral-500;
       }
 
       .course-stats .stat-item mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
-        color: #94A3B8;
+        color: $color-neutral-400;
       }
 
       .course-stats .stat-item.growth {
-        color: #10B981;
-        background: #ECFDF5;
+        color: $color-stem-green;
+        background: $color-stem-green-bg;
       }
 
       .course-stats .stat-item.growth mat-icon {
-        color: #10B981;
+        color: $color-stem-green;
       }
 
       .course-stats .stat-item.revenue {
-        color: #0066FF;
-        background: #EFF6FF;
+        color: $color-brand-primary;
+        background: $color-brand-primary-bg;
       }
 
       .course-stats .stat-item.revenue mat-icon {
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       /* ============================================
@@ -1453,21 +1454,21 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .finance-card {
-        background: white;
+        background: $card-bg;
         border-radius: 12px;
-        border: 1px solid #E2E8F0;
+        border: 1px solid $color-neutral-200;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       }
 
       .finance-card mat-card-header {
         padding: 20px 24px !important;
-        border-bottom: 1px solid #F1F5F9;
+        border-bottom: 1px solid $color-neutral-100;
       }
 
       .finance-card mat-card-title {
         font-size: 16px;
         font-weight: 600;
-        color: #0F172A;
+        color: $color-neutral-900;
       }
 
       .finance-card mat-card-content {
@@ -1483,13 +1484,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       .finance-item {
         text-align: center;
         padding: 16px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
         border-radius: 10px;
       }
 
       .finance-item .label {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
         margin-bottom: 8px;
       }
@@ -1501,24 +1502,24 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
       }
 
       .finance-item .value.revenue {
-        color: #10B981;
+        color: $color-stem-green;
       }
 
       .finance-item .value.expense {
-        color: #F59E0B;
+        color: $color-warning;
       }
 
       .finance-item .value.profit {
-        color: #0066FF;
+        color: $color-brand-primary;
       }
 
       .finance-item .value.receivable {
-        color: #EF4444;
+        color: $color-error;
       }
 
       .finance-item .rate {
         font-size: 13px;
-        color: #94A3B8;
+        color: $color-neutral-400;
         margin-top: 6px;
         font-weight: 500;
       }
@@ -1538,7 +1539,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .divider {
         height: 1px;
-        background: #E2E8F0;
+        background: $color-neutral-200;
         margin: 8px 0;
       }
 
@@ -1550,7 +1551,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .category-item {
         padding: 16px;
-        background: #F8FAFC;
+        background: $color-neutral-50;
         border-radius: 10px;
       }
 
@@ -1562,13 +1563,13 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .category-name {
         font-size: 14px;
-        color: #0F172A;
+        color: $color-neutral-900;
         font-weight: 600;
       }
 
       .category-percentage {
         font-size: 14px;
-        color: #0066FF;
+        color: $color-brand-primary;
         font-weight: 700;
       }
 
@@ -1579,7 +1580,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .category-amount {
         font-size: 13px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
       }
 
@@ -1597,7 +1598,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
 
       .loading-container p {
         font-size: 15px;
-        color: #64748B;
+        color: $color-neutral-500;
         font-weight: 500;
       }
 

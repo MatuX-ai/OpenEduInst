@@ -196,8 +196,10 @@ interface NotificationStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .notifications-container {
-      padding: 24px;
+      padding: $spacing-lg;
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -207,41 +209,41 @@ interface NotificationStats {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: $spacing-lg;
     }
 
     .page-title {
-      font-size: 24px;
+      font-size: $font-size-2xl;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
-      font-size: 14px;
-      color: #64748b;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .header-actions {
       display: flex;
-      gap: 12px;
+      gap: $spacing-md;
     }
 
     /* Stats Grid */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
     }
 
     .stat-card {
-      background: white;
-      border-radius: 12px;
+      background: $card-bg;
+      border-radius: $radius-lg;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      box-shadow: $card-shadow;
+      border: $card-border;
     }
 
     .stat-content {
@@ -255,35 +257,35 @@ interface NotificationStats {
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: $font-size-2xl;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
-      font-size: 12px;
+      font-size: $font-size-xs;
       margin: 0;
     }
 
-    .stat-desc.blue { color: #3b82f6; }
-    .stat-desc.red { color: #ef4444; }
-    .stat-desc.amber { color: #f59e0b; }
+    .stat-desc.blue { color: $color-brand-primary; }
+    .stat-desc.red { color: $color-error; }
+    .stat-desc.amber { color: $color-warning; }
 
     .stat-icon-wrapper {
       width: 48px;
       height: 48px;
-      border-radius: 8px;
+      border-radius: $radius-md;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: 16px;
+      margin-left: $spacing-md;
     }
 
     .stat-icon-wrapper mat-icon {
@@ -292,56 +294,56 @@ interface NotificationStats {
       height: 24px;
     }
 
-    .stat-icon-wrapper.blue { background: #eff6ff; color: #3b82f6; }
-    .stat-icon-wrapper.red { background: #fef2f2; color: #ef4444; }
-    .stat-icon-wrapper.amber { background: #fffbeb; color: #f59e0b; }
-    .stat-icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
+    .stat-icon-wrapper.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon-wrapper.red { background: $color-error-light; color: $color-error; }
+    .stat-icon-wrapper.amber { background: $color-warning-light; color: $color-warning; }
+    .stat-icon-wrapper.purple { background: $color-brand-primary-bg; color: $color-brand-primary; }
 
     /* Filter Bar */
     .filter-bar {
-      background: white;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      padding: $spacing-md;
+      box-shadow: $card-shadow;
+      border: $card-border;
       margin-bottom: 20px;
       display: flex;
-      gap: 12px;
+      gap: $spacing-md;
       flex-wrap: wrap;
     }
 
     .filter-btn {
-      padding: 8px 16px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      background: white;
-      font-size: 13px;
-      color: #475569;
+      padding: $spacing-sm $spacing-md;
+      border: $card-border;
+      border-radius: $radius-md;
+      background: $card-bg;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
       cursor: pointer;
       transition: all 0.2s;
     }
 
     .filter-btn:hover {
-      background: #f8fafc;
+      background: $color-neutral-50;
     }
 
     .filter-btn.active {
-      background: #3b82f6;
+      background: $color-brand-primary;
       color: white;
-      border-color: #3b82f6;
+      border-color: $color-brand-primary;
     }
 
     /* Notification List */
     .notification-list {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
       overflow: hidden;
     }
 
     .notification-item {
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
       transition: background 0.2s;
     }
 
@@ -350,23 +352,23 @@ interface NotificationStats {
     }
 
     .notification-item:hover {
-      background: #f8fafc;
+      background: $color-neutral-50;
     }
 
     .notification-item.unread {
-      background: rgba(59, 130, 246, 0.03);
+      background: $color-brand-primary-subtle;
     }
 
     .notif-content {
       padding: 20px;
       display: flex;
-      gap: 16px;
+      gap: $spacing-md;
     }
 
     .notif-icon {
       width: 40px;
       height: 40px;
-      border-radius: 8px;
+      border-radius: $radius-md;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -379,10 +381,10 @@ interface NotificationStats {
       height: 20px;
     }
 
-    .notif-icon.approval { background: #eff6ff; color: #3b82f6; }
-    .notif-icon.renewal { background: #fffbeb; color: #f59e0b; }
-    .notif-icon.activity { background: #ecfdf5; color: #10b981; }
-    .notif-icon.system { background: #f5f3ff; color: #8b5cf6; }
+    .notif-icon.approval { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .notif-icon.renewal { background: $color-warning-light; color: $color-warning; }
+    .notif-icon.activity { background: $color-stem-green-bg; color: $color-stem-green; }
+    .notif-icon.system { background: $color-brand-primary-bg; color: $color-brand-primary; }
 
     .notif-body {
       flex: 1;
@@ -399,51 +401,51 @@ interface NotificationStats {
     .header-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: $spacing-sm;
       flex: 1;
     }
 
     .notif-title {
-      font-size: 14px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #334155;
+      color: $color-neutral-700;
       margin: 0;
     }
 
     .notif-title.unread {
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
     .unread-dot {
       width: 8px;
       height: 8px;
-      background: #3b82f6;
+      background: $color-brand-primary;
       border-radius: 50%;
     }
 
     .priority-badge {
-      font-size: 11px;
+      font-size: $font-size-xs;
       padding: 2px 8px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
       border: 1px solid;
     }
 
     .priority-badge.urgent {
-      background: #fef2f2;
-      color: #ef4444;
-      border-color: #fecaca;
+      background: $color-error-light;
+      color: $color-error;
+      border-color: $color-error-light;
     }
 
     .notif-time {
-      font-size: 12px;
-      color: #94a3b8;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
       white-space: nowrap;
       margin-left: 12px;
     }
 
     .notif-text {
-      font-size: 13px;
-      color: #475569;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
       margin: 0 0 12px 0;
       line-height: 1.5;
     }
@@ -455,30 +457,30 @@ interface NotificationStats {
     }
 
     .type-badge {
-      font-size: 11px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
     }
 
-    .type-badge.approval { background: #eff6ff; color: #3b82f6; }
-    .type-badge.renewal { background: #fffbeb; color: #f59e0b; }
-    .type-badge.activity { background: #ecfdf5; color: #10b981; }
-    .type-badge.system { background: #f5f3ff; color: #8b5cf6; }
+    .type-badge.approval { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .type-badge.renewal { background: $color-warning-light; color: $color-warning; }
+    .type-badge.activity { background: $color-stem-green-bg; color: $color-stem-green; }
+    .type-badge.system { background: $color-brand-primary-bg; color: $color-brand-primary; }
 
     .action-btn {
-      font-size: 13px;
-      color: #3b82f6;
+      font-size: $font-size-sm;
+      color: $color-brand-primary;
     }
 
     /* Load More */
     .load-more {
       padding: 20px;
       text-align: center;
-      border-top: 1px solid #f1f5f9;
+      border-top: 1px solid $color-neutral-100;
     }
 
     .load-more-btn {
-      color: #3b82f6;
+      color: $color-brand-primary;
     }
   `]
 })

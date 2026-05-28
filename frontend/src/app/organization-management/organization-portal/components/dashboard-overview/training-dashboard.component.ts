@@ -311,9 +311,10 @@ export interface ResourceItem {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .training-dashboard { 
       padding: 24px; 
-      background: #f5f7fa;
+      background: $color-neutral-50;
       min-height: 100%;
     }
     
@@ -327,7 +328,7 @@ export interface ResourceItem {
     
     .metric-card { 
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: $shadow-sm;
       transition: all 0.3s ease;
       cursor: pointer;
       border-left: 4px solid transparent;
@@ -335,7 +336,7 @@ export interface ResourceItem {
     
     .metric-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: $shadow-card-hover;
     }
     
     mat-card-content {
@@ -360,10 +361,10 @@ export interface ResourceItem {
       font-size: 24px;
     }
     
-    .metric-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .metric-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .metric-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
-    .metric-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+    .metric-icon.blue { background: linear-gradient(135deg, $color-brand-primary, $color-brand-primary-dark); }
+    .metric-icon.green { background: linear-gradient(135deg, $color-stem-green, #00A84D); }
+    .metric-icon.orange { background: linear-gradient(135deg, $color-warning, #E65C00); }
+    .metric-icon.purple { background: linear-gradient(135deg, $color-brand-primary, $color-brand-primary-dark); }
     
     .trend {
       font-size: 12px;
@@ -372,20 +373,20 @@ export interface ResourceItem {
       border-radius: 12px;
     }
     
-    .trend.up { color: #4caf50; background: #e8f5e9; }
-    .trend.down { color: #f44336; background: #ffebee; }
-    .trend.stable { color: #ff9800; background: #fff3e0; }
+    .trend.up { color: $color-stem-green; background: $color-stem-green-bg; }
+    .trend.down { color: $color-error; background: $color-error-light; }
+    .trend.stable { color: $color-warning; background: $color-warning-light; }
     
     .metric-value { 
       font-size: 32px; 
       font-weight: 700; 
-      color: #1a1a1a;
+      color: $color-neutral-900;
       margin: 8px 0;
     }
     
     .metric-label { 
-      color: #666; 
-      font-size: 14px;
+      color: $color-neutral-600; 
+      font-size: $font-size-sm;
       font-weight: 500;
     }
     
@@ -393,7 +394,7 @@ export interface ResourceItem {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -406,15 +407,15 @@ export interface ResourceItem {
     
     .module-card {
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: $shadow-sm;
       transition: all 0.3s ease;
       cursor: pointer;
     }
     
     .module-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      border-left: 4px solid #2196f3;
+      box-shadow: $shadow-md;
+      border-left: 4px solid $color-brand-primary;
     }
     
     .module-card mat-card-content {
@@ -427,12 +428,12 @@ export interface ResourceItem {
       width: 56px;
       height: 56px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      background: linear-gradient(135deg, $color-brand-primary-bg, darken($color-brand-primary-bg, 5%));
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 16px;
-      color: #1976d2;
+      color: $color-brand-primary-dark;
     }
     
     .module-icon mat-icon {
@@ -447,19 +448,19 @@ export interface ResourceItem {
     
     .module-info h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .subtitle {
       margin: 4px 0 0 0;
       font-size: 13px;
-      color: #666;
+      color: $color-neutral-600;
     }
     
     .arrow {
-      color: #999;
+      color: $color-neutral-500;
     }
     
     /* 快捷操作栏 */
@@ -496,14 +497,14 @@ export interface ResourceItem {
     
     .resource-card {
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: $shadow-sm;
       transition: all 0.3s ease;
       cursor: pointer;
     }
     
     .resource-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: $shadow-card-hover;
     }
     
     .resource-card mat-card-content {
@@ -516,12 +517,12 @@ export interface ResourceItem {
       width: 48px;
       height: 48px;
       border-radius: 12px;
-      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      background: linear-gradient(135deg, $color-brand-primary-bg, darken($color-brand-primary-bg, 5%));
       display: flex;
       align-items: center;
       justify-content: center;
       margin-right: 16px;
-      color: #1976d2;
+      color: $color-brand-primary-dark;
     }
     
     .resource-icon mat-icon {
@@ -532,15 +533,15 @@ export interface ResourceItem {
     
     .resource-info h4 {
       margin: 0;
-      font-size: 15px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .resource-info p {
       margin: 4px 0 0 0;
-      font-size: 13px;
-      color: #666;
+      font-size: $font-size-xs;
+      color: $color-neutral-600;
     }
     
     /* STEM 特色功能区 */
@@ -553,7 +554,7 @@ export interface ResourceItem {
     
     .stem-feature-card {
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: $shadow-sm;
       transition: all 0.3s ease;
       cursor: pointer;
       border: 2px solid transparent;
@@ -561,8 +562,8 @@ export interface ResourceItem {
     
     .stem-feature-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      border-color: #2196f3;
+      box-shadow: $shadow-card-hover;
+      border-color: $color-brand-primary;
     }
     
     .stem-feature-card mat-card-content {
@@ -586,10 +587,10 @@ export interface ResourceItem {
       color: white;
     }
     
-    .feature-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .feature-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .feature-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-    .feature-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .feature-icon.blue { background: linear-gradient(135deg, $color-brand-primary, $color-brand-primary-dark); }
+    .feature-icon.green { background: linear-gradient(135deg, $color-stem-green, #00A84D); }
+    .feature-icon.purple { background: linear-gradient(135deg, $color-brand-primary, $color-brand-primary-dark); }
+    .feature-icon.orange { background: linear-gradient(135deg, $color-warning, #E65C00); }
     
     .feature-icon mat-icon {
       font-size: 28px;
@@ -603,21 +604,21 @@ export interface ResourceItem {
       height: 20px;
     }
     
-    .status-icon.success { color: #4caf50; }
-    .status-icon.warning { color: #ff9800; }
-    .status-icon.info { color: #2196f3; }
+    .status-icon.success { color: $color-stem-green; }
+    .status-icon.warning { color: $color-warning; }
+    .status-icon.info { color: $color-brand-primary; }
     
     .stem-feature-card h4 {
       margin: 0 0 8px 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .feature-desc {
       margin: 0 0 16px 0;
-      font-size: 13px;
-      color: #666;
+      font-size: $font-size-xs;
+      color: $color-neutral-600;
       line-height: 1.5;
     }
     
@@ -625,7 +626,7 @@ export interface ResourceItem {
       display: flex;
       gap: 16px;
       padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid $color-neutral-100;
     }
     
     .stat-item {
@@ -637,18 +638,18 @@ export interface ResourceItem {
       display: block;
       font-size: 24px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: $color-neutral-900;
       margin-bottom: 4px;
     }
     
-    .stat-value.orange { color: #ff9800; }
-    .stat-value.green { color: #4caf50; }
-    .stat-value.purple { color: #9c27b0; }
+    .stat-value.orange { color: $color-warning; }
+    .stat-value.green { color: $color-stem-green; }
+    .stat-value.purple { color: $color-brand-primary; }
     
     .stat-label {
       display: block;
       font-size: 12px;
-      color: #999;
+      color: $color-neutral-500;
     }
     
     /* 数据趋势图表 */
@@ -661,7 +662,7 @@ export interface ResourceItem {
     
     .chart-card {
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: $shadow-sm;
     }
     
     mat-card-header {
@@ -669,9 +670,9 @@ export interface ResourceItem {
     }
     
     mat-card-title {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .chart-placeholder {
@@ -701,7 +702,7 @@ export interface ResourceItem {
     
     .bar {
       width: 100%;
-      background: linear-gradient(180deg, #2196f3, #1976d2);
+      background: linear-gradient(180deg, $color-brand-primary, $color-brand-primary-dark);
       border-radius: 4px 4px 0 0;
       transition: all 0.3s ease;
       min-height: 20px;
@@ -714,7 +715,7 @@ export interface ResourceItem {
     
     .bar-label {
       font-size: 12px;
-      color: #666;
+      color: $color-neutral-600;
     }
     
     /* 折线图 */
@@ -736,7 +737,7 @@ export interface ResourceItem {
       justify-content: space-between;
       margin-top: 8px;
       font-size: 12px;
-      color: #666;
+      color: $color-neutral-600;
     }
     
     /* 响应式设计 */

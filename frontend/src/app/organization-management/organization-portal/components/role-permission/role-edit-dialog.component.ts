@@ -198,6 +198,7 @@ export interface RoleEditDialogData {
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .role-edit-dialog {
         min-width: 700px;
         max-width: 900px;
@@ -209,14 +210,14 @@ export interface RoleEditDialogData {
         gap: 8px;
         font-size: 20px;
         font-weight: 600;
-        color: #333;
+        color: $color-text-primary;
         margin-bottom: 16px;
 
         mat-icon {
           font-size: 24px;
           width: 24px;
           height: 24px;
-          color: #1976d2;
+          color: $color-primary;
         }
       }
 
@@ -230,12 +231,12 @@ export interface RoleEditDialogData {
       .info-card,
       .permissions-card {
         border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        box-shadow: $shadow-sm;
       }
 
       mat-card-header {
         padding: 12px 16px !important;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid $color-bg-primary;
 
         mat-card-title {
           display: flex;
@@ -248,7 +249,7 @@ export interface RoleEditDialogData {
             font-size: 20px;
             width: 20px;
             height: 20px;
-            color: #ff9800;
+            color: $color-warning;
           }
         }
       }
@@ -268,7 +269,7 @@ export interface RoleEditDialogData {
       }
 
       .required {
-        color: #f44336;
+        color: $color-error;
         margin-left: 4px;
       }
 
@@ -276,7 +277,7 @@ export interface RoleEditDialogData {
         display: flex;
         gap: 24px;
         padding: 16px;
-        background-color: #f5f5f5;
+        background-color: $color-bg-primary;
         border-radius: 8px;
         margin-bottom: 16px;
 
@@ -287,16 +288,16 @@ export interface RoleEditDialogData {
 
           .label {
             font-size: 14px;
-            color: #666;
+            color: $color-text-secondary;
           }
 
           .value {
             font-size: 20px;
             font-weight: bold;
-            color: #333;
+            color: $color-text-primary;
 
             &.highlight {
-              color: #1976d2;
+              color: $color-primary;
             }
           }
         }
@@ -312,7 +313,7 @@ export interface RoleEditDialogData {
       .selected-permissions {
         h4 {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
           margin: 0 0 12px 0;
           font-weight: normal;
         }
@@ -325,13 +326,13 @@ export interface RoleEditDialogData {
           mat-chip {
             height: 28px;
             font-size: 13px;
-            background-color: #e3f2fd;
-            color: #1976d2;
+            background-color: rgba($color-primary, 0.08);
+            color: $color-primary;
           }
 
           .more-chip {
-            background-color: #f5f5f5;
-            color: #999;
+            background-color: $color-bg-primary;
+            color: $color-text-muted;
           }
         }
       }

@@ -228,9 +228,11 @@ export interface VocationalMetrics {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .vocational-dashboard { 
-      padding: 24px; 
-      background: #f5f7fa;
+      padding: $spacing-lg; 
+      background: $color-neutral-50;
       min-height: 100%;
     }
     
@@ -238,19 +240,19 @@ export interface VocationalMetrics {
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
       gap: 20px; 
-      margin-bottom: 32px; 
+      margin-bottom: $spacing-xl; 
     }
     
     .metric-card { 
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
     }
     
     .metric-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transform: $card-transform-hover;
+      box-shadow: $card-shadow-hover;
     }
     
     mat-card-content {
@@ -267,7 +269,7 @@ export interface VocationalMetrics {
     .metric-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -275,78 +277,78 @@ export interface VocationalMetrics {
       font-size: 24px;
     }
     
-    .metric-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-    .metric-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .metric-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .metric-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .metric-icon.purple { background: #9C27B0; }
+    .metric-icon.blue { background: $color-brand-primary; }
+    .metric-icon.green { background: $color-stem-green; }
+    .metric-icon.orange { background: #FF9800; }
     
     .trend {
-      font-size: 12px;
+      font-size: $font-size-xs;
       font-weight: 600;
       padding: 4px 8px;
       border-radius: 12px;
     }
     
-    .trend.up { color: #4caf50; background: #e8f5e9; }
-    .trend.stable { color: #ff9800; background: #fff3e0; }
+    .trend.up { color: $color-stem-green; background: $color-stem-green-bg; }
+    .trend.stable { color: #FF9800; background: $color-warning-light; }
     
     .metric-value { 
-      font-size: 32px; 
+      font-size: $font-size-4xl; 
       font-weight: 700; 
-      color: #1a1a1a;
-      margin: 8px 0;
+      color: $color-neutral-900;
+      margin: $spacing-xs 0;
     }
     
     .metric-label { 
-      color: #666; 
-      font-size: 14px;
+      color: $color-neutral-500; 
+      font-size: $font-size-sm;
       font-weight: 500;
     }
     
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
-      margin-bottom: 16px;
+      color: $color-neutral-900;
+      margin-bottom: $spacing-md;
       padding-left: 4px;
     }
     
     .modules-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-xl;
     }
     
     .module-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
     }
     
     .module-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      border-left: 4px solid #9c27b0;
+      box-shadow: $card-shadow-hover;
+      border-left: 4px solid #9C27B0;
     }
     
     .module-card mat-card-content {
       display: flex;
       align-items: center;
-      padding: 16px !important;
+      padding: $spacing-md !important;
     }
     
     .module-icon {
       width: 56px;
       height: 56px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #f3e5f5, #e1bee7);
+      border-radius: $radius-lg;
+      background: #F3E5F5;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 16px;
-      color: #9c27b0;
+      margin-right: $spacing-md;
+      color: #9C27B0;
     }
     
     .module-icon mat-icon {
@@ -361,39 +363,42 @@ export interface VocationalMetrics {
     
     .module-info h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .subtitle {
       margin: 4px 0 0 0;
-      font-size: 13px;
-      color: #666;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
     }
     
     .arrow {
-      color: #999;
+      color: $color-neutral-400;
     }
     
     .quick-actions-bar {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 32px;
+      margin-bottom: $spacing-xl;
     }
     
     .action-btn {
       text-transform: none;
-      border-radius: 8px;
+      border-radius: $btn-primary-radius;
       padding: 12px 20px;
-      font-weight: 500;
-      background: #9c27b0;
-      transition: all 0.3s ease;
+      font-weight: $btn-font-weight;
+      background: #9C27B0;
+      color: $btn-primary-color;
+      transition: all $transition-normal ease;
+      border: none;
+      cursor: pointer;
     }
     
     .action-btn:hover {
-      transform: translateY(-2px);
+      transform: $btn-primary-transform-hover;
       box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
       background: #8e24aa;
     }
@@ -409,17 +414,17 @@ export interface VocationalMetrics {
     }
     
     .stem-feature-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
       border: 2px solid transparent;
     }
     
     .stem-feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      border-color: #9c27b0;
+      transform: $card-transform-hover;
+      box-shadow: $card-shadow-hover;
+      border-color: #9C27B0;
     }
     
     .stem-feature-card mat-card-content {
@@ -436,17 +441,17 @@ export interface VocationalMetrics {
     .feature-icon {
       width: 56px;
       height: 56px;
-      border-radius: 12px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
     }
     
-    .feature-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-    .feature-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .feature-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .feature-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .feature-icon.purple { background: #9C27B0; }
+    .feature-icon.green { background: $color-stem-green; }
+    .feature-icon.blue { background: $color-brand-primary; }
+    .feature-icon.orange { background: #FF9800; }
     
     .feature-icon mat-icon {
       font-size: 28px;
@@ -460,29 +465,29 @@ export interface VocationalMetrics {
       height: 20px;
     }
     
-    .status-icon.success { color: #4caf50; }
-    .status-icon.warning { color: #ff9800; }
-    .status-icon.info { color: #2196f3; }
+    .status-icon.success { color: $color-stem-green; }
+    .status-icon.warning { color: #FF9800; }
+    .status-icon.info { color: $color-brand-primary; }
     
     .stem-feature-card h4 {
       margin: 0 0 8px 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .feature-desc {
-      margin: 0 0 16px 0;
-      font-size: 13px;
-      color: #666;
+      margin: 0 0 $spacing-md 0;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       line-height: 1.5;
     }
     
     .feature-stats {
       display: flex;
-      gap: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      gap: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $color-neutral-100;
     }
     
     .stat-item {
@@ -492,21 +497,21 @@ export interface VocationalMetrics {
     
     .stat-value {
       display: block;
-      font-size: 24px;
+      font-size: $font-size-lg;
       font-weight: 700;
-      color: #1a1a1a;
+      color: $color-neutral-900;
       margin-bottom: 4px;
     }
     
-    .stat-value.purple { color: #9c27b0; }
-    .stat-value.green { color: #4caf50; }
-    .stat-value.blue { color: #2196f3; }
-    .stat-value.orange { color: #ff9800; }
+    .stat-value.purple { color: #9C27B0; }
+    .stat-value.green { color: $color-stem-green; }
+    .stat-value.blue { color: $color-brand-primary; }
+    .stat-value.orange { color: #FF9800; }
     
     .stat-label {
       display: block;
-      font-size: 12px;
-      color: #999;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
     }
     
     @media (max-width: 1200px) {

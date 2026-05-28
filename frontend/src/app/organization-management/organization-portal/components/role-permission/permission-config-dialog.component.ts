@@ -153,6 +153,7 @@ export interface PermissionConfigDialogData {
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .permission-config-dialog {
         min-width: 800px;
         max-width: 1200px;
@@ -164,14 +165,14 @@ export interface PermissionConfigDialogData {
         gap: 8px;
         font-size: 20px;
         font-weight: 600;
-        color: #333;
+        color: $color-text-primary;
         margin-bottom: 16px;
 
         mat-icon {
           font-size: 24px;
           width: 24px;
           height: 24px;
-          color: #1976d2;
+          color: $color-primary;
         }
       }
 
@@ -180,7 +181,7 @@ export interface PermissionConfigDialogData {
         gap: 12px;
         margin-bottom: 16px;
         padding: 16px;
-        background-color: #f5f5f5;
+        background-color: $color-bg-primary;
         border-radius: 8px;
         flex-wrap: wrap;
 
@@ -205,19 +206,19 @@ export interface PermissionConfigDialogData {
         align-items: center;
         gap: 12px;
         padding: 12px 16px;
-        background-color: #e3f2fd;
+        background-color: rgba($color-primary, 0.08);
         border-radius: 8px;
         margin-bottom: 16px;
         font-size: 14px;
-        color: #666;
+        color: $color-text-secondary;
 
         strong {
-          color: #1976d2;
+          color: $color-primary;
           font-weight: 600;
         }
 
         .divider {
-          color: #ccc;
+          color: $color-border;
         }
       }
 
@@ -231,7 +232,7 @@ export interface PermissionConfigDialogData {
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 
@@ -245,11 +246,11 @@ export interface PermissionConfigDialogData {
 
       .module-card {
         border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        box-shadow: $shadow-sm;
 
         mat-card-header {
           padding: 12px 16px !important;
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid $color-bg-primary;
 
           mat-card-title {
             display: flex;
@@ -268,13 +269,13 @@ export interface PermissionConfigDialogData {
                 font-size: 20px;
                 width: 20px;
                 height: 20px;
-                color: #ff9800;
+                color: $color-warning;
               }
             }
 
             .permission-count {
               font-size: 13px;
-              color: #999;
+              color: $color-text-muted;
               font-weight: normal;
             }
           }
@@ -308,21 +309,21 @@ export interface PermissionConfigDialogData {
 
         .permission-name {
           font-size: 14px;
-          color: #333;
+          color: $color-text-primary;
           font-weight: 500;
         }
 
         .permission-code {
           font-size: 12px;
-          color: #999;
+          color: $color-text-muted;
           font-family: monospace;
         }
 
         mat-chip {
           height: 20px;
           font-size: 11px;
-          background-color: #f3e5f5;
-          color: #7b1fa2;
+          background-color: rgba($color-primary-dark, 0.1);
+          color: $color-primary-dark;
 
           mat-icon {
             font-size: 14px;
@@ -341,13 +342,13 @@ export interface PermissionConfigDialogData {
           font-size: 48px;
           width: 48px;
           height: 48px;
-          color: #ccc;
+          color: $color-text-muted;
           margin-bottom: 16px;
         }
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 

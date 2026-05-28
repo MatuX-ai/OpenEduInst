@@ -25,10 +25,11 @@ export interface QuickActionItem {
     </div>
   `,
   styles: [`
-    .actions-container { margin-bottom: 24px; }
-    .section-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; }
+    @use '../../../../styles/design-tokens' as *;
+    .actions-container { margin-bottom: $spacing-lg; }
+    .section-title { font-size: $font-size-base; font-weight: 600; color: $color-neutral-900; margin-bottom: $spacing-md; }
     .actions-grid { display: flex; gap: 12px; flex-wrap: wrap; }
-    button { text-transform: none; border-radius: 8px; }
+    button { text-transform: none; border-radius: $radius-md; }
     mat-icon { margin-right: 8px; }
   `]
 })

@@ -73,6 +73,7 @@ import { Activity, Alert } from '../../organization-dashboard.service';
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .activities-alerts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
@@ -108,26 +109,26 @@ import { Activity, Alert } from '../../organization-dashboard.service';
       }
 
       .activity-item.warning {
-        background-color: #fff3e0;
+        background-color: $color-warning-light;
       }
 
       .activity-item.error {
-        background-color: #ffebee;
+        background-color: $color-error-light;
       }
 
       .alert-item.high {
-        background-color: #ffebee;
-        border-left: 4px solid #f44336;
+        background-color: $color-error-light;
+        border-left: 4px solid $color-error;
       }
 
       .alert-item.medium {
-        background-color: #fff3e0;
-        border-left: 4px solid #ff9800;
+        background-color: $color-warning-light;
+        border-left: 4px solid $color-warning;
       }
 
       .alert-item.low {
-        background-color: #e3f2fd;
-        border-left: 4px solid #2196f3;
+        background-color: $color-brand-primary-bg;
+        border-left: 4px solid $color-brand-primary;
       }
 
       .activity-icon,
@@ -139,29 +140,29 @@ import { Activity, Alert } from '../../organization-dashboard.service';
       }
 
       .icon-create {
-        color: #4caf50;
+        color: $color-stem-green;
       }
       .icon-update {
-        color: #2196f3;
+        color: $color-brand-primary;
       }
       .icon-delete {
-        color: #f44336;
+        color: $color-error;
       }
       .icon-login {
-        color: #9c27b0;
+        color: $color-brand-primary;
       }
       .icon-default {
-        color: #757575;
+        color: $color-neutral-600;
       }
 
       .alert-icon-warning {
-        color: #ff9800;
+        color: $color-warning;
       }
       .alert-icon-error {
-        color: #f44336;
+        color: $color-error;
       }
       .alert-icon-info {
-        color: #2196f3;
+        color: $color-brand-primary;
       }
 
       .activity-content,

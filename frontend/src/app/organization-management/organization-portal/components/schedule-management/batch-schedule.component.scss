@@ -1,6 +1,8 @@
+@use '../../../../../styles/design-tokens' as *;
+
 .batch-schedule-container {
-  padding: 16px;
-  background-color: #f5f5f5;
+  padding: $spacing-md;
+  background-color: $color-neutral-100;
   min-height: 100%;
 }
 
@@ -19,7 +21,7 @@
   .page-title {
     font-size: 20px;
     font-weight: 600;
-    color: #333;
+    color: $color-neutral-800;
     margin: 0;
   }
 }
@@ -27,7 +29,7 @@
 .page-title {
   font-size: 20px;
   font-weight: 600;
-  color: #333;
+  color: $color-neutral-800;
   margin: 0 0 16px 0;
 }
 
@@ -44,7 +46,7 @@ mat-progress-bar {
   padding: 16px;
   background-color: white;
   border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow-sm;
 }
 
 .step {
@@ -58,8 +60,8 @@ mat-progress-bar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background-color: #e0e0e0;
-    color: #757575;
+    background-color: $color-neutral-200;
+    color: $color-neutral-400;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -70,18 +72,18 @@ mat-progress-bar {
 
   .step-label {
     font-size: 14px;
-    color: #757575;
+    color: $color-neutral-400;
     font-weight: 500;
   }
 
   &.active {
     .step-number {
-      background-color: #1976d2;
+      background-color: $color-brand-primary;
       color: white;
     }
 
     .step-label {
-      color: #1976d2;
+      color: $color-brand-primary;
     }
   }
 }
@@ -89,7 +91,7 @@ mat-progress-bar {
 .step-line {
   flex: 1;
   height: 2px;
-  background-color: #e0e0e0;
+  background-color: $color-neutral-200;
   margin: 0 16px;
 }
 
@@ -101,12 +103,12 @@ mat-progress-bar {
 
 /* 课程列表卡片 */
 .course-list-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
   ::ng-deep mat-card-header {
     padding: 16px !important;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid $color-neutral-200;
 
     mat-card-title {
       display: flex;
@@ -114,11 +116,11 @@ mat-progress-bar {
       gap: 12px;
       font-size: 16px;
       font-weight: 600;
-      color: #333;
+      color: $color-neutral-800;
 
       .selected-count {
         font-size: 14px;
-        color: #1976d2;
+        color: $color-brand-primary;
         font-weight: normal;
       }
     }
@@ -130,7 +132,7 @@ mat-progress-bar {
 
   ::ng-deep mat-card-actions {
     padding: 12px 16px !important;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid $color-neutral-200;
   }
 }
 
@@ -145,7 +147,7 @@ mat-progress-bar {
 }
 
 .course-item {
-  border-radius: 6px;
+  border-radius: $radius-sm;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: transform 0.15s, border 0.15s;
   cursor: pointer;
@@ -153,12 +155,12 @@ mat-progress-bar {
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: $shadow-lg;
   }
 
   &.selected {
-    border-color: #1976d2;
-    background-color: #e3f2fd;
+    border-color: $color-brand-primary;
+    background-color: rgba($color-brand-primary, 0.08);
   }
 
   ::ng-deep mat-card-content {
@@ -180,13 +182,13 @@ mat-progress-bar {
 .course-name {
   font-size: 14px;
   font-weight: 600;
-  color: #333;
+  color: $color-neutral-800;
   margin-bottom: 4px;
 }
 
 .course-code {
   font-size: 12px;
-  color: #666;
+  color: $color-neutral-500;
 }
 
 .course-details {
@@ -201,29 +203,29 @@ mat-progress-bar {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #666;
+  color: $color-neutral-500;
 
   mat-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
-    color: #999;
+    color: $color-neutral-400;
   }
 }
 
 /* 设置卡片 */
 .settings-card {
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: $radius-md;
+  box-shadow: $shadow-sm;
 
   ::ng-deep mat-card-header {
     padding: 16px !important;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid $color-neutral-200;
 
     mat-card-title {
       font-size: 16px;
       font-weight: 600;
-      color: #333;
+      color: $color-neutral-800;
     }
   }
 
@@ -233,7 +235,7 @@ mat-progress-bar {
 
   ::ng-deep mat-card-actions {
     padding: 12px 16px !important;
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid $color-neutral-200;
   }
 }
 
@@ -243,7 +245,7 @@ mat-progress-bar {
 }
 
 .required {
-  color: #f44336;
+  color: $color-error;
   margin-left: 4px;
 }
 
@@ -253,10 +255,10 @@ mat-progress-bar {
   align-items: center;
   gap: 8px;
   padding: 8px;
-  background-color: #e3f2fd;
-  border-radius: 6px;
+  background-color: rgba($color-brand-primary, 0.08);
+  border-radius: $radius-sm;
   margin-bottom: 12px;
-  color: #1976d2;
+  color: $color-brand-primary;
 
   mat-icon {
     font-size: 16px;
@@ -279,7 +281,7 @@ mat-progress-bar {
   }
 
   mat-icon {
-    color: #999;
+    color: $color-neutral-400;
     margin-top: 16px;
   }
 }
@@ -288,13 +290,13 @@ mat-progress-bar {
 .repeat-section {
   margin-top: 16px;
   padding: 12px;
-  background-color: #f5f5f5;
-  border-radius: 6px;
+  background-color: $color-neutral-100;
+  border-radius: $radius-sm;
 
   h4 {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: $color-neutral-800;
     margin: 0 0 12px 0;
   }
 }
@@ -303,13 +305,13 @@ mat-progress-bar {
 .course-preview {
   margin-top: 16px;
   padding: 12px;
-  background-color: #f9f9f9;
-  border-radius: 6px;
+  background-color: $color-neutral-100;
+  border-radius: $radius-sm;
 
   h4 {
     font-size: 14px;
     font-weight: 600;
-    color: #333;
+    color: $color-neutral-800;
     margin: 0 0 8px 0;
   }
 }
@@ -325,19 +327,19 @@ mat-progress-bar {
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #333;
+  color: $color-neutral-800;
 
   mat-icon {
     font-size: 16px;
     width: 16px;
     height: 16px;
-    color: #4caf50;
+    color: $color-stem-green;
   }
 }
 
 .preview-more {
   font-size: 14px;
-  color: #666;
+  color: $color-neutral-500;
   font-style: italic;
   padding-left: 26px;
 }

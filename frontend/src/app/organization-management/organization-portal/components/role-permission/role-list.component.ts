@@ -200,11 +200,12 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .role-list-container {
         height: 100%;
         overflow-y: auto;
         padding: 24px;
-        background-color: #f5f5f5;
+        background-color: $color-bg-primary;
       }
 
       .page-header {
@@ -216,20 +217,20 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
           gap: 12px;
           font-size: 24px;
           font-weight: 600;
-          color: #333;
+          color: $color-text-primary;
           margin: 0 0 8px 0;
 
           mat-icon {
             font-size: 32px;
             width: 32px;
             height: 32px;
-            color: #1976d2;
+            color: $color-primary;
           }
         }
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
           margin: 0;
         }
       }
@@ -242,8 +243,8 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
       }
 
       .stat-card {
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: $radius-lg;
+        box-shadow: $shadow-md;
         transition: transform 0.2s;
 
         &:hover {
@@ -261,7 +262,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
       .stat-icon {
         width: 60px;
         height: 60px;
-        border-radius: 12px;
+        border-radius: $radius-lg;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -274,19 +275,19 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
         }
 
         &.total-icon {
-          background: linear-gradient(135deg, #667eea, #764ba2);
+          background: linear-gradient(135deg, $color-primary, #764ba2);
         }
 
         &.system-icon {
-          background: linear-gradient(135deg, #f093fb, #f5576c);
+          background: linear-gradient(135deg, #f093fb, $color-error);
         }
 
         &.custom-icon {
-          background: linear-gradient(135deg, #4facfe, #00f2fe);
+          background: linear-gradient(135deg, $color-primary-light, #00f2fe);
         }
 
         &.users-icon {
-          background: linear-gradient(135deg, #43e97b, #38f9d7);
+          background: linear-gradient(135deg, $color-secondary, #38f9d7);
         }
       }
 
@@ -296,14 +297,14 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
         .stat-value {
           font-size: 32px;
           font-weight: bold;
-          color: #333;
+          color: $color-text-primary;
           line-height: 1;
           margin-bottom: 4px;
         }
 
         .stat-label {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
           margin: 0;
         }
       }
@@ -316,7 +317,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
         padding: 16px;
         background-color: white;
         border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        box-shadow: $shadow-sm;
       }
 
       .filters {
@@ -336,24 +337,24 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
       }
 
       .role-card {
-        border-radius: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: $radius-lg;
+        box-shadow: $shadow-md;
         transition:
           transform 0.2s,
           box-shadow 0.2s;
 
         &:hover {
           transform: translateY(-4px);
-          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+          box-shadow: $shadow-xl;
         }
 
         &.system-role {
-          border: 2px solid #f44336;
+          border-color: $color-error;
         }
 
         mat-card-header {
           padding: 16px !important;
-          border-bottom: 1px solid #f0f0f0;
+          border-bottom: 1px solid $color-bg-primary;
 
           mat-card-title {
             display: flex;
@@ -371,7 +372,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
 
           mat-card-subtitle {
             font-size: 14px;
-            color: #666;
+            color: $color-text-secondary;
             margin-top: 4px;
           }
         }
@@ -383,7 +384,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
 
       .description {
         font-size: 14px;
-        color: #666;
+        color: $color-text-secondary;
         line-height: 1.6;
         margin-bottom: 16px;
       }
@@ -399,13 +400,13 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
         align-items: center;
         gap: 4px;
         font-size: 13px;
-        color: #666;
+        color: $color-text-secondary;
 
         mat-icon {
           font-size: 18px;
           width: 18px;
           height: 18px;
-          color: #999;
+          color: $color-text-muted;
         }
       }
 
@@ -414,12 +415,12 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
         flex-wrap: wrap;
         gap: 8px;
         padding-top: 12px;
-        border-top: 1px solid #f0f0f0;
+        border-top: 1px solid $color-bg-primary;
 
         mat-chip {
           height: 24px;
           font-size: 12px;
-          background-color: #e3f2fd;
+          background-color: rgba($color-primary, 0.08);
         }
       }
 
@@ -433,7 +434,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 
@@ -445,19 +446,19 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
           font-size: 64px;
           width: 64px;
           height: 64px;
-          color: #999;
+          color: $color-text-muted;
           margin-bottom: 16px;
         }
 
         h3 {
           font-size: 18px;
-          color: #333;
+          color: $color-text-primary;
           margin: 0 0 8px 0;
         }
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
           margin: 0;
         }
       }

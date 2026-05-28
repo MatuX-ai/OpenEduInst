@@ -247,9 +247,11 @@ export interface K12Metrics {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .k12-dashboard { 
-      padding: 24px; 
-      background: #f5f7fa;
+      padding: $spacing-lg; 
+      background: $color-neutral-50;
       min-height: 100%;
     }
     
@@ -258,20 +260,20 @@ export interface K12Metrics {
       display: grid; 
       grid-template-columns: repeat(4, 1fr); 
       gap: 20px; 
-      margin-bottom: 32px; 
+      margin-bottom: $spacing-xl; 
     }
     
     .metric-card { 
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
       border-left: 4px solid transparent;
     }
     
     .metric-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transform: $card-transform-hover;
+      box-shadow: $card-shadow-hover;
     }
     
     mat-card-content {
@@ -288,7 +290,7 @@ export interface K12Metrics {
     .metric-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -296,38 +298,38 @@ export interface K12Metrics {
       font-size: 24px;
     }
     
-    .metric-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .metric-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .metric-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
-    .metric-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+    .metric-icon.green { background: $color-stem-green; }
+    .metric-icon.blue { background: $color-brand-primary; }
+    .metric-icon.orange { background: #FF9800; }
+    .metric-icon.purple { background: #9C27B0; }
     
     .trend {
-      font-size: 12px;
+      font-size: $font-size-xs;
       font-weight: 600;
       padding: 4px 8px;
       border-radius: 12px;
     }
     
-    .trend.up { color: #4caf50; background: #e8f5e9; }
-    .trend.down { color: #f44336; background: #ffebee; }
-    .trend.stable { color: #ff9800; background: #fff3e0; }
+    .trend.up { color: $color-stem-green; background: $color-stem-green-bg; }
+    .trend.down { color: $color-error; background: $color-error-light; }
+    .trend.stable { color: #FF9800; background: $color-warning-light; }
     
     .metric-value { 
-      font-size: 32px; 
+      font-size: $font-size-4xl; 
       font-weight: 700; 
-      color: #1a1a1a;
-      margin: 8px 0;
+      color: $color-neutral-900;
+      margin: $spacing-xs 0;
     }
     
     .metric-label { 
-      color: #666; 
-      font-size: 14px;
+      color: $color-neutral-500; 
+      font-size: $font-size-sm;
       font-weight: 500;
     }
     
     .metric-subtitle {
-      color: #999;
-      font-size: 12px;
+      color: $color-neutral-400;
+      font-size: $font-size-xs;
       margin-top: 4px;
     }
     
@@ -335,47 +337,47 @@ export interface K12Metrics {
     .section-title {
       font-size: 18px;
       font-weight: 600;
-      color: #1a1a1a;
-      margin-bottom: 16px;
+      color: $color-neutral-900;
+      margin-bottom: $spacing-md;
       padding-left: 4px;
     }
     
     .modules-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-xl;
     }
     
     .module-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
     }
     
     .module-card:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-      border-left: 4px solid #4caf50;
+      box-shadow: $card-shadow-hover;
+      border-left: 4px solid $color-stem-green;
     }
     
     .module-card mat-card-content {
       display: flex;
       align-items: center;
-      padding: 16px !important;
+      padding: $spacing-md !important;
     }
     
     .module-icon {
       width: 56px;
       height: 56px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border-radius: $radius-lg;
+      background: $color-stem-green-bg;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 16px;
-      color: #4caf50;
+      margin-right: $spacing-md;
+      color: $color-stem-green;
     }
     
     .module-icon mat-icon {
@@ -390,19 +392,19 @@ export interface K12Metrics {
     
     .module-info h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .subtitle {
       margin: 4px 0 0 0;
-      font-size: 13px;
-      color: #666;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
     }
     
     .arrow {
-      color: #999;
+      color: $color-neutral-400;
     }
     
     /* 快捷操作栏 */
@@ -410,22 +412,25 @@ export interface K12Metrics {
       display: flex;
       gap: 12px;
       flex-wrap: wrap;
-      margin-bottom: 32px;
+      margin-bottom: $spacing-xl;
     }
     
     .action-btn {
       text-transform: none;
-      border-radius: 8px;
+      border-radius: $btn-primary-radius;
       padding: 12px 20px;
-      font-weight: 500;
-      background: #4caf50;
-      transition: all 0.3s ease;
+      font-weight: $btn-font-weight;
+      background: $color-brand-primary;
+      color: $btn-primary-color;
+      transition: all $transition-normal ease;
+      border: none;
+      cursor: pointer;
     }
     
     .action-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
-      background: #43a047;
+      transform: $btn-primary-transform-hover;
+      box-shadow: $btn-primary-shadow-hover;
+      background: $btn-primary-bg-hover;
     }
     
     .action-btn mat-icon {
@@ -436,38 +441,38 @@ export interface K12Metrics {
     .resource-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-xl;
     }
     
     .resource-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
     }
     
     .resource-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      transform: $card-transform-hover;
+      box-shadow: $card-shadow-hover;
     }
     
     .resource-card mat-card-content {
       display: flex;
       align-items: center;
-      padding: 16px !important;
+      padding: $spacing-md !important;
     }
     
     .resource-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+      border-radius: $radius-lg;
+      background: $color-brand-primary-bg;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-right: 16px;
-      color: #4caf50;
+      margin-right: $spacing-md;
+      color: $color-brand-primary;
     }
     
     .resource-icon mat-icon {
@@ -478,15 +483,15 @@ export interface K12Metrics {
     
     .resource-info h4 {
       margin: 0;
-      font-size: 15px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .resource-info p {
       margin: 4px 0 0 0;
-      font-size: 13px;
-      color: #666;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
     }
     
     /* STEM 特色功能区 */
@@ -497,17 +502,17 @@ export interface K12Metrics {
     }
     
     .stem-feature-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      border-radius: $card-border-radius;
+      box-shadow: $card-shadow;
+      transition: all $transition-normal ease;
       cursor: pointer;
       border: 2px solid transparent;
     }
     
     .stem-feature-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-      border-color: #4caf50;
+      transform: $card-transform-hover;
+      box-shadow: $card-shadow-hover;
+      border-color: $color-stem-green;
     }
     
     .stem-feature-card mat-card-content {
@@ -524,17 +529,17 @@ export interface K12Metrics {
     .feature-icon {
       width: 56px;
       height: 56px;
-      border-radius: 12px;
+      border-radius: $radius-lg;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
     }
     
-    .feature-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .feature-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .feature-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
-    .feature-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
+    .feature-icon.green { background: $color-stem-green; }
+    .feature-icon.blue { background: $color-brand-primary; }
+    .feature-icon.purple { background: #9C27B0; }
+    .feature-icon.orange { background: #FF9800; }
     
     .feature-icon mat-icon {
       font-size: 28px;
@@ -548,29 +553,29 @@ export interface K12Metrics {
       height: 20px;
     }
     
-    .status-icon.success { color: #4caf50; }
-    .status-icon.warning { color: #ff9800; }
-    .status-icon.info { color: #2196f3; }
+    .status-icon.success { color: $color-stem-green; }
+    .status-icon.warning { color: #FF9800; }
+    .status-icon.info { color: $color-brand-primary; }
     
     .stem-feature-card h4 {
       margin: 0 0 8px 0;
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
     
     .feature-desc {
-      margin: 0 0 16px 0;
-      font-size: 13px;
-      color: #666;
+      margin: 0 0 $spacing-md 0;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       line-height: 1.5;
     }
     
     .feature-stats {
       display: flex;
-      gap: 16px;
-      padding-top: 16px;
-      border-top: 1px solid #f0f0f0;
+      gap: $spacing-md;
+      padding-top: $spacing-md;
+      border-top: 1px solid $color-neutral-100;
     }
     
     .stat-item {
@@ -580,21 +585,21 @@ export interface K12Metrics {
     
     .stat-value {
       display: block;
-      font-size: 24px;
+      font-size: $font-size-lg;
       font-weight: 700;
-      color: #1a1a1a;
+      color: $color-neutral-900;
       margin-bottom: 4px;
     }
     
-    .stat-value.orange { color: #ff9800; }
-    .stat-value.green { color: #4caf50; }
-    .stat-value.purple { color: #9c27b0; }
-    .stat-value.blue { color: #2196f3; }
+    .stat-value.orange { color: #FF9800; }
+    .stat-value.green { color: $color-stem-green; }
+    .stat-value.purple { color: #9C27B0; }
+    .stat-value.blue { color: $color-brand-primary; }
     
     .stat-label {
       display: block;
-      font-size: 12px;
-      color: #999;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
     }
     
     /* 响应式设计 */

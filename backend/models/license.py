@@ -82,6 +82,15 @@ class Organization(Base):
     active_sponsorships = Column(Integer, default=0)  # 活跃赞助活动数
     total_brand_exposures = Column(Integer, default=0)  # 总品牌曝光次数
     accumulated_points = Column(Float, default=0.0)  # 累积积分
+    
+    # OpenMTSciEd API配置
+    opensciedu_api_key = Column(String(255), nullable=True, index=True)  # API密钥（加密存储）
+    opensciedu_api_enabled = Column(Boolean, default=False)  # 是否启用OpenMTSciEd集成
+    opensciedu_sync_enabled = Column(Boolean, default=True)  # 是否启用自动同步
+    opensciedu_sync_interval = Column(Integer, default=3600)  # 同步间隔（秒）
+    opensciedu_last_sync = Column(DateTime, nullable=True)  # 最后同步时间
+    opensciedu_sync_status = Column(String(50), default="idle")  # 同步状态：idle, syncing, success, error
+    opensciedu_api_config = Column(JSON, default=dict)  # 额外API配置
 
     # 状态和时间戳
     is_active = Column(Boolean, default=True)
@@ -326,6 +335,8 @@ class OrganizationCreate(BaseModel):
     website: Optional[str] = None
     org_type: OrganizationType = Field(default=OrganizationType.TRAINING, description="组织类型")
     max_users: int = Field(default=100, ge=1, le=100000)
+    opensciedu_api_key: Optional[str] = Field(None, description="OpenMTSciEd API密钥")
+    opensciedu_api_enabled: bool = Field(default=False, description="是否启用OpenMTSciEd集成")
 
 
 class OrganizationUpdate(BaseModel):
@@ -339,6 +350,10 @@ class OrganizationUpdate(BaseModel):
     org_type: Optional[OrganizationType] = Field(None, description="组织类型")
     max_users: Optional[int] = Field(None, ge=1, le=100000)
     is_active: Optional[bool] = None
+    opensciedu_api_key: Optional[str] = Field(None, description="OpenMTSciEd API密钥")
+    opensciedu_api_enabled: Optional[bool] = Field(None, description="是否启用OpenMTSciEd集成")
+    opensciedu_sync_enabled: Optional[bool] = Field(None, description="是否启用自动同步")
+    opensciedu_sync_interval: Optional[int] = Field(None, ge=60, description="同步间隔（秒）")
 
 
 class LicenseCreate(BaseModel):

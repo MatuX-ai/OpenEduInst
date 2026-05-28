@@ -31,6 +31,7 @@ export interface CommonFunctionItem {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .functions-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -40,7 +41,7 @@ export interface CommonFunctionItem {
     .function-card {
       cursor: pointer;
       transition: all 0.2s;
-      border-radius: 12px;
+      border-radius: $radius-lg;
     }
     .function-card:hover {
       transform: translateY(-4px);
@@ -61,8 +62,8 @@ export interface CommonFunctionItem {
       margin-right: 12px;
       color: white;
     }
-    .info h4 { margin: 0; font-size: 15px; color: #333; font-weight: 600; }
-    .info p { margin: 4px 0 0; font-size: 13px; color: #666; }
+    .info h4 { margin: 0; font-size: $font-size-base; color: $color-neutral-900; font-weight: 600; }
+    .info p { margin: 4px 0 0; font-size: $font-size-xs; color: $color-neutral-600; }
   `]
 })
 export class MatuxCommonFunctionsComponent {

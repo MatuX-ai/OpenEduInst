@@ -160,6 +160,7 @@ import { StudentInfo, TeacherInfo } from '@app/core/services/org-admin.service';
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .teacher-student-section {
         margin-bottom: 24px;
       }
@@ -188,7 +189,7 @@ import { StudentInfo, TeacherInfo } from '@app/core/services/org-admin.service';
       .empty-state {
         text-align: center;
         padding: 40px;
-        color: rgba(0, 0, 0, 0.5);
+        color: $color-text-muted;
       }
 
       .empty-state mat-icon {
@@ -206,18 +207,18 @@ import { StudentInfo, TeacherInfo } from '@app/core/services/org-admin.service';
       }
 
       .status-active {
-        background-color: #e8f5e9;
-        color: #2e7d32;
+        background-color: rgba($color-secondary, 0.1);
+        color: $color-secondary-dark;
       }
 
       .status-inactive {
-        background-color: #ffebee;
-        color: #c62828;
+        background-color: rgba($color-error, 0.1);
+        color: $color-error;
       }
 
       .status-on_leave {
-        background-color: #fff3e0;
-        color: #ef6c00;
+        background-color: rgba($color-warning, 0.1);
+        color: $color-warning;
       }
     `,
   ],

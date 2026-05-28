@@ -67,7 +67,7 @@ interface Project {
       <div class="page-header">
         <div>
           <h1 class="page-title">家长中心</h1>
-          <p class="page-subtitle">学员成长档案、课堂反馈、家校互动</p>
+          <p class="page-subtitle">STEM学习档案、课堂反馈、竞赛成果与家校互动</p>
         </div>
         <button mat-raised-button color="primary" (click)="viewNotifications()">
           <mat-icon>notifications</mat-icon>
@@ -285,8 +285,10 @@ interface Project {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .parent-portal-container {
-      padding: 24px;
+      padding: $spacing-lg;
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -296,35 +298,35 @@ interface Project {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: $spacing-lg;
     }
 
     .page-title {
-      font-size: 24px;
+      font-size: $font-size-2xl;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
-      font-size: 14px;
-      color: #64748b;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     /* Profile Card */
     .profile-card {
-      background: linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%);
-      border-radius: 12px;
-      padding: 24px;
+      background: linear-gradient(135deg, $color-brand-primary 0%, $color-stem-green 100%);
+      border-radius: $radius-lg;
+      padding: $spacing-lg;
       color: white;
-      margin-bottom: 24px;
+      margin-bottom: $spacing-lg;
     }
 
     .profile-content {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: $spacing-md;
     }
 
     .avatar {
@@ -369,7 +371,7 @@ interface Project {
     }
 
     .star-icon {
-      color: #fde047;
+      color: $color-warning;
       font-size: 20px;
       width: 20px;
       height: 20px;
@@ -381,7 +383,7 @@ interface Project {
     }
 
     .rating-label {
-      font-size: 12px;
+      font-size: $font-size-xs;
       color: rgba(255, 255, 255, 0.8);
       margin: 0;
     }
@@ -390,16 +392,16 @@ interface Project {
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
     }
 
     .stat-card {
-      background: white;
-      border-radius: 12px;
+      background: $card-bg;
+      border-radius: $radius-lg;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      box-shadow: $card-shadow;
+      border: $card-border;
     }
 
     .stat-content {
@@ -413,42 +415,42 @@ interface Project {
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: $font-size-2xl;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-value-small {
-      font-size: 18px;
+      font-size: $font-size-lg;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
-      font-size: 12px;
+      font-size: $font-size-xs;
       margin: 0;
     }
 
-    .stat-desc.green { color: #10b981; }
-    .stat-desc.blue { color: #3b82f6; }
-    .stat-desc.amber { color: #f59e0b; }
+    .stat-desc.green { color: $color-stem-green; }
+    .stat-desc.blue { color: $color-brand-primary; }
+    .stat-desc.amber { color: $color-warning; }
 
     .stat-icon-wrapper {
       width: 48px;
       height: 48px;
-      border-radius: 8px;
+      border-radius: $radius-md;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: 16px;
+      margin-left: $spacing-md;
     }
 
     .stat-icon-wrapper mat-icon {
@@ -457,10 +459,10 @@ interface Project {
       height: 24px;
     }
 
-    .stat-icon-wrapper.blue { background: #eff6ff; color: #3b82f6; }
+    .stat-icon-wrapper.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
     .stat-icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
-    .stat-icon-wrapper.amber { background: #fffbeb; color: #f59e0b; }
-    .stat-icon-wrapper.green { background: #ecfdf5; color: #10b981; }
+    .stat-icon-wrapper.amber { background: $color-warning-light; color: $color-warning; }
+    .stat-icon-wrapper.green { background: $color-stem-green-bg; color: $color-stem-green; }
 
     /* Main Grid */
     .main-grid {
@@ -483,16 +485,16 @@ interface Project {
 
     /* Section Card */
     .section-card, .sidebar-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
       overflow: hidden;
     }
 
     .section-header {
       padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -501,25 +503,25 @@ interface Project {
     .header-left {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: $spacing-sm;
     }
 
     .section-icon {
-      color: #3b82f6;
+      color: $color-brand-primary;
     }
 
     .section-title {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1e293b;
+      color: $color-neutral-800;
       margin: 0;
     }
 
     .badge {
-      font-size: 12px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
-      background: #eff6ff;
-      color: #3b82f6;
+      background: $color-brand-primary-bg;
+      color: $color-brand-primary;
       border-radius: 12px;
     }
 
@@ -529,10 +531,10 @@ interface Project {
 
     /* Course Item */
     .course-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      border: $card-border;
+      border-radius: $radius-md;
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: $spacing-md;
       transition: box-shadow 0.2s;
     }
 
@@ -541,7 +543,7 @@ interface Project {
     }
 
     .course-item:hover {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: $shadow-md;
     }
 
     .course-header {
@@ -552,15 +554,15 @@ interface Project {
     }
 
     .course-name {
-      font-size: 14px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .course-teacher {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
@@ -588,46 +590,46 @@ interface Project {
     }
 
     .progress-label {
-      font-size: 12px;
-      color: #475569;
+      font-size: $font-size-xs;
+      color: $color-neutral-600;
     }
 
     .progress-percent {
-      font-size: 12px;
+      font-size: $font-size-xs;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
     .progress-bar {
       height: 8px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
     }
 
     .course-footer {
       display: flex;
       justify-content: space-between;
-      font-size: 12px;
+      font-size: $font-size-xs;
     }
 
     .remaining-hours {
-      color: #64748b;
+      color: $color-neutral-500;
     }
 
     .next-class {
-      color: #3b82f6;
+      color: $color-brand-primary;
       font-weight: 500;
     }
 
     /* Feedback Item */
     .feedback-item {
-      border-left: 4px solid #3b82f6;
+      border-left: 4px solid $color-brand-primary;
       padding-left: 16px;
       padding-top: 12px;
       padding-bottom: 12px;
       padding-right: 16px;
-      background: #f8fafc;
-      border-radius: 0 8px 8px 0;
-      margin-bottom: 16px;
+      background: $color-neutral-50;
+      border-radius: 0 $radius-md $radius-md 0;
+      margin-bottom: $spacing-md;
     }
 
     .feedback-item:last-child {
@@ -642,15 +644,15 @@ interface Project {
     }
 
     .feedback-course {
-      font-size: 13px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 2px 0;
     }
 
     .feedback-meta {
-      font-size: 11px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
@@ -660,29 +662,29 @@ interface Project {
     }
 
     .feedback-content {
-      font-size: 13px;
-      color: #334155;
+      font-size: $font-size-sm;
+      color: $color-neutral-700;
       margin: 0 0 12px 0;
       line-height: 1.5;
     }
 
     .homework-box {
-      background: white;
-      border-radius: 8px;
+      background: $card-bg;
+      border-radius: $radius-md;
       padding: 12px;
-      border: 1px solid #e2e8f0;
+      border: $card-border;
     }
 
     .homework-label {
-      font-size: 11px;
+      font-size: $font-size-xs;
       font-weight: 500;
-      color: #475569;
+      color: $color-neutral-600;
       margin: 0 0 4px 0;
     }
 
     .homework-text {
-      font-size: 13px;
-      color: #0f172a;
+      font-size: $font-size-sm;
+      color: $color-neutral-900;
       margin: 0;
     }
 
@@ -711,22 +713,22 @@ interface Project {
     }
 
     .achievement-name {
-      font-size: 13px;
+      font-size: $font-size-sm;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 2px 0;
     }
 
     .achievement-date {
-      font-size: 11px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     /* Project Item */
     .project-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      border: $card-border;
+      border-radius: $radius-md;
       padding: 12px;
       margin-bottom: 12px;
     }
@@ -743,26 +745,26 @@ interface Project {
     }
 
     .project-name {
-      font-size: 13px;
+      font-size: $font-size-sm;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0;
     }
 
     .status-badge {
-      font-size: 10px;
+      font-size: $font-size-xs;
       padding: 2px 8px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
     }
 
     .status-badge.completed {
-      background: #ecfdf5;
-      color: #10b981;
+      background: $color-stem-green-bg;
+      color: $color-stem-green;
     }
 
     .status-badge.in-progress {
-      background: #eff6ff;
-      color: #3b82f6;
+      background: $color-brand-primary-bg;
+      color: $color-brand-primary;
     }
 
     .project-progress {

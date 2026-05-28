@@ -18,13 +18,6 @@ interface SocialAccount {
   is_active: boolean;
 }
 
-interface LeadSummary {
-  total_leads: number;
-  pending_leads: number;
-  enrolled_leads: number;
-  source_distribution: Array<{source: string, count: number}>;
-}
-
 interface Campaign {
   id: number;
   name: string;
@@ -80,7 +73,7 @@ interface MarketingStats {
       <div class="page-header">
         <div>
           <h1 class="page-title">营销中心</h1>
-          <p class="page-subtitle">招生线索、社媒管理、拼团活动、优惠券管理</p>
+          <p class="page-subtitle">社媒管理、营销活动、优惠券管理</p>
         </div>
         <button mat-raised-button color="primary" (click)="createCampaign()">
           <mat-icon>add</mat-icon>
@@ -89,60 +82,7 @@ interface MarketingStats {
       </div>
 
       <mat-tab-group class="marketing-tabs">
-        <!-- Tab 1: 招生线索看板 -->
-        <mat-tab label="招生线索">
-          <div class="tab-content">
-            <div class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-content">
-                  <div class="stat-info">
-                    <p class="stat-label">总线索数</p>
-                    <p class="stat-value">{{ leadSummary.total_leads || 0 }}</p>
-                  </div>
-                  <div class="stat-icon-wrapper blue">
-                    <mat-icon>person_search</mat-icon>
-                  </div>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-content">
-                  <div class="stat-info">
-                    <p class="stat-label">待跟进</p>
-                    <p class="stat-value amber-text">{{ leadSummary.pending_leads || 0 }}</p>
-                  </div>
-                  <div class="stat-icon-wrapper amber">
-                    <mat-icon>pending_actions</mat-icon>
-                  </div>
-                </div>
-              </div>
-              <div class="stat-card">
-                <div class="stat-content">
-                  <div class="stat-info">
-                    <p class="stat-label">已报名</p>
-                    <p class="stat-value green-text">{{ leadSummary.enrolled_leads || 0 }}</p>
-                  </div>
-                  <div class="stat-icon-wrapper green">
-                    <mat-icon>check_circle</mat-icon>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="section-card">
-              <div class="section-header">
-                <h2 class="section-title">渠道分布</h2>
-              </div>
-              <div class="source-list">
-                <div *ngFor="let item of leadSummary.source_distribution" class="source-item">
-                  <span class="source-name">{{ item.source }}</span>
-                  <span class="source-count">{{ item.count }} 条</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 2: 社媒管理 -->
+        <!-- Tab 1: 社媒管理 -->
         <mat-tab label="社媒管理">
           <div class="tab-content">
             <div class="section-header">
@@ -179,7 +119,7 @@ interface MarketingStats {
           </div>
         </mat-tab>
 
-        <!-- Tab 3: 营销活动 -->
+        <!-- Tab 2: 营销活动 -->
         <mat-tab label="营销活动">
           <div class="tab-content">
             <!-- Stats Cards -->
@@ -405,8 +345,10 @@ interface MarketingStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
+
     .marketing-container {
-      padding: 24px;
+      padding: $spacing-lg;
       max-width: 1400px;
       margin: 0 auto;
     }
@@ -416,19 +358,19 @@ interface MarketingStats {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 24px;
+      margin-bottom: $spacing-lg;
     }
 
     .page-title {
-      font-size: 24px;
+      font-size: $font-size-2xl;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
-      font-size: 14px;
-      color: #64748b;
+      font-size: $font-size-sm;
+      color: $color-neutral-500;
       margin: 0;
     }
 
@@ -436,16 +378,16 @@ interface MarketingStats {
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 16px;
-      margin-bottom: 24px;
+      gap: $spacing-md;
+      margin-bottom: $spacing-lg;
     }
 
     .stat-card {
-      background: white;
-      border-radius: 12px;
+      background: $card-bg;
+      border-radius: $radius-lg;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      box-shadow: $card-shadow;
+      border: $card-border;
     }
 
     .stat-content {
@@ -459,35 +401,35 @@ interface MarketingStats {
     }
 
     .stat-label {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
-      font-size: 28px;
+      font-size: $font-size-2xl;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
-      font-size: 12px;
+      font-size: $font-size-xs;
       margin: 0;
     }
 
-    .stat-desc.green { color: #10b981; }
-    .stat-desc.blue { color: #3b82f6; }
-    .stat-desc.purple { color: #8b5cf6; }
+    .stat-desc.green { color: $color-stem-green; }
+    .stat-desc.blue { color: $color-brand-primary; }
+    .stat-desc.purple { color: $color-brand-primary; }
 
     .stat-icon-wrapper {
       width: 48px;
       height: 48px;
-      border-radius: 8px;
+      border-radius: $radius-md;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-left: 16px;
+      margin-left: $spacing-md;
     }
 
     .stat-icon-wrapper mat-icon {
@@ -496,24 +438,24 @@ interface MarketingStats {
       height: 24px;
     }
 
-    .stat-icon-wrapper.green { background: #ecfdf5; color: #10b981; }
-    .stat-icon-wrapper.blue { background: #eff6ff; color: #3b82f6; }
-    .stat-icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
-    .stat-icon-wrapper.amber { background: #fffbeb; color: #f59e0b; }
+    .stat-icon-wrapper.green { background: $color-stem-green-bg; color: $color-stem-green; }
+    .stat-icon-wrapper.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon-wrapper.purple { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon-wrapper.amber { background: $color-warning-light; color: $color-warning; }
 
     /* Section Card */
     .section-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
-      margin-bottom: 24px;
+      background: $card-bg;
+      border-radius: $radius-lg;
+      box-shadow: $card-shadow;
+      border: $card-border;
+      margin-bottom: $spacing-lg;
       overflow: hidden;
     }
 
     .section-header {
       padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -522,29 +464,29 @@ interface MarketingStats {
     .header-left {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: $spacing-md;
     }
 
     .section-icon {
-      color: #3b82f6;
+      color: $color-brand-primary;
     }
 
     .section-icon.amber {
-      color: #f59e0b;
+      color: $color-warning;
     }
 
     .section-title {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #1e293b;
+      color: $color-neutral-800;
       margin: 0;
     }
 
     .badge {
-      font-size: 12px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
-      background: #f1f5f9;
-      color: #475569;
+      background: $color-neutral-100;
+      color: $color-neutral-600;
       border-radius: 12px;
     }
 
@@ -557,7 +499,7 @@ interface MarketingStats {
     .search-box mat-icon {
       position: absolute;
       left: 12px;
-      color: #94a3b8;
+      color: $color-neutral-400;
       font-size: 18px;
       width: 18px;
       height: 18px;
@@ -565,16 +507,15 @@ interface MarketingStats {
 
     .search-box input {
       padding: 8px 12px 8px 36px;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      font-size: 13px;
+      border: $card-border;
+      border-radius: $radius-md;
+      font-size: $font-size-sm;
       width: 220px;
       outline: none;
     }
 
     .search-box input:focus {
-      border-color: #3b82f6;
-      ring: 2px solid #bfdbfe;
+      border-color: $color-brand-primary;
     }
 
     /* Campaigns List */
@@ -583,15 +524,15 @@ interface MarketingStats {
     }
 
     .campaign-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      border: $card-border;
+      border-radius: $radius-md;
       padding: 20px;
-      margin-bottom: 16px;
+      margin-bottom: $spacing-md;
       transition: box-shadow 0.2s;
     }
 
     .campaign-item:hover {
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      box-shadow: $shadow-md;
     }
 
     .campaign-header {
@@ -606,86 +547,86 @@ interface MarketingStats {
     }
 
     .campaign-name {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0;
     }
 
     .status-badge {
-      font-size: 11px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
       border: 1px solid;
     }
 
     .status-badge.active {
-      background: #ecfdf5;
-      color: #10b981;
-      border-color: #a7f3d0;
+      background: $color-stem-green-bg;
+      color: $color-stem-green;
+      border-color: $color-stem-green-bg;
     }
 
     .status-badge.planned {
-      background: #fffbeb;
-      color: #f59e0b;
-      border-color: #fde68a;
+      background: $color-warning-light;
+      color: $color-warning;
+      border-color: $color-warning-light;
     }
 
     .status-badge.ended {
-      background: #f8fafc;
-      color: #64748b;
-      border-color: #e2e8f0;
+      background: $color-neutral-50;
+      color: $color-neutral-500;
+      border-color: $color-neutral-200;
     }
 
     .type-badge {
-      font-size: 11px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
-      background: #eff6ff;
-      color: #3b82f6;
-      border-radius: 4px;
+      background: $color-brand-primary-bg;
+      color: $color-brand-primary;
+      border-radius: $radius-sm;
     }
 
     .campaign-desc {
-      font-size: 13px;
-      color: #475569;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
       margin: 0;
     }
 
     .campaign-stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
+      gap: $spacing-md;
       margin-bottom: 16px;
     }
 
     .stat-item {
       padding: 12px;
-      background: #f8fafc;
-      border-radius: 6px;
+      background: $color-neutral-50;
+      border-radius: $radius-sm;
     }
 
-    .stat-label {
-      font-size: 11px;
-      color: #64748b;
+    .stat-item .stat-label {
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0 0 4px 0;
     }
 
     .stat-value-small {
-      font-size: 13px;
-      color: #0f172a;
+      font-size: $font-size-sm;
+      color: $color-neutral-900;
       margin: 0;
     }
 
     .stat-value-green {
-      font-size: 13px;
-      color: #10b981;
+      font-size: $font-size-sm;
+      color: $color-stem-green;
       font-weight: 600;
       margin: 0;
     }
 
     .stat-value-bold {
-      font-size: 13px;
-      color: #0f172a;
+      font-size: $font-size-sm;
+      color: $color-neutral-900;
       font-weight: 700;
       margin: 0;
     }
@@ -701,24 +642,24 @@ interface MarketingStats {
     }
 
     .progress-label {
-      font-size: 12px;
-      color: #475569;
+      font-size: $font-size-xs;
+      color: $color-neutral-600;
     }
 
     .progress-percent {
-      font-size: 12px;
+      font-size: $font-size-xs;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
     .progress-bar {
       height: 8px;
-      border-radius: 4px;
+      border-radius: $radius-sm;
     }
 
     .campaign-actions {
       display: flex;
-      gap: 8px;
+      gap: $spacing-sm;
     }
 
     /* Coupon Table */
@@ -727,23 +668,23 @@ interface MarketingStats {
     }
 
     .coupon-name {
-      font-size: 13px;
+      font-size: $font-size-sm;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-neutral-900;
       margin: 0 0 2px 0;
     }
 
     .coupon-code {
-      font-size: 11px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       font-family: monospace;
       margin: 0;
     }
 
     .discount-value {
-      font-size: 13px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #f59e0b;
+      color: $color-warning;
     }
 
     .usage-info {
@@ -755,31 +696,31 @@ interface MarketingStats {
     .usage-bar {
       width: 80px;
       height: 6px;
-      background: #e2e8f0;
-      border-radius: 3px;
+      background: $color-neutral-200;
+      border-radius: $radius-sm;
       overflow: hidden;
     }
 
     .usage-fill {
       height: 100%;
-      background: #f59e0b;
-      border-radius: 3px;
+      background: $color-warning;
+      border-radius: $radius-sm;
     }
 
     .status-chip {
-      font-size: 11px;
+      font-size: $font-size-xs;
       padding: 4px 10px;
       border-radius: 12px;
     }
 
     .status-chip.active {
-      background: #ecfdf5;
-      color: #10b981;
+      background: $color-stem-green-bg;
+      color: $color-stem-green;
     }
 
     .status-chip.inactive {
-      background: #f8fafc;
-      color: #64748b;
+      background: $color-neutral-50;
+      color: $color-neutral-500;
     }
 
     /* Tabs & New Sections */
@@ -799,22 +740,22 @@ interface MarketingStats {
     }
 
     .social-card {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
       padding: 20px;
       transition: all 0.2s;
     }
 
     .social-card:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      box-shadow: $shadow-md;
       transform: translateY(-2px);
     }
 
     .social-header {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: $spacing-md;
       margin-bottom: 20px;
     }
 
@@ -823,33 +764,33 @@ interface MarketingStats {
       width: 32px;
       height: 32px;
       padding: 8px;
-      border-radius: 8px;
+      border-radius: $radius-md;
     }
 
-    .platform-icon.wechat { background: #ecfdf5; color: #10b981; }
-    .platform-icon.douyin { background: #f8fafc; color: #0f172a; }
-    .platform-icon.xiaohongshu { background: #fef2f2; color: #ef4444; }
-    .platform-icon.weibo { background: #fffbeb; color: #f59e0b; }
-    .platform-icon.bilibili { background: #eff6ff; color: #3b82f6; }
+    .platform-icon.wechat { background: $color-stem-green-bg; color: $color-stem-green; }
+    .platform-icon.douyin { background: $color-neutral-50; color: $color-neutral-900; }
+    .platform-icon.xiaohongshu { background: $color-error-light; color: $color-error; }
+    .platform-icon.weibo { background: $color-warning-light; color: $color-warning; }
+    .platform-icon.bilibili { background: $color-brand-primary-bg; color: $color-brand-primary; }
 
     .social-info h3 {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 600;
       margin: 0 0 4px 0;
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
     .social-info p {
-      font-size: 12px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin: 0;
     }
 
     .social-stats {
       display: flex;
       justify-content: space-between;
-      padding-top: 16px;
-      border-top: 1px solid #f1f5f9;
+      padding-top: $spacing-md;
+      border-top: 1px solid $color-neutral-100;
     }
 
     .s-stat {
@@ -859,15 +800,15 @@ interface MarketingStats {
     }
 
     .s-stat .label {
-      font-size: 11px;
-      color: #64748b;
+      font-size: $font-size-xs;
+      color: $color-neutral-500;
       margin-bottom: 4px;
     }
 
     .s-stat .value {
-      font-size: 16px;
+      font-size: $font-size-base;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
     .source-list {
@@ -878,34 +819,27 @@ interface MarketingStats {
       display: flex;
       justify-content: space-between;
       padding: 12px 0;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-neutral-100;
     }
 
     .source-name {
-      font-size: 14px;
-      color: #475569;
+      font-size: $font-size-sm;
+      color: $color-neutral-600;
     }
 
     .source-count {
-      font-size: 14px;
+      font-size: $font-size-sm;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-neutral-900;
     }
 
-    .green-text { color: #10b981; }
-    .amber-text { color: #f59e0b; }
+    .green-text { color: $color-stem-green; }
+    .amber-text { color: $color-warning; }
   `]
 })
 export class MarketingComponent implements OnInit {
   searchKeyword: string = '';
   displayedColumns: string[] = ['name', 'discount', 'condition', 'usage', 'expiry', 'status', 'actions'];
-
-  leadSummary: LeadSummary = {
-    total_leads: 0,
-    pending_leads: 0,
-    enrolled_leads: 0,
-    source_distribution: []
-  };
 
   socialAccounts: SocialAccount[] = [
     { id: 1, platform: 'wechat', account_name: 'MatuX编程', followers_count: 12500, total_posts: 86, conversion_leads: 45, is_active: true },

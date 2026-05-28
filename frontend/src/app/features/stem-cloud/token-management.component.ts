@@ -286,11 +286,12 @@ export { TokenTransaction, TokenService, TokenPackage };
     </div>
   `,
   styles: [`
+    @use '../../../styles/design-tokens' as *;
     .token-management {
       padding: 24px;
-      background: transparent;
+      background: $color-neutral-100;
       min-height: 100%;
-      color: #e2e8f0;
+      color: $color-neutral-700;
     }
 
     /* Page Header */
@@ -303,16 +304,15 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .page-header h1 {
       margin: 0;
-      font-size: 48px;
+      font-size: 20px;
       font-weight: 700;
-      color: #ffffff;
-      line-height: 1.2;
-      letter-spacing: -0.5px;
+      color: $color-neutral-900;
+      line-height: 1.3;
     }
 
     .subtitle {
-      margin: 8px 0 0 0;
-      color: #94a3b8;
+      margin: 4px 0 0 0;
+      color: $color-neutral-500;
       font-size: 14px;
     }
 
@@ -334,13 +334,10 @@ export { TokenTransaction, TokenService, TokenPackage };
     }
 
     .balance-card {
-      border-radius: 20px;
-      background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(56, 189, 248, 0.1);
-      box-shadow: 0 0 40px rgba(56, 189, 248, 0.05);
-      position: relative;
-      overflow: hidden;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
     }
 
     .balance-card::before {
@@ -350,7 +347,7 @@ export { TokenTransaction, TokenService, TokenPackage };
       left: 0;
       width: 100%;
       height: 4px;
-      background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+      background: linear-gradient(90deg, $color-brand-primary, $color-brand-primary, $color-brand-primary);
     }
 
     mat-card-content {
@@ -365,36 +362,33 @@ export { TokenTransaction, TokenService, TokenPackage };
     }
 
     .balance-icon {
-      width: 72px;
-      height: 72px;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: $color-brand-primary-subtle;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
-      box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
+      color: $color-brand-primary;
     }
 
     .balance-icon mat-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
+      font-size: 24px;
+      width: 24px;
+      height: 24px;
     }
 
     .balance-info h2 {
       margin: 0;
-      font-size: 42px;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -1.5px;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      font-size: 24px;
+      font-weight: 700;
+      color: $color-neutral-900;
     }
 
     .balance-info p {
       margin: 4px 0 0 0;
-      color: #94a3b8;
-      font-size: 15px;
+      color: $color-neutral-500;
+      font-size: 14px;
     }
 
     .balance-details {
@@ -407,22 +401,23 @@ export { TokenTransaction, TokenService, TokenPackage };
     .detail-item {
       text-align: center;
       padding: 12px;
-      background: rgba(15, 23, 42, 0.6);
-      border-radius: 8px;
+      background: $color-neutral-50;
+      border: $card-border;
+      border-radius: $radius-md;
     }
 
     .detail-item .label {
       display: block;
       font-size: 12px;
-      color: #94a3b8;
+      color: $color-neutral-400;
       margin-bottom: 4px;
     }
 
     .detail-item .value {
       display: block;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .balance-trend {
@@ -433,7 +428,7 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .trend-label {
       font-size: 14px;
-      color: #94a3b8;
+      color: $color-neutral-500;
       white-space: nowrap;
     }
 
@@ -447,18 +442,22 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .trend-bar {
       flex: 1;
-      background: #4caf50;
+      background: $color-brand-primary;
       border-radius: 2px 2px 0 0;
       min-height: 4px;
+      opacity: 0.3;
     }
 
     .trend-bar.down {
-      background: #f44336;
+      background: $color-brand-primary;
+      opacity: 0.15;
     }
 
     .usage-stats-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
     }
 
     .service-stats {
@@ -476,11 +475,11 @@ export { TokenTransaction, TokenService, TokenPackage };
     .service-icon {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: $color-brand-primary;
       flex-shrink: 0;
     }
 
@@ -498,13 +497,13 @@ export { TokenTransaction, TokenService, TokenPackage };
       margin: 0 0 4px 0;
       font-size: 14px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .service-info p {
       margin: 0 0 8px 0;
       font-size: 12px;
-      color: #94a3b8;
+      color: $color-neutral-400;
     }
 
     .usage-bar {
@@ -514,15 +513,15 @@ export { TokenTransaction, TokenService, TokenPackage };
     .usage-text {
       display: block;
       font-size: 11px;
-      color: #94a3b8;
+      color: $color-neutral-400;
       margin-top: 4px;
     }
 
     /* Section Title */
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-700;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -536,14 +535,15 @@ export { TokenTransaction, TokenService, TokenPackage };
     }
 
     .service-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
     }
 
     .service-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .service-card mat-card-content {
@@ -560,11 +560,11 @@ export { TokenTransaction, TokenService, TokenPackage };
     .service-icon-large {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: $color-brand-primary;
     }
 
     .service-icon-large mat-icon {
@@ -581,7 +581,7 @@ export { TokenTransaction, TokenService, TokenPackage };
       display: block;
       font-size: 18px;
       font-weight: 700;
-      color: #1a1a1a;
+      color: $color-neutral-900;
     }
 
     .cost-unit {
@@ -594,13 +594,13 @@ export { TokenTransaction, TokenService, TokenPackage };
       margin: 0 0 8px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .service-description {
       margin: 0 0 16px 0;
       font-size: 13px;
-      color: #94a3b8;
+      color: $color-neutral-400;
       line-height: 1.4;
     }
 
@@ -614,7 +614,7 @@ export { TokenTransaction, TokenService, TokenPackage };
       flex: 1;
       text-align: center;
       padding: 8px;
-      background: #f8f9fa;
+      border: 1px solid $color-neutral-200;
       border-radius: 6px;
     }
 
@@ -622,13 +622,13 @@ export { TokenTransaction, TokenService, TokenPackage };
       display: block;
       font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .mini-label {
       display: block;
       font-size: 10px;
-      color: #94a3b8;
+      color: $color-neutral-400;
     }
 
     .service-action-btn {
@@ -637,9 +637,11 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     /* Transactions Card */
     .transactions-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 32px;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      margin-bottom: 24px;
     }
 
     .tab-content {
@@ -663,15 +665,17 @@ export { TokenTransaction, TokenService, TokenPackage };
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #999;
+      color: $color-neutral-400;
     }
 
     .search-box input {
       width: 100%;
       padding: 10px 10px 10px 40px;
-      border: 1px solid #ddd;
+      border: 1px solid $color-neutral-200;
       border-radius: 8px;
       font-size: 14px;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     .filter-controls {
@@ -681,9 +685,11 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .filter-controls select {
       padding: 8px 12px;
-      border: 1px solid #ddd;
+      border: 1px solid $color-neutral-200;
       border-radius: 8px;
       font-size: 14px;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     /* Table Styles */
@@ -733,20 +739,22 @@ export { TokenTransaction, TokenService, TokenPackage };
     }
 
     .package-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
-    }
-
-    .package-card.popular {
-      border-color: #ff9800;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
       position: relative;
     }
 
+    .package-card.popular {
+      border-color: #f59e0b;
+      position: relative;
+      border-width: 2px;
+    }
+
     .package-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .package-card mat-card-content {
@@ -763,7 +771,7 @@ export { TokenTransaction, TokenService, TokenPackage };
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .popular-badge {
@@ -784,15 +792,15 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .token-count {
       display: block;
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 700;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .token-label {
       display: block;
       font-size: 14px;
-      color: #94a3b8;
+      color: $color-neutral-400;
     }
 
     .package-price {
@@ -819,7 +827,7 @@ export { TokenTransaction, TokenService, TokenPackage };
 
     .value-text {
       font-size: 12px;
-      color: #94a3b8;
+      color: $color-neutral-500;
     }
 
     .purchase-btn {
@@ -898,7 +906,7 @@ export class TokenManagementComponent implements OnInit {
       icon: 'psychology', 
       costPerUse: 5, 
       totalUses: 1240, 
-      color: 'linear-gradient(135deg, #3b82f6, #2563eb)' 
+      color: '#eff6ff' 
     },
     { 
       id: 'auto-grading', 
@@ -907,7 +915,7 @@ export class TokenManagementComponent implements OnInit {
       icon: 'fact_check', 
       costPerUse: 8, 
       totalUses: 856, 
-      color: 'linear-gradient(135deg, #10b981, #059669)' 
+      color: '#ecfdf5' 
     }
   ];
 

@@ -225,7 +225,7 @@ import {
         border-radius: tokens.$radius-lg;
         overflow: hidden;
         box-shadow: tokens.$shadow-md;
-        background: white;
+        background: tokens.$card-bg;
 
         table th {
           background: tokens.$color-neutral-50;
@@ -245,7 +245,7 @@ import {
         }
       }
 
-      // 响应式适配
+      /* 响应式适配 */
       @include mixins.tablet {
         .header h1 {
           font-size: tokens.$font-size-3xl;

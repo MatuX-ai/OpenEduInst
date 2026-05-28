@@ -255,6 +255,7 @@ interface UserViewModel {
   `,
   styles: [
     `
+      @use '../../../../styles/design-tokens' as *;
       .user-assign-dialog {
         min-width: 800px;
         max-width: 1000px;
@@ -266,14 +267,14 @@ interface UserViewModel {
         gap: 8px;
         font-size: 20px;
         font-weight: 600;
-        color: #333;
+        color: $color-text-primary;
         margin-bottom: 16px;
 
         mat-icon {
           font-size: 24px;
           width: 24px;
           height: 24px;
-          color: #1976d2;
+          color: $color-primary;
         }
       }
 
@@ -290,13 +291,13 @@ interface UserViewModel {
       }
 
       .info-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        border-radius: $radius-md;
+        box-shadow: $shadow-md;
       }
 
       mat-card-header {
         padding: 12px 16px !important;
-        border-bottom: 1px solid #f0f0f0;
+        border-bottom: 1px solid $color-border;
 
         mat-card-title {
           display: flex;
@@ -309,7 +310,7 @@ interface UserViewModel {
             font-size: 20px;
             width: 20px;
             height: 20px;
-            color: #ff9800;
+            color: $color-warning;
           }
         }
       }
@@ -323,7 +324,7 @@ interface UserViewModel {
       }
 
       .required {
-        color: #f44336;
+        color: $color-error;
         margin-left: 4px;
       }
 
@@ -337,19 +338,19 @@ interface UserViewModel {
       }
 
       .user-card {
-        border-radius: 8px;
+        border-radius: $radius-md;
         cursor: pointer;
         transition: all 0.2s;
         border: 2px solid transparent;
 
         &:hover {
           transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          box-shadow: $shadow-lg;
         }
 
         &.selected {
-          border-color: #1976d2;
-          background-color: #e3f2fd;
+          border-color: $color-primary;
+          background-color: rgba($color-primary, 0.08);
         }
 
         mat-card-content {
@@ -371,7 +372,7 @@ interface UserViewModel {
           font-size: 40px;
           width: 40px;
           height: 40px;
-          color: #999;
+          color: $color-text-muted;
         }
       }
 
@@ -379,19 +380,19 @@ interface UserViewModel {
         .user-name {
           font-size: 15px;
           font-weight: 600;
-          color: #333;
+          color: $color-text-primary;
           margin-bottom: 4px;
         }
 
         .user-email {
           font-size: 13px;
-          color: #666;
+          color: $color-text-secondary;
           margin-bottom: 2px;
         }
 
         .user-department {
           font-size: 12px;
-          color: #999;
+          color: $color-text-muted;
         }
       }
 
@@ -399,8 +400,8 @@ interface UserViewModel {
         margin-top: 16px;
         max-height: 400px;
         overflow-y: auto;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
+        border: 1px solid $color-border;
+        border-radius: $radius-md;
       }
 
       .user-table {
@@ -408,8 +409,8 @@ interface UserViewModel {
 
         th.mat-header-cell {
           font-weight: 600;
-          color: #333;
-          background-color: #f5f5f5;
+          color: $color-text-primary;
+          background-color: $color-bg-primary;
           position: sticky;
           top: 0;
           z-index: 1;
@@ -420,7 +421,7 @@ interface UserViewModel {
         }
 
         tr.mat-row:hover {
-          background-color: #f5f5f5;
+          background-color: $color-bg-primary;
         }
       }
 
@@ -433,19 +434,19 @@ interface UserViewModel {
           font-size: 32px;
           width: 32px;
           height: 32px;
-          color: #999;
+          color: $color-text-muted;
         }
 
         .user-name {
           font-size: 14px;
           font-weight: 600;
-          color: #333;
+          color: $color-text-primary;
           margin-bottom: 2px;
         }
 
         .user-email {
           font-size: 13px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 
@@ -457,13 +458,13 @@ interface UserViewModel {
         mat-chip {
           height: 24px;
           font-size: 12px;
-          background-color: #e3f2fd;
-          color: #1976d2;
+          background-color: rgba($color-primary, 0.08);
+          color: $color-primary;
         }
 
         .no-role {
           font-size: 13px;
-          color: #999;
+          color: $color-text-muted;
         }
       }
 
@@ -474,20 +475,20 @@ interface UserViewModel {
 
         .role-name {
           font-weight: 600;
-          color: #333;
+          color: $color-text-primary;
         }
 
         .role-code {
           font-size: 12px;
-          color: #999;
+          color: $color-text-muted;
           font-family: monospace;
         }
 
         mat-chip {
           height: 20px;
           font-size: 11px;
-          background-color: #fff3e0;
-          color: #f57c00;
+          background-color: rgba($color-warning, 0.1);
+          color: $color-warning;
         }
       }
 
@@ -496,19 +497,19 @@ interface UserViewModel {
         align-items: center;
         gap: 8px;
         padding: 12px;
-        background-color: #e8f5e9;
-        border-radius: 8px;
+        background-color: rgba($color-secondary, 0.1);
+        border-radius: $radius-md;
         margin-top: 12px;
 
         mat-icon {
           font-size: 20px;
           width: 20px;
           height: 20px;
-          color: #4caf50;
+          color: $color-secondary;
         }
 
         strong {
-          color: #2e7d32;
+          color: $color-secondary-dark;
           font-weight: 600;
         }
       }
@@ -523,7 +524,7 @@ interface UserViewModel {
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 
@@ -535,13 +536,13 @@ interface UserViewModel {
           font-size: 48px;
           width: 48px;
           height: 48px;
-          color: #ccc;
+          color: $color-text-muted;
           margin-bottom: 16px;
         }
 
         p {
           font-size: 14px;
-          color: #666;
+          color: $color-text-secondary;
         }
       }
 

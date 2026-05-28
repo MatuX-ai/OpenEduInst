@@ -104,7 +104,7 @@ def get_current_user_info(
             UserOrganization.user_id == current_user.id
         ).first()
         
-        org_id = user_org.organization_id if user_org else None
+        org_id = user_org.org_id if user_org else None
         role = user_org.role.value if user_org and user_org.role else "user"
         
         return {

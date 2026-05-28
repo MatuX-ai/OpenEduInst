@@ -19,12 +19,10 @@ router = APIRouter(
 # 定义基础菜单结构 (按业务场景分组)
 BASE_MENU = [
     {
-        "id": "overview",
-        "title": "经营概览",
-        "icon": "dashboard",
-        "children": [
-            {"id": "dashboard", "title": "经营仪表盘", "icon": "space_dashboard", "path": "dashboard"}
-        ]
+        "id": "dashboard",
+        "title": "经营仪表盘",
+        "icon": "space_dashboard",
+        "path": "dashboard"
     },
     {
         "id": "academic",
@@ -33,7 +31,8 @@ BASE_MENU = [
         "children": [
             {"id": "students", "title": "学员管理", "icon": "people", "path": "students"},
             {"id": "teachers", "title": "教师管理", "icon": "person", "path": "teachers"},
-            {"id": "schedule", "title": "排课管理", "icon": "calendar_month", "path": "schedule"}
+            {"id": "schedule", "title": "排课管理", "icon": "calendar_month", "path": "schedule"},
+            {"id": "resources", "title": "教学资源", "icon": "library_books", "path": "resources"}
         ]
     },
     {
@@ -42,19 +41,26 @@ BASE_MENU = [
         "icon": "campaign",
         "children": [
             {"id": "marketing-center", "title": "营销中心", "icon": "trending_up", "path": "marketing"},
-            {"id": "parent-portal", "title": "家长中心", "icon": "family_restroom", "path": "parent-portal"},
-            {"id": "resources", "title": "教学资源", "icon": "library_books", "path": "resources"}
+            {"id": "leads", "title": "招生线索", "icon": "person_search", "path": "leads"}
         ]
     },
     {
-        "id": "stem-lab",
-        "title": "STEM 实验室",
-        "icon": "science",
-        "children": [
-            {"id": "projects", "title": "项目管理", "icon": "account_tree", "path": "projects"},
-            {"id": "devices", "title": "设备与空间", "icon": "devices", "path": "devices"},
-            {"id": "competitions", "title": "竞赛认证", "icon": "emoji_events", "path": "competitions"}
-        ]
+        "id": "classrooms",
+        "title": "教室管理",
+        "icon": "meeting_room",
+        "path": "classrooms"
+    },
+    {
+        "id": "equipment",
+        "title": "设备与器材管理",
+        "icon": "devices",
+        "path": "devices"
+    },
+    {
+        "id": "competitions",
+        "title": "竞赛认证",
+        "icon": "emoji_events",
+        "path": "competitions"
     },
     {
         "id": "finance",
@@ -62,9 +68,14 @@ BASE_MENU = [
         "icon": "account_balance_wallet",
         "children": [
             {"id": "finance-dashboard", "title": "财务管理", "icon": "payments", "path": "finance"},
-            {"id": "licenses", "title": "许可证/Token", "icon": "vpn_key", "path": "licenses"},
-            {"id": "multi-campus", "title": "多校区管理", "icon": "business", "path": "multi-campus"}
+            {"id": "licenses", "title": "许可证/Token", "icon": "vpn_key", "path": "tokens"}
         ]
+    },
+    {
+        "id": "multi-campus",
+        "title": "多校区管理",
+        "icon": "business",
+        "path": "multi-campus"
     },
     {
         "id": "system",
@@ -73,6 +84,7 @@ BASE_MENU = [
         "children": [
             {"id": "users", "title": "团队与权限", "icon": "group", "path": "users"},
             {"id": "notifications", "title": "消息中心", "icon": "notifications", "path": "notifications"},
+            {"id": "parent-portal", "title": "家长中心", "icon": "family_restroom", "path": "parent-portal"},
             {"id": "settings", "title": "基础配置", "icon": "tune", "path": "settings"}
         ]
     }

@@ -304,11 +304,12 @@ export { HardwareDevice, DeviceCategory };
     </div>
   `,
   styles: [`
+    @use '../../../styles/design-tokens' as *;
     .hardware-management {
       padding: 24px;
-      background: transparent;
+      background: $color-neutral-100;
       min-height: 100%;
-      color: #e2e8f0;
+      color: $color-neutral-700;
     }
 
     /* Page Header */
@@ -321,16 +322,15 @@ export { HardwareDevice, DeviceCategory };
 
     .page-header h1 {
       margin: 0;
-      font-size: 48px;
+      font-size: 20px;
       font-weight: 700;
-      color: #ffffff;
-      line-height: 1.2;
-      letter-spacing: -0.5px;
+      color: $color-neutral-900;
+      line-height: 1.3;
     }
 
     .subtitle {
-      margin: 8px 0 0 0;
-      color: #94a3b8;
+      margin: 4px 0 0 0;
+      color: $color-neutral-500;
       font-size: 14px;
     }
 
@@ -352,18 +352,15 @@ export { HardwareDevice, DeviceCategory };
     }
 
     .stat-card {
-      border-radius: 16px;
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
     }
 
     .stat-card:hover {
-      transform: translateY(-4px);
-      border-color: rgba(56, 189, 248, 0.3);
-      box-shadow: 0 8px 30px rgba(56, 189, 248, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     mat-card-content {
@@ -378,52 +375,47 @@ export { HardwareDevice, DeviceCategory };
     }
 
     .stat-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    .stat-icon.blue { background: linear-gradient(135deg, #3b82f6, #2563eb); }
-    .stat-icon.green { background: linear-gradient(135deg, #10b981, #059669); }
-    .stat-icon.orange { background: linear-gradient(135deg, #f59e0b, #d97706); }
-    .stat-icon.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .stat-icon.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon.green { background: $color-stem-green-bg; color: $color-stem-green; }
+    .stat-icon.orange { background: $color-warning-light; color: $color-warning; }
+    .stat-icon.red { background: $color-error-light; color: $color-error; }
 
     .stat-trend {
       font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: rgba(0,0,0,0.2);
+      font-weight: 500;
     }
 
-    .stat-trend.up { color: #4ade80; }
-    .stat-trend.down { color: #f87171; }
-    .stat-trend.stable { color: #fbbf24; }
+    .stat-trend.up { color: $color-stem-green; }
+    .stat-trend.down { color: $color-error; }
+    .stat-trend.stable { color: $color-brand-primary; }
 
     .stat-value {
-      font-size: 36px;
-      font-weight: 800;
-      color: #ffffff;
+      font-size: 24px;
+      font-weight: 700;
+      color: $color-neutral-900;
       margin: 8px 0;
-      letter-spacing: -1px;
     }
 
     .stat-label {
-      color: #94a3b8;
-      font-size: 14px;
+      color: $color-neutral-500;
+      font-size: 12px;
       font-weight: 500;
     }
 
     /* Section Title */
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-700;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -437,20 +429,22 @@ export { HardwareDevice, DeviceCategory };
     }
 
     .category-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
       cursor: pointer;
     }
 
     .category-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .category-card mat-card-content {
       display: flex;
       align-items: center;
+      gap: 16px;
       padding: 16px !important;
     }
 
@@ -462,13 +456,14 @@ export { HardwareDevice, DeviceCategory };
       align-items: center;
       justify-content: center;
       margin-right: 16px;
-      color: white;
+      color: #475569;
     }
 
     .category-icon mat-icon {
       font-size: 28px;
       width: 28px;
       height: 28px;
+      color: #475569;
     }
 
     .category-info {
@@ -477,9 +472,9 @@ export { HardwareDevice, DeviceCategory };
 
     .category-info h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .category-count {
@@ -501,13 +496,11 @@ export { HardwareDevice, DeviceCategory };
 
     /* Device List Card */
     .device-list-card {
-      border-radius: 16px;
-      background: rgba(30, 41, 59, 0.6);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-      margin-bottom: 32px;
-      color: #e2e8f0;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      margin-bottom: 24px;
     }
 
     .tab-content {
@@ -531,21 +524,21 @@ export { HardwareDevice, DeviceCategory };
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #64748b;
+      color: #94a3b8;
     }
 
     .search-box input {
       width: 100%;
       padding: 10px 10px 10px 40px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
+      border: 1px solid $color-neutral-200;
+      border-radius: 8px;
       font-size: 14px;
-      color: #ffffff;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     .search-box input::placeholder {
-      color: #64748b;
+      color: #94a3b8;
     }
 
     .filter-controls {
@@ -555,11 +548,11 @@ export { HardwareDevice, DeviceCategory };
 
     .filter-controls select {
       padding: 8px 12px;
-      background: rgba(15, 23, 42, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 10px;
+      border: 1px solid $color-neutral-200;
+      border-radius: 8px;
       font-size: 14px;
-      color: #ffffff;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     /* Table Styles */
@@ -623,8 +616,10 @@ export { HardwareDevice, DeviceCategory };
 
     /* Maintenance Card */
     .maintenance-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
     }
 
     .maintenance-list {
@@ -636,7 +631,7 @@ export { HardwareDevice, DeviceCategory };
       display: flex;
       align-items: flex-start;
       padding: 16px 0;
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid $color-neutral-200;
     }
 
     .maintenance-item:last-child {
@@ -654,8 +649,23 @@ export { HardwareDevice, DeviceCategory };
       flex-shrink: 0;
     }
 
-    .maintenance-icon mat-icon {
-      color: white;
+    .maintenance-icon.repair-icon {
+      background: #fef2f2;
+    }
+    .maintenance-icon.repair-icon mat-icon {
+      color: #dc2626;
+    }
+    .maintenance-icon.calibration-icon {
+      background: #eff6ff;
+    }
+    .maintenance-icon.calibration-icon mat-icon {
+      color: $color-brand-primary;
+    }
+    .maintenance-icon.maintenance-icon {
+      background: #fffbeb;
+    }
+    .maintenance-icon.maintenance-icon mat-icon {
+      color: #d97706;
     }
 
     .maintenance-info {
@@ -666,7 +676,7 @@ export { HardwareDevice, DeviceCategory };
       margin: 0 0 4px 0;
       font-size: 15px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .maintenance-info p {
@@ -679,7 +689,7 @@ export { HardwareDevice, DeviceCategory };
       display: flex;
       gap: 16px;
       font-size: 12px;
-      color: #64748b;
+      color: $color-neutral-500;
     }
 
     .maintenance-status-chip {
@@ -823,10 +833,10 @@ export class HardwareManagementComponent implements OnInit {
     ];
     
     this.deviceCategories = [
-      { id: 'arduino', name: 'Arduino套件', icon: 'memory', count: 65, available: 52, color: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-      { id: 'raspberry', name: 'Raspberry Pi', icon: 'developer_board', count: 42, available: 35, color: 'linear-gradient(135deg, #10b981, #059669)' },
-      { id: 'sensors', name: '传感器模块', icon: 'sensors', count: 58, available: 45, color: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-      { id: 'robots', name: '机器人底盘', icon: 'precision_manufacturing', count: 21, available: 18, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }
+      { id: 'arduino', name: 'Arduino套件', icon: 'memory', count: 65, available: 52, color: '#eff6ff' },
+      { id: 'raspberry', name: 'Raspberry Pi', icon: 'developer_board', count: 42, available: 35, color: '#ecfdf5' },
+      { id: 'sensors', name: '传感器模块', icon: 'sensors', count: 58, available: 45, color: '#fffbeb' },
+      { id: 'robots', name: '机器人底盘', icon: 'precision_manufacturing', count: 21, available: 18, color: '#f5f3ff' }
     ];
 
     this.updateStats();

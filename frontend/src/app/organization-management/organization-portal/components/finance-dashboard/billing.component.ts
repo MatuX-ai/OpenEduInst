@@ -42,6 +42,8 @@ interface FinanceStats {
   pending_bills: number;
   monthly_classes: number;
   teacher_salary: number;
+  token_consumption: number;
+  equipment_rental_income: number;
 }
 
 @Component({
@@ -131,6 +133,37 @@ interface FinanceStats {
             </div>
             <div class="stat-icon-wrapper purple">
               <mat-icon>people</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- Token 消耗 -->
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-info">
+              <p class="stat-label">Token 消耗</p>
+              <p class="stat-value">{{ stats.token_consumption | number:'1.0-0' }}</p>
+              <p class="stat-desc">点 / 本月</p>
+            </div>
+            <div class="stat-icon-wrapper cyan">
+              <mat-icon>token</mat-icon>
+            </div>
+          </div>
+        </div>
+
+        <!-- 设备租赁收入 -->
+        <div class="stat-card">
+          <div class="stat-content">
+            <div class="stat-info">
+              <p class="stat-label">设备租赁收入</p>
+              <p class="stat-value">¥{{ stats.equipment_rental_income | number:'1.0-0' }}</p>
+              <p class="stat-trend positive">
+                <mat-icon class="trend-icon">trending_up</mat-icon>
+                +12.5% 较上月
+              </p>
+            </div>
+            <div class="stat-icon-wrapper orange">
+              <mat-icon>desktop_windows</mat-icon>
             </div>
           </div>
         </div>
@@ -283,6 +316,7 @@ interface FinanceStats {
     </div>
   `,
   styles: [`
+    @use '../../../../styles/design-tokens' as *;
     .billing-container {
       padding: 24px;
       max-width: 1400px;
@@ -300,13 +334,13 @@ interface FinanceStats {
     .page-title {
       font-size: 24px;
       font-weight: 600;
-      color: #0f172a;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .page-subtitle {
       font-size: 14px;
-      color: #64748b;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -320,7 +354,7 @@ interface FinanceStats {
     }
 
     .add-btn {
-      background: #3b82f6 !important;
+      background: $color-primary !important;
     }
 
     /* Stats Grid */
@@ -332,11 +366,11 @@ interface FinanceStats {
     }
 
     .stat-card {
-      background: white;
-      border-radius: 12px;
+      background: $color-bg-card;
+      border-radius: $radius-lg;
       padding: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-border;
     }
 
     .stat-content {
@@ -351,20 +385,20 @@ interface FinanceStats {
 
     .stat-label {
       font-size: 12px;
-      color: #64748b;
+      color: $color-text-secondary;
       margin: 0 0 4px 0;
     }
 
     .stat-value {
       font-size: 28px;
       font-weight: 700;
-      color: #0f172a;
+      color: $color-text-primary;
       margin: 0 0 4px 0;
     }
 
     .stat-desc {
       font-size: 12px;
-      color: #64748b;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -377,7 +411,7 @@ interface FinanceStats {
     }
 
     .stat-trend.positive {
-      color: #10b981;
+      color: $color-secondary;
     }
 
     .trend-icon {
@@ -400,10 +434,12 @@ interface FinanceStats {
       height: 24px;
     }
 
-    .stat-icon-wrapper.emerald { background: #ecfdf5; color: #10b981; }
-    .stat-icon-wrapper.amber { background: #fffbeb; color: #f59e0b; }
-    .stat-icon-wrapper.blue { background: #eff6ff; color: #3b82f6; }
-    .stat-icon-wrapper.purple { background: #f5f3ff; color: #8b5cf6; }
+    .stat-icon-wrapper.emerald { background: rgba($color-secondary, 0.1); color: $color-secondary; }
+    .stat-icon-wrapper.amber { background: rgba($color-warning, 0.1); color: $color-warning; }
+    .stat-icon-wrapper.blue { background: rgba($color-primary, 0.1); color: $color-primary; }
+    .stat-icon-wrapper.purple { background: rgba($color-primary-dark, 0.1); color: $color-primary-dark; }
+    .stat-icon-wrapper.cyan { background: rgba($color-primary-light, 0.1); color: $color-primary-light; }
+    .stat-icon-wrapper.orange { background: rgba($color-warning, 0.1); color: $color-warning; }
 
     /* Content Grid */
     .content-grid {
@@ -414,16 +450,16 @@ interface FinanceStats {
 
     /* Cards */
     .chart-card, .table-card, .sidebar-card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      border: 1px solid #e2e8f0;
+      background: $color-bg-card;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      border: 1px solid $color-border;
       overflow: hidden;
     }
 
     .card-header {
       padding: 20px;
-      border-bottom: 1px solid #f1f5f9;
+      border-bottom: 1px solid $color-bg-primary;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -438,30 +474,30 @@ interface FinanceStats {
     .card-title {
       font-size: 16px;
       font-weight: 600;
-      color: #1e293b;
+      color: $color-text-primary;
       margin: 0 0 2px 0;
     }
 
     .card-subtitle {
       font-size: 12px;
-      color: #64748b;
+      color: $color-text-secondary;
       margin: 0;
     }
 
     .count-badge {
       font-size: 12px;
       padding: 4px 12px;
-      background: #fffbeb;
-      color: #f59e0b;
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
       border-radius: 12px;
     }
 
     .period-select {
       padding: 6px 12px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $color-border;
       border-radius: 6px;
       font-size: 12px;
-      background: #f8fafc;
+      background: $color-bg-primary;
       outline: none;
     }
 
@@ -476,7 +512,7 @@ interface FinanceStats {
 
     .placeholder-text {
       text-align: center;
-      color: #94a3b8;
+      color: $color-text-muted;
     }
 
     .placeholder-icon {
@@ -504,12 +540,12 @@ interface FinanceStats {
       font-size: 18px;
       width: 18px;
       height: 18px;
-      color: #94a3b8;
+      color: $color-text-muted;
     }
 
     .search-box input {
       padding: 8px 12px 8px 36px;
-      border: 1px solid #e2e8f0;
+      border: 1px solid $color-border;
       border-radius: 8px;
       font-size: 13px;
       width: 180px;
@@ -517,8 +553,8 @@ interface FinanceStats {
     }
 
     .search-box input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+      border-color: $color-primary;
+      box-shadow: 0 0 0 3px rgba($color-primary, 0.1);
     }
 
     /* Table */
@@ -529,22 +565,22 @@ interface FinanceStats {
     .bills-table th {
       font-size: 11px;
       font-weight: 600;
-      color: #475569;
+      color: $color-text-primary;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      background: #f8fafc;
+      background: $color-bg-primary;
       padding: 12px 20px;
     }
 
     .bills-table td {
       padding: 16px 20px;
       font-size: 13px;
-      color: #334155;
+      color: $color-text-primary;
     }
 
     .amount-cell {
       font-weight: 600;
-      color: #0f172a;
+      color: $color-text-primary;
     }
 
     .status-badge {
@@ -555,21 +591,21 @@ interface FinanceStats {
     }
 
     .status-badge.pending {
-      background: #fffbeb;
-      color: #f59e0b;
-      border-color: #fde68a;
+      background: rgba($color-warning, 0.1);
+      color: $color-warning;
+      border-color: rgba($color-warning, 0.3);
     }
 
     .status-badge.confirmed {
-      background: #ecfdf5;
-      color: #10b981;
-      border-color: #a7f3d0;
+      background: rgba($color-secondary, 0.1);
+      color: $color-secondary;
+      border-color: rgba($color-secondary, 0.3);
     }
 
     .status-badge.paid {
-      background: #eff6ff;
-      color: #3b82f6;
-      border-color: #bfdbfe;
+      background: rgba($color-primary, 0.1);
+      color: $color-primary;
+      border-color: rgba($color-primary, 0.3);
     }
 
     .action-link {
@@ -578,11 +614,11 @@ interface FinanceStats {
     }
 
     .action-link.confirm {
-      color: #3b82f6;
+      color: $color-primary;
     }
 
     .action-link.detail {
-      color: #64748b;
+      color: $color-text-secondary;
     }
 
     /* Sidebar */
@@ -600,14 +636,14 @@ interface FinanceStats {
     }
 
     .teacher-item {
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
+      border: 1px solid $color-border;
+      border-radius: $radius-md;
       padding: 12px;
       transition: all 0.2s;
     }
 
     .teacher-item:hover {
-      background: #f8fafc;
+      background: $color-bg-primary;
     }
 
     .teacher-header {
@@ -620,13 +656,13 @@ interface FinanceStats {
     .teacher-name {
       font-size: 13px;
       font-weight: 500;
-      color: #0f172a;
+      color: $color-text-primary;
       margin: 0 0 2px 0;
     }
 
     .teacher-level {
       font-size: 11px;
-      color: #64748b;
+      color: $color-text-secondary;
       margin: 0;
     }
 
@@ -634,18 +670,18 @@ interface FinanceStats {
       display: flex;
       justify-content: space-between;
       font-size: 11px;
-      color: #475569;
+      color: $color-text-secondary;
     }
 
     .teacher-amount {
       font-weight: 600;
-      color: #0f172a;
+      color: $color-text-primary;
     }
 
     .batch-pay-btn {
       width: 100%;
       margin-top: 8px;
-      background: #3b82f6 !important;
+      background: $color-primary !important;
     }
 
     /* Quick Actions */
@@ -670,9 +706,9 @@ interface FinanceStats {
       margin-right: 8px;
     }
 
-    .action-icon.blue { color: #3b82f6; }
-    .action-icon.emerald { color: #10b981; }
-    .action-icon.purple { color: #8b5cf6; }
+    .action-icon.blue { color: $color-primary; }
+    .action-icon.emerald { color: $color-secondary; }
+    .action-icon.purple { color: $color-primary-dark; }
   `]
 })
 export class BillingComponent implements OnInit {
@@ -682,7 +718,9 @@ export class BillingComponent implements OnInit {
     monthly_revenue: 125000,
     pending_bills: 8,
     monthly_classes: 1248,
-    teacher_salary: 28000
+    teacher_salary: 28000,
+    token_consumption: 12580,
+    equipment_rental_income: 18500
   };
 
   displayedColumns: string[] = ['student', 'course', 'hours', 'amount', 'date', 'status', 'actions'];

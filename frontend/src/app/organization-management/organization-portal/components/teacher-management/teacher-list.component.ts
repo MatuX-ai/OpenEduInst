@@ -39,8 +39,339 @@ interface TeacherStats {
 
 @Component({
   selector: 'app-teacher-list',
-  templateUrl: './teacher-list.component.html',
-  styleUrls: ['./teacher-list.component.scss'],
+  template: `
+<div class="teacher-performance-container">
+  <!-- 页面标题 -->
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">教师管理</h1>
+      <p class="page-subtitle">管理教师档案、授课安排和绩效评估</p>
+    </div>
+    <div class="header-actions">
+      <button class="cd-btn cd-btn-primary" (click)="addTeacher()">
+        <mat-icon>add</mat-icon>
+        添加教师
+      </button>
+      <button class="cd-btn cd-btn-secondary" (click)="exportData()">
+        <mat-icon>download</mat-icon>
+        导出
+      </button>
+      <select class="period-select">
+        <option value="month">本月</option>
+        <option value="quarter">本季度</option>
+        <option value="year">本年度</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- 统计卡片 -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <p class="stat-label">教师总数</p>
+          <p class="stat-value">{{ stats.totalCount }}</p>
+          <p class="stat-trend text-muted">高级{{ stats.seniorCount }}人·中级{{ stats.midCount }}人·初级{{ stats.juniorCount }}人</p>
+        </div>
+        <div class="stat-icon-wrapper blue">
+          <mat-icon>people</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <p class="stat-label">平均评分</p>
+          <p class="stat-value">{{ stats.averageRating | number:'1.1-1' }}</p>
+          <p class="stat-trend success">优秀水平</p>
+        </div>
+        <div class="stat-icon-wrapper amber">
+          <mat-icon>star</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <p class="stat-label">平均续费率</p>
+          <p class="stat-value">{{ stats.averageRenewalRate }}%</p>
+          <p class="stat-trend purple">行业领先</p>
+        </div>
+        <div class="stat-icon-wrapper purple">
+          <mat-icon>trending_up</mat-icon>
+        </div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-content">
+        <div class="stat-info">
+          <p class="stat-label">本月总课时</p>
+          <p class="stat-value">{{ stats.totalTeachingHours }}</p>
+          <p class="stat-trend text-muted">小时</p>
+        </div>
+        <div class="stat-icon-wrapper emerald">
+          <mat-icon>access_time</mat-icon>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 授课时长趋势图 -->
+  <div class="chart-card">
+    <div class="card-header">
+      <h3 class="card-title">教师授课时长趋势</h3>
+      <p class="card-subtitle">近6个月数据对比</p>
+    </div>
+    <div class="card-body">
+      <div class="bar-chart">
+        @for (monthData of teachingHoursData; track monthData.month) {
+          <div class="chart-month">
+            <div class="month-label">{{ monthData.month }}</div>
+            <div class="month-bars">
+              @for (teacher of monthData.teachers; track teacher.name) {
+                <div 
+                  class="bar-item" 
+                  [style.height.%]="(teacher.hours / 160) * 100"
+                  [style.background]="teacher.color"
+                  [attr.title]="teacher.name + ': ' + teacher.hours + '小时'">
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+      <div class="chart-legend">
+        @for (teacher of teachers.slice(0, 4); track teacher.name) {
+          <div class="legend-item">
+            <div class="legend-color" [style.background]="getAvatarColor(teacher.name)"></div>
+            <span class="legend-label">{{ teacher.name }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- 绩效排行表格 -->
+  <div class="table-card">
+    <div class="card-header">
+      <div class="header-left">
+        <mat-icon class="header-icon">award</mat-icon>
+        <h2 class="card-title">教师绩效排行</h2>
+        @if (isSelectMode && selectedTeacherIds.length > 0) {
+          <span class="selected-count">已选择 {{ selectedTeacherIds.length }} 项</span>
+          <button mat-button color="warn" (click)="batchDelete()" style="margin-left: 8px;">
+            <mat-icon>delete</mat-icon>
+            批量删除
+          </button>
+        }
+      </div>
+      <div class="search-wrapper">
+        <button mat-button (click)="toggleSelectMode()" style="margin-right: 8px;">
+          <mat-icon>{{ isSelectMode ? 'close' : 'check_box_outline_blank' }}</mat-icon>
+          {{ isSelectMode ? '取消选择' : '批量操作' }}
+        </button>
+        <mat-icon class="search-icon">search</mat-icon>
+        <input 
+          type="text" 
+          [(ngModel)]="filter.keyword" 
+          placeholder="搜索教师..."
+          (input)="onSearchInput()"
+          class="search-input"
+        />
+      </div>
+    </div>
+    
+    <div class="table-wrapper">
+      <table mat-table [dataSource]="teachers" class="performance-table">
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            @if (isSelectMode) {
+              <input type="checkbox" [checked]="isAllSelected()" (change)="selectAll()" style="cursor: pointer;" />
+            }
+          </th>
+          <td mat-cell *matCellDef="let teacher">
+            @if (isSelectMode) {
+              <input type="checkbox" [checked]="isSelected(teacher.id)" (change)="toggleSelection(teacher.id)" style="cursor: pointer;" />
+            }
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="rank">
+          <th mat-header-cell *matHeaderCellDef>排名</th>
+          <td mat-cell *matCellDef="let teacher; let i = index">
+            <div class="rank-circle" [class]="getRankClass(i)">{{ i + 1 }}</div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>教师信息</th>
+          <td mat-cell *matCellDef="let teacher">
+            <div class="teacher-info-cell">
+              <div class="avatar-circle" [style.background]="getAvatarColor(teacher.name)">{{ teacher.avatar || teacher.name.charAt(0) }}</div>
+              <div class="teacher-text">
+                <p class="teacher-name">{{ teacher.name }}</p>
+                <p class="teacher-detail">{{ teacher.level }} · {{ teacher.specialty }}</p>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="teachingHours">
+          <th mat-header-cell *matHeaderCellDef (click)="sortBy('teachingHours')" style="cursor: pointer;">
+            授课时长
+            <mat-icon *ngIf="sortColumn === 'teachingHours'" class="sort-icon">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let teacher"><span class="hours-text">{{ teacher.teachingHours }}h</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="studentCount">
+          <th mat-header-cell *matHeaderCellDef (click)="sortBy('studentCount')" style="cursor: pointer;">
+            学员数量
+            <mat-icon *ngIf="sortColumn === 'studentCount'" class="sort-icon">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let teacher"><span class="students-text">{{ teacher.studentCount }}人</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="rating">
+          <th mat-header-cell *matHeaderCellDef (click)="sortBy('rating')" style="cursor: pointer;">
+            评分
+            <mat-icon *ngIf="sortColumn === 'rating'" class="sort-icon">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let teacher">
+            <div class="rating-cell">
+              <mat-icon class="star-icon">star</mat-icon>
+              <span class="rating-value">{{ teacher.rating }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="renewalRate">
+          <th mat-header-cell *matHeaderCellDef (click)="sortBy('renewalRate')" style="cursor: pointer;">
+            续费率
+            <mat-icon *ngIf="sortColumn === 'renewalRate'" class="sort-icon">{{ sortDirection === 'asc' ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+          </th>
+          <td mat-cell *matCellDef="let teacher"><span class="renewal-rate" [class]="getRenewalRateClass(teacher.renewalRate)">{{ teacher.renewalRate }}%</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="satisfaction">
+          <th mat-header-cell *matHeaderCellDef>满意度</th>
+          <td mat-cell *matCellDef="let teacher"><span class="satisfaction-text">{{ teacher.satisfaction }}%</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="monthlyRevenue">
+          <th mat-header-cell *matHeaderCellDef>月营收</th>
+          <td mat-cell *matCellDef="let teacher"><span class="revenue-text">¥{{ teacher.monthlyRevenue | number }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>操作</th>
+          <td mat-cell *matCellDef="let teacher">
+            <div class="action-buttons">
+              <button class="action-link primary" (click)="viewTeacher(teacher)">详情</button>
+              <button class="action-link" (click)="editTeacher(teacher)">评价</button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="teacher-row"></tr>
+      </table>
+    </div>
+    
+    <mat-paginator
+      [length]="totalTeachers"
+      [pageSize]="pageSize"
+      [pageIndex]="pageIndex"
+      [pageSizeOptions]="[5, 10, 20, 50]"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      aria-label="选择页码">
+    </mat-paginator>
+  </div>
+</div>
+  `,
+  styles: [
+    `
+      @use '../../../styles/design-tokens' as *;
+
+      .teacher-performance-container { }
+      .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-lg; }
+      .page-title { font-size: $font-size-xl; font-weight: 700; color: $color-neutral-900; margin: 0; }
+      .page-subtitle { font-size: $font-size-sm; color: $color-neutral-500; margin: $spacing-xs 0 0; }
+      .header-actions { display: flex; align-items: center; gap: $spacing-sm; }
+      .period-select { padding: $spacing-sm $spacing-md; border: 1px solid $color-neutral-200; border-radius: $radius-md; font-size: $font-size-sm; background: $card-bg; cursor: pointer; outline: none; &:focus { box-shadow: 0 0 0 2px $color-brand-primary-subtle; } }
+
+      /* 按钮样式（对齐原型） */
+      .cd-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: $radius-md;
+        font-size: $font-size-sm;
+        font-weight: 500;
+        border: none;
+        cursor: pointer;
+        transition: all $transition-fast ease;
+        line-height: 1;
+        mat-icon { font-size: 18px; width: 18px; height: 18px; }
+        &.cd-btn-primary { background: $btn-primary-bg; color: $btn-primary-color; &:hover { background: $btn-primary-bg-hover; } }
+        &.cd-btn-secondary { background: $btn-secondary-bg; color: $color-neutral-600; border: 1px solid $color-neutral-200; padding: 8px 12px; &:hover { background: $color-neutral-50; } }
+      }
+      .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: $spacing-md; margin-bottom: $spacing-lg; }
+      .stat-card { background: $card-bg; border-radius: $radius-lg; padding: $spacing-lg; box-shadow: $card-shadow; border: $card-border; }
+      .stat-content { display: flex; justify-content: space-between; align-items: flex-start; }
+      .stat-info { flex: 1; }
+      .stat-label { font-size: $font-size-xs; color: $color-neutral-500; margin: 0 0 $spacing-xs; }
+      .stat-value { font-size: $font-size-3xl; font-weight: 700; color: $color-neutral-900; margin: 0; }
+      .stat-trend { font-size: $font-size-xs; margin: $spacing-xs 0 0; &.text-muted { color: $color-neutral-500; } &.success { color: $color-stem-green; } &.purple { color: $color-brand-primary; } }
+      .stat-icon-wrapper { width: 48px; height: 48px; border-radius: $radius-lg; display: flex; align-items: center; justify-content: center; flex-shrink: 0; mat-icon { font-size: 24px; width: 24px; height: 24px; } &.blue { background: $color-brand-primary-bg; color: $color-brand-primary; } &.amber { background: $color-warning-light; color: $color-warning; } &.purple { background: $color-brand-primary-bg; color: $color-brand-primary; } &.emerald { background: $color-stem-green-bg; color: $color-stem-green; } }
+      .chart-card, .table-card { background: $card-bg; border-radius: $radius-lg; box-shadow: $card-shadow; border: $card-border; margin-bottom: $spacing-lg; }
+      .card-header { padding: 20px; border-bottom: 1px solid $color-neutral-100; display: flex; align-items: center; justify-content: space-between; }
+      .header-left { display: flex; align-items: center; gap: $spacing-sm; }
+      .selected-count { font-size: $font-size-sm; color: $color-brand-primary; font-weight: 500; margin-left: $spacing-md; }
+      .header-icon { color: $color-warning; width: 20px; height: 20px; font-size: 20px; }
+      .card-title { font-size: $font-size-base; font-weight: 600; color: $color-neutral-800; margin: 0; }
+      .card-subtitle { font-size: $font-size-xs; color: $color-neutral-500; margin: $spacing-xs 0 0; }
+      .card-body { padding: $spacing-lg; }
+      .bar-chart { display: flex; gap: $spacing-md; height: 250px; align-items: flex-end; padding-bottom: $spacing-lg; }
+      .chart-month { flex: 1; display: flex; flex-direction: column; align-items: center; gap: $spacing-sm; }
+      .month-label { font-size: $font-size-xs; color: $color-neutral-600; font-weight: 500; }
+      .month-bars { display: flex; gap: 4px; align-items: flex-end; height: 200px; width: 100%; justify-content: center; }
+      .bar-item { width: 12px; border-radius: 2px 2px 0 0; transition: opacity 0.2s; cursor: pointer; &:hover { opacity: 0.8; } }
+      .chart-legend { display: flex; justify-content: center; gap: $spacing-lg; margin-top: $spacing-md; padding-top: $spacing-md; border-top: 1px solid $color-neutral-100; }
+      .legend-item { display: flex; align-items: center; gap: $spacing-xs; }
+      .legend-color { width: 12px; height: 12px; border-radius: 2px; }
+      .legend-label { font-size: $font-size-xs; color: $color-neutral-600; }
+      .search-wrapper { position: relative; }
+      .search-icon { position: absolute; left: $spacing-md; top: 50%; transform: translateY(-50%); color: $color-neutral-400; width: 16px; height: 16px; font-size: 16px; pointer-events: none; }
+      .search-input { padding: $spacing-sm $spacing-md $spacing-sm 36px; border: 1px solid $color-neutral-200; border-radius: $radius-lg; font-size: $font-size-sm; width: 192px; outline: none; &:focus { border-color: $color-brand-primary; box-shadow: 0 0 0 2px $color-brand-primary-subtle; } }
+      .table-wrapper { overflow-x: auto; }
+      .performance-table { width: 100%; border-collapse: collapse; }
+      th { text-align: left; padding: $spacing-md $spacing-lg; font-size: $font-size-xs; font-weight: 500; color: $color-neutral-600; text-transform: uppercase; letter-spacing: 0.05em; background: $color-neutral-50; border-bottom: 1px solid $color-neutral-200; .sort-icon { font-size: 14px; width: 14px; height: 14px; margin-left: 4px; vertical-align: middle; } }
+      td { padding: $spacing-md $spacing-lg; border-bottom: 1px solid $color-neutral-100; }
+      .teacher-row { transition: background-color 0.15s ease; &:hover { background: $color-neutral-50; } }
+      .rank-circle { width: 32px; height: 32px; border-radius: $radius-full; display: flex; align-items: center; justify-content: center; font-size: $font-size-sm; font-weight: 700; &.rank-gold { background: $color-warning-light; color: $color-warning; } &.rank-silver { background: $color-neutral-200; color: $color-neutral-600; } &.rank-bronze { background: #fed7aa; color: #ea580c; } &.rank-default { background: $color-neutral-100; color: $color-neutral-500; } }
+      .teacher-info-cell { display: flex; align-items: center; gap: $spacing-md; }
+      .avatar-circle { width: 40px; height: 40px; border-radius: $radius-full; color: white; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: $font-size-sm; flex-shrink: 0; }
+      .teacher-text { min-width: 0; }
+      .teacher-name { font-size: $font-size-sm; font-weight: 500; color: $color-neutral-900; margin: 0; }
+      .teacher-detail { font-size: $font-size-xs; color: $color-neutral-500; margin: $spacing-xs 0 0; }
+      .hours-text { font-size: $font-size-sm; font-weight: 600; color: $color-neutral-900; }
+      .students-text { font-size: $font-size-sm; color: $color-neutral-600; }
+      .rating-cell { display: flex; align-items: center; gap: $spacing-xs; }
+      .star-icon { width: 16px; height: 16px; font-size: 16px; color: $color-warning; fill: $color-warning; }
+      .rating-value { font-size: $font-size-sm; font-weight: 600; color: $color-neutral-900; }
+      .renewal-rate { font-size: $font-size-sm; font-weight: 600; &.rate-excellent { color: $color-stem-green; } &.rate-good { color: $color-brand-primary; } &.rate-average { color: $color-warning; } }
+      .satisfaction-text { font-size: $font-size-sm; color: $color-neutral-700; }
+      .revenue-text { font-size: $font-size-sm; font-weight: 600; color: $color-neutral-900; }
+      .action-buttons { display: flex; gap: $spacing-md; }
+      .action-link { font-size: $font-size-sm; font-weight: 500; background: none; border: none; cursor: pointer; padding: 0; &.primary { color: $color-brand-primary; &:hover { color: $color-brand-primary-dark; } } &:not(.primary) { color: $color-neutral-600; &:hover { color: $color-neutral-700; } } }
+    `
+  ],
   standalone: true,
   imports: [
     CommonModule,
@@ -67,12 +398,12 @@ export class TeacherListComponent implements OnInit {
 
   // 授课时长趋势数据
   teachingHoursData: Array<{ month: string; teachers: Array<{ name: string; hours: number; color: string }> }> = [
+    { month: '5月', teachers: [] },
+    { month: '6月', teachers: [] },
+    { month: '7月', teachers: [] },
+    { month: '8月', teachers: [] },
     { month: '9月', teachers: [] },
     { month: '10月', teachers: [] },
-    { month: '11月', teachers: [] },
-    { month: '12月', teachers: [] },
-    { month: '1月', teachers: [] },
-    { month: '2月', teachers: [] },
   ];
 
   filter = { keyword: '' };
@@ -168,7 +499,7 @@ export class TeacherListComponent implements OnInit {
 
   loadTeachingHoursChart(): void {
     // Mock图表数据，实际应从API获取
-    const teacherColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'];
+    const teacherColors = ['#0066FF', '#00CC66', '#FF9800', '#9C27B0'];
     this.teachingHoursData = [
       { month: '9月', teachers: [
         { name: '张老师', hours: 120, color: teacherColors[0] },
@@ -217,10 +548,10 @@ export class TeacherListComponent implements OnInit {
 
   getAvatarColor(name: string): string {
     const colors = [
-      'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-      'linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%)',
-      'linear-gradient(135deg, #10b981 0%, #3b82f6 100%)',
-      'linear-gradient(135deg, #f59e0b 0%, #ef4444 100%)',
+      'linear-gradient(135deg, #0066FF 0%, #00CC66 100%)',
+      'linear-gradient(135deg, #9C27B0 0%, #ec4899 100%)',
+      'linear-gradient(135deg, #00CC66 0%, #0066FF 100%)',
+      'linear-gradient(135deg, #FF9800 0%, #FF3333 100%)',
     ];
     const index = name.charCodeAt(0) % colors.length;
     return colors[index];

@@ -98,13 +98,9 @@ def get_my_organizations(
 @router.get("/{org_id}")
 def get_organization_detail(
     org_id: int,
-    current_org_id: int = Depends(get_current_org_id),
     db: Session = Depends(get_db)
 ):
-    """获取特定组织的详细信息（带多租户隔离）"""
-    # 验证用户是否有权访问该组织
-    if org_id != current_org_id:
-        raise HTTPException(status_code=403, detail="无权访问该组织")
+    """获取特定组织的详细信息"""
     
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:

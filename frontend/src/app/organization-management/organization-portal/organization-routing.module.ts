@@ -33,6 +33,14 @@ const routes: Routes = [
             (m) => m.BillingComponent
           ),
       },
+      // 教室管理（独立菜单，与设备管理分开）
+      {
+        path: 'classrooms',
+        loadComponent: () =>
+          import('./components/classroom-dashboard/classroom-dashboard.component').then(
+            (m) => m.ClassroomDashboardComponent
+          ),
+      },
       // 教室与设备管理（合并教室管理和设备资产）
       {
         path: 'devices',
@@ -76,59 +84,6 @@ const routes: Routes = [
                   ),
               },
             ],
-          },
-        ],
-      },
-      // 项目管理（包含教学资源和STEM项目）
-      {
-        path: 'projects',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('./components/dashboard-overview/stem-features-container.component').then(
-                (m) => m.StemFeaturesContainerComponent
-              ),
-          },
-          {
-            path: 'create',
-            loadComponent: () =>
-              import('../../features/stem-cloud/project-management.component').then(
-                (m) => m.ProjectManagementComponent
-              ),
-          },
-          {
-            path: ':id',
-            children: [
-              {
-                path: '',
-                loadComponent: () =>
-                  import('../../features/stem-cloud/project-management.component').then(
-                    (m) => m.ProjectManagementComponent
-                  ),
-              },
-              {
-                path: 'edit',
-                loadComponent: () =>
-                  import('../../features/stem-cloud/project-management.component').then(
-                    (m) => m.ProjectManagementComponent
-                  ),
-              },
-              {
-                path: 'showcase',
-                loadComponent: () =>
-                  import('../../features/stem-cloud/project-management.component').then(
-                    (m) => m.ProjectManagementComponent
-                  ),
-              },
-            ],
-          },
-          {
-            path: 'showcase',
-            loadComponent: () =>
-              import('../../features/stem-cloud/project-management.component').then(
-                (m) => m.ProjectManagementComponent
-              ),
           },
         ],
       },
@@ -276,64 +231,6 @@ const routes: Routes = [
               import('./components/schedule-management/batch-schedule.component').then(
                 (m) => m.BatchScheduleComponent
               ),
-          },
-        ],
-      },
-      // STEM空间预约
-      {
-        path: 'spaces',
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('../../features/stem-cloud/space-scheduling.component').then(
-                (m) => m.SpaceSchedulingComponent
-              ),
-          },
-          {
-            path: 'book',
-            loadComponent: () =>
-              import('../../features/stem-cloud/space-scheduling.component').then(
-                (m) => m.SpaceSchedulingComponent
-              ),
-          },
-          {
-            path: ':id',
-            loadComponent: () =>
-              import('../../features/stem-cloud/space-scheduling.component').then(
-                (m) => m.SpaceSchedulingComponent
-              ),
-          },
-          {
-            path: 'calendar',
-            loadComponent: () =>
-              import('../../features/stem-cloud/space-scheduling.component').then(
-                (m) => m.SpaceSchedulingComponent
-              ),
-          },
-          {
-            path: 'bookings',
-            children: [
-              {
-                path: ':id',
-                children: [
-                  {
-                    path: '',
-                    loadComponent: () =>
-                      import('../../features/stem-cloud/space-scheduling.component').then(
-                        (m) => m.SpaceSchedulingComponent
-                      ),
-                  },
-                  {
-                    path: 'edit',
-                    loadComponent: () =>
-                      import('../../features/stem-cloud/space-scheduling.component').then(
-                        (m) => m.SpaceSchedulingComponent
-                      ),
-                  },
-                ],
-              },
-            ],
           },
         ],
       },

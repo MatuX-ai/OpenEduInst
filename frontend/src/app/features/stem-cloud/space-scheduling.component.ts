@@ -352,11 +352,12 @@ export { SpaceRoom, Booking, SpaceCategory };
     </div>
   `,
   styles: [`
+    @use '../../../styles/design-tokens' as *;
     .space-scheduling {
       padding: 24px;
-      background: #0f172a;
+      background: $color-neutral-100;
       min-height: 100%;
-      color: #e2e8f0;
+      color: $color-neutral-700;
     }
 
     /* Page Header */
@@ -369,16 +370,15 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     .page-header h1 {
       margin: 0;
-      font-size: 48px;
-      font-weight: 600;
-      color: #ffffff;
-      line-height: 1.2;
-      letter-spacing: -0.5px;
+      font-size: 20px;
+      font-weight: 700;
+      color: $color-neutral-900;
+      line-height: 1.3;
     }
 
     .subtitle {
-      margin: 8px 0 0 0;
-      color: #666;
+      margin: 4px 0 0 0;
+      color: $color-neutral-500;
       font-size: 14px;
     }
 
@@ -400,14 +400,15 @@ export { SpaceRoom, Booking, SpaceCategory };
     }
 
     .stat-card {
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      background: $card-bg;
+      border: $card-border;
+      border-radius: $radius-lg;
+      box-shadow: $shadow-sm;
+      transition: all 0.2s ease;
     }
 
     .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     mat-card-content {
@@ -424,47 +425,45 @@ export { SpaceRoom, Booking, SpaceCategory };
     .stat-icon {
       width: 48px;
       height: 48px;
-      border-radius: 12px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
     }
 
-    .stat-icon.blue { background: linear-gradient(135deg, #2196f3, #1976d2); }
-    .stat-icon.green { background: linear-gradient(135deg, #4caf50, #388e3c); }
-    .stat-icon.orange { background: linear-gradient(135deg, #ff9800, #f57c00); }
-    .stat-icon.purple { background: linear-gradient(135deg, #9c27b0, #7b1fa2); }
+    .stat-icon.blue { background: $color-brand-primary-bg; color: $color-brand-primary; }
+    .stat-icon.green { background: $color-stem-green-bg; color: $color-stem-green; }
+    .stat-icon.orange { background: $color-warning-light; color: $color-warning; }
+    .stat-icon.purple { background: $color-brand-primary-subtle; color: $color-brand-primary; }
 
     .stat-trend {
       font-size: 12px;
-      font-weight: 600;
-      padding: 4px 8px;
-      border-radius: 12px;
+      font-weight: 500;
     }
 
-    .stat-trend.up { color: #4caf50; background: #e8f5e9; }
-    .stat-trend.down { color: #f44336; background: #ffebee; }
-    .stat-trend.stable { color: #ff9800; background: #fff3e0; }
+    .stat-trend.up { color: $color-stem-green; }
+    .stat-trend.down { color: $color-error; }
+    .stat-trend.stable { color: $color-brand-primary; }
 
     .stat-value {
-      font-size: 32px;
+      font-size: 24px;
       font-weight: 700;
-      color: #ffffff;
+      color: $color-neutral-900;
       margin: 8px 0;
     }
 
     .stat-label {
-      color: #94a3b8;
-      font-size: 14px;
+      color: $color-neutral-500;
+      font-size: 12px;
       font-weight: 500;
     }
 
     /* Section Title */
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-700;
       margin-bottom: 16px;
       padding-left: 4px;
     }
@@ -478,15 +477,16 @@ export { SpaceRoom, Booking, SpaceCategory };
     }
 
     .category-card {
+      background: $card-bg;
+      border: 1px solid $color-neutral-200;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
       cursor: pointer;
     }
 
     .category-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .category-card mat-card-content {
@@ -503,13 +503,14 @@ export { SpaceRoom, Booking, SpaceCategory };
       align-items: center;
       justify-content: center;
       margin-right: 16px;
-      color: white;
+      color: #475569;
     }
 
     .category-icon mat-icon {
       font-size: 28px;
       width: 28px;
       height: 28px;
+      color: #475569;
     }
 
     .category-info {
@@ -518,9 +519,9 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     .category-info h4 {
       margin: 0;
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .category-count {
@@ -550,19 +551,20 @@ export { SpaceRoom, Booking, SpaceCategory };
     }
 
     .space-card {
+      background: $card-bg;
+      border: 1px solid $color-neutral-200;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      transition: all 0.3s ease;
-      border: 2px solid transparent;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
     }
 
     .space-card.available {
-      border-color: #4caf50;
+      border-color: $color-stem-green;
+      border-width: 2px;
     }
 
     .space-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
 
     .space-card mat-card-content {
@@ -579,17 +581,18 @@ export { SpaceRoom, Booking, SpaceCategory };
     .space-type-icon {
       width: 40px;
       height: 40px;
-      border-radius: 10px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: #475569;
     }
 
     .space-type-icon mat-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
+      color: #475569;
     }
 
     .status-chip {
@@ -620,7 +623,7 @@ export { SpaceRoom, Booking, SpaceCategory };
       margin: 0 0 8px 0;
       font-size: 16px;
       font-weight: 600;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .space-capacity {
@@ -647,13 +650,13 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     .equipment-chip {
       font-size: 11px;
-      background: rgba(30, 41, 59, 0.6);
-      color: #94a3b8;
+      background: $color-neutral-100;
+      color: $color-neutral-500;
     }
 
     .more-equipment {
       font-size: 11px;
-      color: #64748b;
+      color: $color-neutral-500;
     }
 
     .space-booking-info {
@@ -665,7 +668,7 @@ export { SpaceRoom, Booking, SpaceCategory };
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      color: #94a3b8;
+      color: $color-neutral-500;
       margin-bottom: 4px;
     }
 
@@ -686,9 +689,11 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     /* Bookings Card */
     .bookings-card {
+      background: $card-bg;
+      border: 1px solid $color-neutral-200;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      margin-bottom: 32px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      margin-bottom: 24px;
     }
 
     .tab-content {
@@ -712,15 +717,17 @@ export { SpaceRoom, Booking, SpaceCategory };
       left: 12px;
       top: 50%;
       transform: translateY(-50%);
-      color: #999;
+      color: #94a3b8;
     }
 
     .search-box input {
       width: 100%;
       padding: 10px 10px 10px 40px;
-      border: 1px solid #ddd;
+      border: 1px solid $color-neutral-200;
       border-radius: 8px;
       font-size: 14px;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     .filter-controls {
@@ -730,9 +737,11 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     .filter-controls select {
       padding: 8px 12px;
-      border: 1px solid #ddd;
+      border: 1px solid $color-neutral-200;
       border-radius: 8px;
       font-size: 14px;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     /* Table Styles */
@@ -762,8 +771,10 @@ export { SpaceRoom, Booking, SpaceCategory };
 
     /* Quick Booking Card */
     .quick-booking-card {
+      background: $card-bg;
+      border: 1px solid $color-neutral-200;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     }
 
     .booking-form {
@@ -791,15 +802,17 @@ export { SpaceRoom, Booking, SpaceCategory };
     .form-group label {
       font-size: 14px;
       font-weight: 500;
-      color: #ffffff;
+      color: $color-neutral-900;
     }
 
     .form-group input,
     .form-group select {
       padding: 10px 12px;
-      border: 1px solid #ddd;
+      border: 1px solid $color-neutral-200;
       border-radius: 8px;
       font-size: 14px;
+      color: $color-neutral-700;
+      background: $card-bg;
     }
 
     .form-actions {
@@ -866,10 +879,10 @@ export class SpaceSchedulingComponent implements OnInit {
 
   // Space categories (Mock for now)
   spaceCategories: SpaceCategory[] = [
-    { id: 'lab', name: '实验室', icon: 'biotech', count: 5, available: 3, color: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-    { id: 'makerspace', name: '创客空间', icon: 'hardware', count: 4, available: 3, color: 'linear-gradient(135deg, #10b981, #059669)' },
-    { id: 'classroom', name: '教室', icon: 'smart_display', count: 2, available: 1, color: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-    { id: 'workshop', name: '工作坊', icon: 'engineering', count: 1, available: 1, color: 'linear-gradient(135deg, #8b5cf6, #6d28d9)' }
+    { id: 'lab', name: '实验室', icon: 'biotech', count: 5, available: 3, color: '#eff6ff' },
+    { id: 'makerspace', name: '创客空间', icon: 'hardware', count: 4, available: 3, color: '#ecfdf5' },
+    { id: 'classroom', name: '教室', icon: 'smart_display', count: 2, available: 1, color: '#fffbeb' },
+    { id: 'workshop', name: '工作坊', icon: 'engineering', count: 1, available: 1, color: '#f5f3ff' }
   ];
 
   // Space rooms
@@ -975,11 +988,11 @@ export class SpaceSchedulingComponent implements OnInit {
 
   getSpaceTypeColor(type: string): string {
     switch(type) {
-      case 'lab': return 'linear-gradient(135deg, #2196f3, #1976d2)';
-      case 'makerspace': return 'linear-gradient(135deg, #4caf50, #388e3c)';
-      case 'classroom': return 'linear-gradient(135deg, #ff9800, #f57c00)';
-      case 'workshop': return 'linear-gradient(135deg, #9c27b0, #7b1fa2)';
-      default: return 'linear-gradient(135deg, #607d8b, #455a64)';
+      case 'lab': return '#eff6ff';
+      case 'makerspace': return '#ecfdf5';
+      case 'classroom': return '#fffbeb';
+      case 'workshop': return '#f5f3ff';
+      default: return '#f1f5f9';
     }
   }
 

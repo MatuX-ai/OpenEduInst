@@ -21,13 +21,32 @@ $color-secondary-dark: #00A352;
 $color-warning: #FF6600;        // 警告橙
 $color-error: #FF3333;          // 错误红
 
-/* 中性色 (浅色模式) */
-$color-bg-primary: #F5F7FA;     // 主背景
+/* 中性色 (浅色模式) - Slate色系，对齐Tailwind */
+$color-bg-primary: #F1F5F9;     // slate-100 主背景
 $color-bg-card: #FFFFFF;        // 卡片背景
-$color-border: #E2E8F0;         // 边框
-$color-text-primary: #1E293B;   // 主要文字
-$color-text-secondary: #64748B; // 次要文字
-$color-text-muted: #94A3B8;     // 辅助文字
+$color-border: #E2E8F0;         // slate-200 边框
+$color-text-primary: #1E293B;   // slate-900 主要文字
+$color-text-secondary: #64748B; // slate-500 次要文字
+$color-text-muted: #94A3B8;     // slate-400 辅助文字
+
+/* Slate色系扩展 - 对齐营销网站 */
+$color-neutral-50: #F8FAFC;
+$color-neutral-100: #F1F5F9;   // slate-100
+$color-neutral-200: #E2E8F0;   // slate-200
+$color-neutral-300: #CBD5E1;
+$color-neutral-400: #94A3B8;
+$color-neutral-500: #64748B;
+$color-neutral-600: #475569;
+$color-neutral-700: #334155;
+$color-neutral-800: #1E293B;   // slate-800
+$color-neutral-900: #0F172A;   // slate-900
+$color-neutral-950: #020617;
+
+/* 品牌主色系 - 对齐Tailwind Blue */
+$color-brand-primary: #3B82F6;     // blue-500
+$color-brand-primary-light: #60A5FA; // blue-400
+$color-brand-primary-dark: #2563EB;  // blue-600
+$color-brand-primary-subtle: rgba(59, 130, 246, 0.2); // blue-500/20
 
 @mixin org-theme($type) {
   @if $type == 'training' {
