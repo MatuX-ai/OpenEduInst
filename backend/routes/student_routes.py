@@ -9,7 +9,7 @@ from typing import List, Optional
 from datetime import datetime
 
 from utils.database import get_db
-from utils.auth_utils import get_current_org_id, get_current_user_sync
+from utils.auth_utils import get_current_org_id, get_current_user_sync, require_org_context
 from models.student import (
     Student, 
     Enrollment, 
@@ -60,7 +60,7 @@ def get_students(
         students = query.offset(skip).limit(page_size).all()
         
         return {
-            "data": students,
+            "data": [s.to_dict() for s in students],
             "pagination": {
                 "total": total,
                 "page": page,
@@ -176,37 +176,48 @@ def delete_student(
 @router.get("/{student_id}/enrollments", response_model=List[EnrollmentResponse])
 def get_student_enrollments(
     student_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取学员的报名记录"""
-    enrollments = db.query(Enrollment).filter(Enrollment.student_id == student_id).all()
+    """获取学员的报名记录（仅当前组织）"""
+    _, org_id = ctx
+    # 先校验该学员属于当前组织
+    student = db.query(Student).filter(
+        Student.id == student_id, Student.org_id == org_id
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="学员不存在或无权访问")
+    enrollments = db.query(Enrollment).filter(
+        Enrollment.student_id == student_id, Enrollment.org_id == org_id
+    ).all()
     return enrollments
 
 
 @router.post("/enrollments", response_model=EnrollmentResponse)
 def create_enrollment(
     enrollment_data: EnrollmentCreate,
-    org_id: int = Query(..., description="机构ID"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """创建报名记录"""
-    # 验证学员和课程是否存在
-    student = db.query(Student).filter(Student.id == enrollment_data.student_id).first()
+    """创建报名记录（org_id 来自 Token，拒绝 query 传入）"""
+    _, org_id = ctx
+    student = db.query(Student).filter(
+        Student.id == enrollment_data.student_id, Student.org_id == org_id
+    ).first()
     if not student:
-        raise HTTPException(status_code=404, detail="学员不存在")
-    
-    # 这里应该验证课程是否存在，暂时跳过
-    
-    # 创建报名记录
+        raise HTTPException(status_code=404, detail="学员不存在或无权访问")
+
     db_enrollment = Enrollment(
         org_id=org_id,
-        **enrollment_data.dict()
+        student_id=enrollment_data.student_id,
+        course_id=enrollment_data.course_id,
+        start_date=enrollment_data.start_date,
+        end_date=enrollment_data.end_date,
+        fee_amount=enrollment_data.fee_amount,
     )
-    
     db.add(db_enrollment)
     db.commit()
     db.refresh(db_enrollment)
-    
     return db_enrollment
 
 
@@ -217,42 +228,55 @@ def get_student_attendance(
     student_id: int,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取学员的出勤记录"""
-    query = db.query(AttendanceRecord).filter(AttendanceRecord.student_id == student_id)
-    
+    """获取学员的出勤记录（仅当前组织）"""
+    _, org_id = ctx
+    student = db.query(Student).filter(
+        Student.id == student_id, Student.org_id == org_id
+    ).first()
+    if not student:
+        raise HTTPException(status_code=404, detail="学员不存在或无权访问")
+
+    query = db.query(AttendanceRecord).filter(
+        AttendanceRecord.student_id == student_id,
+        AttendanceRecord.org_id == org_id,
+    )
     if start_date:
         query = query.filter(AttendanceRecord.attendance_date >= start_date)
     if end_date:
         query = query.filter(AttendanceRecord.attendance_date <= end_date)
-    
-    attendance_records = query.all()
-    return attendance_records
+    return query.all()
 
 
 @router.post("/attendance", response_model=AttendanceRecordResponse)
 def create_attendance_record(
     attendance_data: AttendanceRecordCreate,
-    org_id: int = Query(..., description="机构ID"),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """创建出勤记录"""
-    # 验证学员是否存在
-    student = db.query(Student).filter(Student.id == attendance_data.student_id).first()
+    """创建出勤记录（org_id 来自 Token，拒绝 query 传入）"""
+    _, org_id = ctx
+    student = db.query(Student).filter(
+        Student.id == attendance_data.student_id, Student.org_id == org_id
+    ).first()
     if not student:
-        raise HTTPException(status_code=404, detail="学员不存在")
-    
-    # 创建出勤记录
+        raise HTTPException(status_code=404, detail="学员不存在或无权访问")
+
     db_attendance = AttendanceRecord(
         org_id=org_id,
-        **attendance_data.dict()
+        student_id=attendance_data.student_id,
+        schedule_id=attendance_data.schedule_id,
+        attendance_date=attendance_data.attendance_date,
+        status=attendance_data.status,
+        check_in_time=attendance_data.check_in_time,
+        check_out_time=attendance_data.check_out_time,
+        notes=attendance_data.notes,
     )
-    
     db.add(db_attendance)
     db.commit()
     db.refresh(db_attendance)
-    
     return db_attendance
 
 

@@ -1,0 +1,45 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python 产物
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 项目本地数据（别拷到镜像）
+logs/
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境变量（避免把生产密钥打进镜像）
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 测试 / 临时
+tests/
+*.log
+start_server.py
+acceptance_test.py
+acceptance_check.py
+check_routes.py
+
+# Node 相关（本仓库是 Python 后端，前端在别处）
+node_modules/
+package-lock.json

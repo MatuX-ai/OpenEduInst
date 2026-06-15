@@ -1,9 +1,20 @@
 ﻿fastapi>=0.104.0
-uvicorn>=0.24.0
-sqlalchemy>=2.0.0
+uvicorn[standard]>=0.24.0
+SQLAlchemy>=2.0.0
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 python-jose[cryptography]>=3.3.0
 passlib[bcrypt]>=1.7.4
+bcrypt>=4.0.0
 python-multipart>=0.0.6
 redis>=5.0.0
+requests>=2.31.0
+httpx>=0.25.0
+slowapi>=0.1.9
+tenacity>=8.2.0
+# PostgreSQL 驱动（生产环境需要）
+psycopg2-binary>=2.9.9
+# 日志格式化（可选：用于结构化 JSON 日志）
+python-json-logger>=2.0.7
+# gunicorn（多进程容器内 WSGI/ASGI 网关，配合 uvicorn worker 使用）
+gunicorn>=21.2.0
