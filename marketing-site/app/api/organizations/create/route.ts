@@ -5,7 +5,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const token = request.headers.get("authorization");
 
-    const response = await fetch("http://127.0.0.1:8000/api/v1/organizations/create", {
+    const API_BASE = process.env.BACKEND_API_URL || "http://127.0.0.1:8000";
+    const response = await fetch(`${API_BASE}/api/v1/organizations/create`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -8,7 +8,8 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ detail: "Missing token" }, { status: 401 });
     }
 
-    const response = await fetch("http://127.0.0.1:8000/api/v1/organizations/my", {
+    const API_BASE = process.env.BACKEND_API_URL || "http://127.0.0.1:8000";
+    const response = await fetch(`${API_BASE}/api/v1/organizations/my`, {
       headers: {
         Authorization: token,
       },

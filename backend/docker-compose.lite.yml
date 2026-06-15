@@ -1,0 +1,164 @@
+# ============================================================
+# OpenMT 机构管理系统 - 入门型套餐精简版 (2核 2GB RAM)
+#
+# 优化点：
+#   1) WORKERS=2       -> 节省 ~300MB
+#   2) 移除本地 postgres -> 使用 Neon 外部 DB（节省 ~300MB）
+#   3) Redis 限制 16MB -> 节省 ~50MB
+#   4) Docker 内存硬限制 -> 防止 OOM
+#   5) Nginx 关闭 access_log -> 节省 IO
+#
+# 总占用约 1.0-1.2GB，给 OS 留 800MB-1GB 余量
+#
+# 使用：
+#   docker compose -f docker-compose.lite.yml --env-file .env up -d
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # 1. 后端 FastAPI (gunicorn x 2 workers)
+  # ----------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openmt-api
+    restart: unless-stopped
+    # 内存硬限制 + swap 限制（防止 1 个 worker 失控拖垮整台）
+    deploy:
+      resources:
+        limits:
+          memory: 600M
+          cpus: "1.5"
+        reservations:
+          memory: 256M
+    environment:
+      ENV: ${ENV:-dev}
+      # 数据库：必填 Neon 连接串
+      DATABASE_URL: ${DATABASE_URL:?必须配置 Neon DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY:?必须配置 48 字节随机字符串}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      # Redis：容器内 Redis（已限制内存）
+      REDIS_URL: redis://redis:6379/0
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-https://app.yourschool.com}
+      ENFORCE_HTTPS: 1
+      DEMO_MODE: ${DEMO_MODE:-0}
+      # 2 核机器压 2 worker，再多会争抢 CPU
+      WORKERS: 2
+      LOG_LEVEL: ${LOG_LEVEL:-warning}
+      # 限流（入门型下调，保护带宽）
+      RL_ANON_LIMIT: 30
+      RL_AUTH_LIMIT: 300
+      RL_LOGIN_LIMIT: 5
+      # 外部服务（按需）
+      IMATU_SECRET_KEY: ${IMATU_SECRET_KEY:-}
+      OPENSCIEDU_API_KEY: ${OPENSCIEDU_API_KEY:-}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------
+  # 2. 营销站点 (Next.js standalone)
+  # ----------------------------------------------------------
+  marketing:
+    build:
+      context: ../marketing-site
+      dockerfile: Dockerfile
+    container_name: openmt-marketing
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 300M
+          cpus: "0.5"
+        reservations:
+          memory: 128M
+    environment:
+      BACKEND_API_URL: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+  # ----------------------------------------------------------
+  # 3. Nginx 反向代理
+  # ----------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: openmt-nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+      - marketing
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
+      - ./deploy/frontend:/var/www/openmt:ro
+      - ./logs/nginx:/var/log/nginx
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "2"
+
+  # ----------------------------------------------------------
+  # 4. Redis (16MB 硬限)
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: openmt-redis
+    restart: unless-stopped
+    command:
+      - redis-server
+      - --save
+      - ""
+      - --appendonly
+      - "no"
+      - --maxmemory
+      - "16mb"
+      - --maxmemory-policy
+      - "allkeys-lru"
+      - --loglevel
+      - "warning"
+    deploy:
+      resources:
+        limits:
+          memory: 32M
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    logging:
+      driver: json-file
+      options:
+        max-size: "5m"
+        max-file: "1"
+
+volumes:
+  redis_data:
