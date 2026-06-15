@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
-import { Building2, ArrowRight, LogOut, User, Shield } from "lucide-react";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { Building2, LogOut, User, Shield, CheckCircle2, Loader2 } from "lucide-react";
 
 interface UserInfo {
   id: number;
@@ -13,17 +12,27 @@ interface UserInfo {
   role?: string;
 }
 
+const steps = [
+  { key: "auth", label: "验证登录信息", icon: Shield },
+  { key: "org", label: "获取组织信息", icon: Building2 },
+  { key: "redirect", label: "进入管理后台", icon: CheckCircle2 },
+];
+
 export default function UserCenterPage() {
   const router = useRouter();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
-  const [redirecting, setRedirecting] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+  const [error, setError] = useState("");
 
-  const redirectToOrganization = async () => {
-    setRedirecting(true);
-
+  const redirectToOrganization = useCallback(async () => {
     try {
-      // 调用后端 API 获取用户所属的组织（通过代理）
+      // Step 1: 验证登录 (already done by checking token)
+      setCurrentStep(0);
+
+      // Step 2: 获取组织信息
+      setCurrentStep(1);
       const response = await fetch("/api/organizations/my", {
         headers: {
           "Authorization": `Bearer ${localStorage.getItem("access_token")}`,
@@ -35,128 +44,222 @@ export default function UserCenterPage() {
       }
 
       const organizations = await response.json();
+      setCompletedSteps([0, 1]);
 
+      let redirectUrl: string;
       if (organizations.length === 0) {
-        // 没有组织，使用默认组织 ID=1
-        window.location.href = `http://localhost:4200/organization/1/dashboard`;
-        return;
+        redirectUrl = `http://localhost:4200/organization/1/dashboard`;
+      } else {
+        const org = organizations[0];
+        const token = localStorage.getItem("access_token");
+        redirectUrl = `http://localhost:4200/organization/${org.id}/dashboard?token=${encodeURIComponent(token || "")}`;
       }
 
-      // 用户只能有一个组织，直接跳转
-      const org = organizations[0];
-      
-      // 带上 token 跳转到 Angular 管理后台
-      const token = localStorage.getItem("access_token");
-      window.location.href = `http://localhost:4200/organization/${org.id}/dashboard?token=${encodeURIComponent(token || "")}`;
+      // Step 3: 跳转
+      setCurrentStep(2);
+      setCompletedSteps([0, 1, 2]);
+
+      // 短暂展示完成状态后跳转
+      await new Promise((resolve) => setTimeout(resolve, 600));
+      window.location.href = redirectUrl;
     } catch (err) {
       console.error("跳转失败:", err);
-      // 失败时跳转到默认组织
+      setCompletedSteps([0, 1]);
+      setCurrentStep(2);
+      await new Promise((resolve) => setTimeout(resolve, 600));
       const token = localStorage.getItem("access_token");
       window.location.href = `http://localhost:4200/organization/1/dashboard?token=${encodeURIComponent(token || "")}`;
     }
-  };
+  }, []);
 
   useEffect(() => {
-    // 获取用户信息
     const userStr = localStorage.getItem("user_info");
     const token = localStorage.getItem("access_token");
 
     if (!token || !userStr) {
-      // 未登录，跳转到登录页
-      router.push("/demo/login");
+      router.push("/login");
       return;
     }
 
     try {
       const user = JSON.parse(userStr);
-      
-      // 模拟加载延迟，展示过渡页面
-      setTimeout(() => {
-        setUserInfo(user);
-        redirectToOrganization();
-      }, 1500);
+      setUserInfo(user);
+      setLoading(false);
+
+      // 立即开始跳转流程
+      redirectToOrganization();
     } catch (err) {
       console.error("解析用户信息失败:", err);
-      router.push("/demo/login");
-    } finally {
-      setLoading(false);
+      router.push("/login");
     }
   }, [router, redirectToOrganization]);
 
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("user_info");
-    router.push("/demo/login");
+    router.push("/login");
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">加载中...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="w-full max-w-lg"
+        transition={{ duration: 0.4 }}
+        className="w-full max-w-md"
       >
-        {/* 用户信息卡片 */}
-        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 backdrop-blur-sm">
-          {/* 头像和用户名 */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <User className="w-10 h-10 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-slate-100 mb-1">
-              {userInfo?.username || "用户"}
-            </h1>
-            <p className="text-slate-400 text-sm">
-              {userInfo?.email || ""}
-            </p>
-            {userInfo?.role && (
-              <div className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full">
-                <Shield className="w-3 h-3 text-blue-400" />
-                <span className="text-xs text-blue-400">{userInfo.role}</span>
-              </div>
-            )}
-          </div>
-
-          {/* 正在跳转提示 */}
-          <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-6 mb-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                <Building2 className="w-6 h-6 text-blue-400" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-slate-100 font-semibold mb-1">
-                  正在进入 STEM 机构管理后台
-                </h3>
-                <p className="text-sm text-slate-400">
-                  {redirecting ? "准备跳转..." : "即将跳转到管理后台"}
-                </p>
-              </div>
-              {redirecting && (
-                <div className="w-5 h-5 border-2 border-blue-400/30 border-t-blue-400 rounded-full animate-spin" />
-              )}
-            </div>
-          </div>
-
-
+        {/* Logo */}
+        <div className="text-center mb-6">
+          <h1 className="text-xl font-bold text-slate-100">OpenMT</h1>
         </div>
 
-        {/* 提示信息 */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-slate-500">
-            如果页面没有自动跳转，请点击&quot;立即进入&quot;按钮
-          </p>
+        {/* 主卡片 */}
+        <div className="bg-slate-900/50 border border-slate-800 rounded-xl p-8 backdrop-blur-sm">
+          {/* 用户头像区 */}
+          <AnimatePresence mode="wait">
+            {loading ? (
+              <motion.div
+                key="loading-header"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center mb-8"
+              >
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-600/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Loader2 className="w-10 h-10 text-blue-400 animate-spin" />
+                </div>
+                <h2 className="text-lg font-semibold text-slate-300">正在登录</h2>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="user-header"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center mb-8"
+              >
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <User className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-100 mb-1">
+                  {userInfo?.username || "用户"}
+                </h2>
+                <p className="text-slate-400 text-sm">{userInfo?.email || ""}</p>
+                {userInfo?.role && (
+                  <div className="inline-flex items-center gap-1 mt-2 px-3 py-1 bg-blue-500/10 border border-blue-500/30 rounded-full">
+                    <Shield className="w-3 h-3 text-blue-400" />
+                    <span className="text-xs text-blue-400">{userInfo.role}</span>
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* 步骤进度 */}
+          <div className="space-y-3 mb-6">
+            {steps.map((step, index) => {
+              const StepIcon = step.icon;
+              const isCurrent = currentStep === index;
+              const isCompleted = completedSteps.includes(index);
+              const isPending = index > currentStep && !isCompleted;
+
+              return (
+                <motion.div
+                  key={step.key}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.15 }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${
+                    isCurrent
+                      ? "bg-blue-500/10 border border-blue-500/30"
+                      : isCompleted
+                      ? "bg-emerald-500/5 border border-emerald-500/20"
+                      : "bg-slate-800/30 border border-slate-700/50"
+                  }`}
+                >
+                  {/* 图标 */}
+                  <div
+                    className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 transition-all ${
+                      isCurrent
+                        ? "bg-blue-500/20 text-blue-400"
+                        : isCompleted
+                        ? "bg-emerald-500/20 text-emerald-400"
+                        : "bg-slate-700/50 text-slate-500"
+                    }`}
+                  >
+                    {isCompleted ? (
+                      <CheckCircle2 className="w-5 h-5" />
+                    ) : isCurrent ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <StepIcon className="w-5 h-5" />
+                    )}
+                  </div>
+
+                  {/* 文字 */}
+                  <span
+                    className={`text-sm font-medium flex-1 ${
+                      isCurrent
+                        ? "text-blue-300"
+                        : isCompleted
+                        ? "text-emerald-300"
+                        : "text-slate-500"
+                    }`}
+                  >
+                    {step.label}
+                  </span>
+
+                  {/* 当前步骤脉冲 */}
+                  {isCurrent && (
+                    <motion.div
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                      className="w-2 h-2 rounded-full bg-blue-400"
+                    />
+                  )}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {/* 错误提示 */}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="p-4 bg-red-500/10 border border-red-500/50 rounded-lg text-sm text-red-400 text-center mb-4"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {/* 全部完成提示 */}
+          {completedSteps.length === steps.length && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 0.5 }}
+                className="text-emerald-400 font-semibold mb-1"
+              >
+                ✓ 准备就绪，正在跳转...
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* 底部操作 */}
+        <div className="mt-6 text-center space-y-3">
+          <p className="text-xs text-slate-500">如果页面没有自动跳转，请联系技术支持</p>
+          <button
+            onClick={handleLogout}
+            className="inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-red-400 transition-colors"
+          >
+            <LogOut className="w-4 h-4" />
+            退出登录
+          </button>
         </div>
       </motion.div>
     </div>

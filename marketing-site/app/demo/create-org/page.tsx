@@ -24,7 +24,7 @@ export default function CreateOrgPage() {
       const token = localStorage.getItem('access_token');
       if (!token) {
         alert("请先登录！");
-        router.push('/demo/login'); // 假设有登录页
+        router.push('/login'); // 假设有登录页
         return;
       }
 

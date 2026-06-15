@@ -40,7 +40,7 @@ export default function Header() {
           ))}
           <div className="ml-3 flex items-center gap-2">
             <Link
-              href="/demo/login"
+              href="/login"
               className="px-4 py-2 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors"
             >
               登录
@@ -80,7 +80,7 @@ export default function Header() {
             ))}
             <div className="mt-2 flex flex-col gap-2">
               <Link
-                href="/demo/login"
+                href="/login"
                 onClick={() => setMobileOpen(false)}
                 className="px-4 py-2.5 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors text-center border border-slate-700 rounded-lg"
               >

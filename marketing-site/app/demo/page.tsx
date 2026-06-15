@@ -63,7 +63,7 @@ function DemoEntryContent() {
           </Link>
           <div className="flex items-center gap-4">
             <Link
-              href="/demo/login"
+              href="/login"
               className="text-sm text-blue-400 hover:text-blue-300 transition-colors font-medium"
             >
               登录

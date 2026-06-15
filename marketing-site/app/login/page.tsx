@@ -3,8 +3,11 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Lock, Mail, ArrowRight, AlertCircle } from "lucide-react";
+import { Lock, Mail, ArrowRight, AlertCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
+
+const DEMO_EMAIL = "zhao_admin";
+const DEMO_PASSWORD = "demo123456";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,8 +16,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const doLogin = async (username: string, pwd: string) => {
     setLoading(true);
     setError("");
 
@@ -26,8 +28,8 @@ export default function LoginPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: email,
-          password: password,
+          username,
+          password: pwd,
         }),
       });
 
@@ -37,7 +39,7 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      
+
       // 保存 Token
       localStorage.setItem("access_token", data.access_token);
 
@@ -62,6 +64,15 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await doLogin(email, password);
+  };
+
+  const handleDemoLogin = async () => {
+    await doLogin(DEMO_EMAIL, DEMO_PASSWORD);
   };
 
   return (
@@ -167,15 +178,33 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* 演示账号提示 */}
-        <div className="mt-6 p-4 bg-slate-800/30 border border-slate-700 rounded-lg">
-          <p className="text-xs text-slate-400 text-center">
-            💡 演示账号：<code className="px-2 py-0.5 bg-slate-700 rounded text-slate-200">zhao_admin</code> / <code className="px-2 py-0.5 bg-slate-700 rounded text-slate-200">demo123456</code>
-          </p>
-        </div>
+        {/* 演示账号一键登录 */}
+        <button
+          onClick={handleDemoLogin}
+          disabled={loading}
+          className="mt-6 w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-semibold rounded-lg transition-all flex items-center justify-center gap-2"
+        >
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+          ) : (
+            <>
+              <Sparkles className="w-5 h-5" />
+              演示账号一键登录
+            </>
+          )}
+        </button>
+        <p className="mt-2 text-xs text-slate-500 text-center">
+          账号 zhao_admin / 密码 demo123456
+        </p>
 
         {/* 返回首页 */}
-        <div className="mt-6 text-center">
+        <div className="mt-6 text-center space-y-2">
+          <p className="text-sm text-slate-400">
+            还没有账号？{" "}
+            <Link href="/demo/register" className="text-blue-400 hover:text-blue-300 font-medium transition-colors">
+              注册云托管账号
+            </Link>
+          </p>
           <Link
             href="/"
             className="text-sm text-slate-400 hover:text-blue-400 transition-colors"
