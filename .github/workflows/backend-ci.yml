@@ -1,0 +1,60 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: openmt_edu_inst
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+        options: >-
+          --health-cmd "pg_isready -U test_user -d openmt_edu_inst"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    env:
+      ENV: dev
+      SECRET_KEY: ci-test-secret-require-override-in-prod-please-1234567890
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/openmt_edu_inst
+      CORS_ALLOW_ORIGINS: http://localhost:4200
+      ENFORCE_HTTPS: "0"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Syntax & module import
+        run: |
+          cd backend
+          python -c "import main; print('ok')"
+
+      - name: Run tests
+        run: |
+          cd backend
+          pytest -q tests/
