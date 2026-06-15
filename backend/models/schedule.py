@@ -44,6 +44,17 @@ class LeadStatus(enum.Enum):
     UNREACHABLE = "未接通"
     INVALID = "无效线索"
 
+
+class LeadSource(enum.Enum):
+    """线索来源枚举"""
+    GROUND_PROMOTION = "地推活动"
+    REFERRAL = "老带新"
+    ONLINE = "线上咨询"
+    TRANSFER = "转介绍"
+    WALK_IN = "上门咨询"
+    AD = "广告投放"
+    OTHER = "其他"
+
 class Lead(Base):
     """招生线索模型"""
     __tablename__ = "leads"

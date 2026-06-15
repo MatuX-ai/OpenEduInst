@@ -1,0 +1,131 @@
+# ============================================================
+# OpenMT 机构管理系统 - docker-compose.yml
+#
+# 服务构成：
+#   api     -> FastAPI 后端 (端口 8000)
+#   nginx   -> 反向代理 + HTTPS 终止 + 静态资源 (端口 80/443)
+#   redis   -> 限流/缓存 (端口 6379)
+#   postgres -> 本地 PostgreSQL（仅在 COMPOSE_PROFILES=with-db 时启动）
+#
+# 使用说明：
+#   1) 生产环境：把 DATABASE_URL 指向 Neon/外部 Postgres，忽略 postgres 服务
+#   2) 本地联调：export COMPOSE_PROFILES=with-db，一键启动完整四件套
+#
+# 启动命令：
+#   docker compose up -d --build
+# 查看日志：
+#   docker compose logs -f --tail=200
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # 1. 后端 FastAPI 服务
+  # ----------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openmt-api
+    restart: unless-stopped
+    environment:
+      ENV: prod
+      # 数据库：推荐指向 Neon/云数据库；本地联调时使用 postgres 服务
+      DATABASE_URL: ${DATABASE_URL:-postgresql://openmt_user:change_me_password@postgres:5432/openmt_edu_inst?sslmode=disable}
+      # JWT 密钥：必须修改！建议用 48 字节以上随机字符串
+      SECRET_KEY: ${SECRET_KEY:-please-change-me-to-a-long-random-string}
+      ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      # Redis（限流/缓存）
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      # CORS：逗号分隔，前端域名
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:4200}
+      # 强制 HTTPS（Nginx 终止后，应用层追加 HSTS）
+      ENFORCE_HTTPS: ${ENFORCE_HTTPS:-1}
+      # Demo 模式（1 = 只读演示环境）
+      DEMO_MODE: ${DEMO_MODE:-0}
+      # 限流参数
+      RL_ANON_LIMIT: ${RL_ANON_LIMIT:-60}
+      RL_AUTH_LIMIT: ${RL_AUTH_LIMIT:-600}
+      RL_LOGIN_LIMIT: ${RL_LOGIN_LIMIT:-10}
+      # Gunicorn 工作进程数（建议 = CPU 核数）
+      WORKERS: ${WORKERS:-4}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      # 外部服务
+      IMATU_SECRET_KEY: ${IMATU_SECRET_KEY:-}
+      OPENSCIEDU_API_KEY: ${OPENSCIEDU_API_KEY:-}
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ----------------------------------------------------------
+  # 2. Nginx 反向代理
+  # ----------------------------------------------------------
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: openmt-nginx
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/nginx/conf.d:/etc/nginx/conf.d:ro
+      # SSL 证书（生产环境：把 cert.pem / privkey.pem 放到 deploy/nginx/ssl/ 目录
+      - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
+      # 前端静态文件（若把前端 build 产物放到 deploy/frontend 下，可直接由 nginx 提供）
+      - ./deploy/frontend:/var/www/openmt:ro
+      - ./logs/nginx:/var/log/nginx
+
+  # ----------------------------------------------------------
+  # 3. Redis（限流/缓存）
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: openmt-redis
+    restart: unless-stopped
+    command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # ----------------------------------------------------------
+  # 4. PostgreSQL（可选；本地联调用，生产推荐 Neon/云数据库
+  #     启动: COMPOSE_PROFILES=with-db docker compose up -d
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: openmt-postgres
+    profiles: ["with-db"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: openmt_edu_inst
+      POSTGRES_USER: openmt_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-change_me_password}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U openmt_user -d openmt_edu_inst"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
+  pg_data:

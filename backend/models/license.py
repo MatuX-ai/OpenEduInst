@@ -386,29 +386,29 @@ class LicenseResponse(BaseModel):
     id: int
     license_key: str
     organization_id: int
-    product_id: Optional[int]
+    product_id: Optional[int] = None
     license_type: LicenseType
     status: LicenseStatus
     issued_at: datetime
     expires_at: datetime
-    activated_at: Optional[datetime]
+    activated_at: Optional[datetime] = None
     max_users: int
     max_devices: int
     current_users: int
     current_devices: int
-    features: List[str]
-    restrictions: Dict[str, Any]
-    metadata: Dict[str, Any]
-    notes: Optional[str]
+    features: Optional[List[str]] = []
+    restrictions: Optional[Dict[str, Any]] = {}
+    custom_metadata: Optional[Dict[str, Any]] = {}
+    notes: Optional[str] = None
     is_active: bool
     created_at: datetime
     updated_at: datetime
     is_expired: bool
     is_valid: bool
-    days_until_expiry: Optional[int]
+    days_until_expiry: Optional[int] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class OrganizationResponse(BaseModel):

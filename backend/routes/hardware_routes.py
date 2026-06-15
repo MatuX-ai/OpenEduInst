@@ -1,57 +1,71 @@
 """
-硬件设备管理API路由
+硬件设备管理 API 路由（多租户版）
+
+【关键安全约束】
+- 所有写操作、读操作必须通过 require_org_context 拿到 org_id
+- 所有 SQL 查询必须 filter(Model.org_id == org_id)
+- 禁止从 query/path/body 读取 org_id
 """
+
+from __future__ import annotations
+
+from datetime import datetime
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from typing import List, Optional
-from datetime import datetime
 
-from utils.database import get_db
 from models.hardware_device import (
-    HardwareDevice,
-    HardwareDeviceCreate,
-    HardwareDeviceUpdate,
-    HardwareDeviceResponse,
+    DeviceCategory,
     DeviceMaintenanceRecord,
     DeviceMaintenanceRecordCreate,
     DeviceMaintenanceRecordResponse,
+    DeviceStatus,
     DeviceUsageLog,
     DeviceUsageLogCreate,
     DeviceUsageLogResponse,
-    DeviceStatus,
-    DeviceCategory,
+    HardwareDevice,
+    HardwareDeviceCreate,
+    HardwareDeviceResponse,
+    HardwareDeviceUpdate,
 )
-from models.license import Organization
+from utils.auth_utils import require_org_context
+from utils.database import get_db
 
 router = APIRouter(prefix="/api/v1/hardware", tags=["硬件设备管理"])
 
 
-# 设备管理接口
+# =================== 设备 ===================
+
 @router.post("/devices/", response_model=HardwareDeviceResponse)
 def create_device(
-    device: HardwareDeviceCreate,
+    payload: HardwareDeviceCreate,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """创建新的硬件设备"""
-    # 验证组织是否存在（简化处理，实际应从 Token 获取 org_id）
-    org = db.query(Organization).filter(Organization.id == device.org_id).first()
-    if not org:
-        raise HTTPException(status_code=404, detail="Organization not found")
-    
-    # 创建设备实例
-    db_device = HardwareDevice(
-        **device.dict(),
-        org_id=org.id,
-        specifications=str(device.specifications) if device.specifications else None,
-        accessories=str(device.accessories) if device.accessories else None,
+    """创建新的硬件设备（自动关联到当前 Token 中的组织）"""
+    _, org_id = ctx
+    device = HardwareDevice(
+        org_id=org_id,
+        name=payload.name,
+        model=payload.model,
+        serial_number=payload.serial_number,
+        category=payload.category,
+        description=payload.description,
+        purchase_date=payload.purchase_date,
+        purchase_price=payload.purchase_price,
+        supplier=payload.supplier,
+        warranty_period=payload.warranty_period,
+        status=DeviceStatus.AVAILABLE,
+        location=payload.location,
+        specifications=str(payload.specifications) if payload.specifications else None,
+        accessories=str(payload.accessories) if payload.accessories else None,
+        notes=payload.notes,
     )
-    
-    db.add(db_device)
+    db.add(device)
     db.commit()
-    db.refresh(db_device)
-    
-    return db_device
+    db.refresh(device)
+    return device
 
 
 @router.get("/devices/", response_model=List[HardwareDeviceResponse])
@@ -62,57 +76,68 @@ def list_devices(
     status: Optional[DeviceStatus] = None,
     search: Optional[str] = None,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取设备列表"""
-    query = db.query(HardwareDevice)
-    
-    # 添加过滤条件
+    """获取当前组织的设备列表"""
+    _, org_id = ctx
+    query = db.query(HardwareDevice).filter(
+        HardwareDevice.org_id == org_id,
+        HardwareDevice.is_active.is_(True),
+    )
     if category:
         query = query.filter(HardwareDevice.category == category)
     if status:
         query = query.filter(HardwareDevice.status == status)
     if search:
+        like = f"%{search}%"
         query = query.filter(
-            (HardwareDevice.name.ilike(f"%{search}%")) |
-            (HardwareDevice.model.ilike(f"%{search}%")) |
-            (HardwareDevice.serial_number.ilike(f"%{search}%"))
+            (HardwareDevice.name.ilike(like))
+            | (HardwareDevice.model.ilike(like))
+            | (HardwareDevice.serial_number.ilike(like))
         )
-    
-    devices = query.offset(skip).limit(limit).all()
-    return devices
+    return query.offset(skip).limit(limit).all()
 
 
 @router.get("/devices/{device_id}", response_model=HardwareDeviceResponse)
 def get_device(
     device_id: int,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
     """获取单个设备详情"""
-    device = db.query(HardwareDevice).filter(HardwareDevice.id == device_id).first()
+    _, org_id = ctx
+    device = (
+        db.query(HardwareDevice)
+        .filter(HardwareDevice.id == device_id, HardwareDevice.org_id == org_id)
+        .first()
+    )
     if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
+        raise HTTPException(status_code=404, detail="设备不存在或无权访问")
     return device
 
 
 @router.put("/devices/{device_id}", response_model=HardwareDeviceResponse)
 def update_device(
     device_id: int,
-    device_update: HardwareDeviceUpdate,
+    payload: HardwareDeviceUpdate,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
     """更新设备信息"""
-    device = db.query(HardwareDevice).filter(HardwareDevice.id == device_id).first()
+    _, org_id = ctx
+    device = (
+        db.query(HardwareDevice)
+        .filter(HardwareDevice.id == device_id, HardwareDevice.org_id == org_id)
+        .first()
+    )
     if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    # 更新字段
-    for field, value in device_update.dict(exclude_unset=True).items():
+        raise HTTPException(status_code=404, detail="设备不存在或无权访问")
+
+    for field, value in payload.model_dump(exclude_unset=True).items():
         setattr(device, field, value)
-    
     device.updated_at = datetime.utcnow()
     db.commit()
     db.refresh(device)
-    
     return device
 
 
@@ -120,48 +145,60 @@ def update_device(
 def delete_device(
     device_id: int,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """删除设备（软删除）"""
-    device = db.query(HardwareDevice).filter(HardwareDevice.id == device_id).first()
+    """软删除设备"""
+    _, org_id = ctx
+    device = (
+        db.query(HardwareDevice)
+        .filter(HardwareDevice.id == device_id, HardwareDevice.org_id == org_id)
+        .first()
+    )
     if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
+        raise HTTPException(status_code=404, detail="设备不存在或无权访问")
     device.is_active = False
     device.updated_at = datetime.utcnow()
     db.commit()
-    
-    return {"message": "Device deleted successfully"}
+    return {"message": "设备删除成功"}
 
 
-# 维护记录接口
+# =================== 维护记录 ===================
+
 @router.post("/maintenance-records/", response_model=DeviceMaintenanceRecordResponse)
 def create_maintenance_record(
-    record: DeviceMaintenanceRecordCreate,
+    payload: DeviceMaintenanceRecordCreate,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
     """创建设备维护记录"""
-    # 验证设备是否存在
-    device = db.query(HardwareDevice).filter(HardwareDevice.id == record.device_id).first()
-    if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    # 创建维护记录
-    db_record = DeviceMaintenanceRecord(
-        **record.dict(),
-        org_id=device.org_id,
-        attachments=str(record.attachments) if record.attachments else None,
+    _, org_id = ctx
+    device = (
+        db.query(HardwareDevice)
+        .filter(HardwareDevice.id == payload.device_id, HardwareDevice.org_id == org_id)
+        .first()
     )
-    
-    db.add(db_record)
-    
-    # 更新设备的下次维护日期
-    if record.next_maintenance_date:
-        device.next_maintenance_date = record.next_maintenance_date
-    
+    if not device:
+        raise HTTPException(status_code=404, detail="设备不存在或无权访问")
+
+    record = DeviceMaintenanceRecord(
+        device_id=payload.device_id,
+        org_id=org_id,
+        maintenance_type=payload.maintenance_type,
+        description=payload.description,
+        performed_by=payload.performed_by,
+        maintenance_date=payload.maintenance_date or datetime.utcnow(),
+        cost=payload.cost or 0.0,
+        result=payload.result,
+        next_maintenance_date=payload.next_maintenance_date,
+        attachments=str(payload.attachments) if payload.attachments else None,
+    )
+    db.add(record)
+
+    if payload.next_maintenance_date:
+        device.next_maintenance_date = payload.next_maintenance_date
     db.commit()
-    db.refresh(db_record)
-    
-    return db_record
+    db.refresh(record)
+    return record
 
 
 @router.get("/maintenance-records/", response_model=List[DeviceMaintenanceRecordResponse])
@@ -170,45 +207,62 @@ def list_maintenance_records(
     limit: int = Query(100, ge=1, le=1000),
     device_id: Optional[int] = None,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取维护记录列表"""
-    query = db.query(DeviceMaintenanceRecord)
-    
-    if device_id:
+    """获取当前组织的维护记录列表"""
+    _, org_id = ctx
+    query = db.query(DeviceMaintenanceRecord).filter(
+        DeviceMaintenanceRecord.org_id == org_id
+    )
+    if device_id is not None:
+        # 额外校验：该设备也必须是当前组织的
+        device = (
+            db.query(HardwareDevice)
+            .filter(HardwareDevice.id == device_id, HardwareDevice.org_id == org_id)
+            .first()
+        )
+        if not device:
+            raise HTTPException(status_code=404, detail="设备不存在或无权访问")
         query = query.filter(DeviceMaintenanceRecord.device_id == device_id)
-    
-    records = query.offset(skip).limit(limit).all()
-    return records
+    return query.offset(skip).limit(limit).all()
 
 
-# 使用日志接口
+# =================== 使用日志 ===================
+
 @router.post("/usage-logs/", response_model=DeviceUsageLogResponse)
 def create_usage_log(
-    log: DeviceUsageLogCreate,
+    payload: DeviceUsageLogCreate,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
     """创建设备使用日志"""
-    # 验证设备是否存在
-    device = db.query(HardwareDevice).filter(HardwareDevice.id == log.device_id).first()
-    if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    # 创建使用日志
-    db_log = DeviceUsageLog(
-        **log.dict(),
-        org_id=device.org_id,
+    _, org_id = ctx
+    device = (
+        db.query(HardwareDevice)
+        .filter(HardwareDevice.id == payload.device_id, HardwareDevice.org_id == org_id)
+        .first()
     )
-    
-    db.add(db_log)
-    
-    # 更新设备状态为使用中
+    if not device:
+        raise HTTPException(status_code=404, detail="设备不存在或无权访问")
+
+    log = DeviceUsageLog(
+        device_id=payload.device_id,
+        org_id=org_id,
+        user_id=payload.user_id,
+        start_time=payload.start_time,
+        end_time=payload.end_time,
+        purpose=payload.purpose,
+        project_id=payload.project_id,
+        condition_before=payload.condition_before,
+        condition_after=payload.condition_after,
+        issues_found=payload.issues_found,
+    )
+    db.add(log)
     device.status = DeviceStatus.IN_USE
-    device.assigned_to = log.user_id
-    
+    device.assigned_to = payload.user_id
     db.commit()
-    db.refresh(db_log)
-    
-    return db_log
+    db.refresh(log)
+    return log
 
 
 @router.get("/usage-logs/", response_model=List[DeviceUsageLogResponse])
@@ -218,49 +272,50 @@ def list_usage_logs(
     device_id: Optional[int] = None,
     user_id: Optional[int] = None,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取使用日志列表"""
-    query = db.query(DeviceUsageLog)
-    
-    if device_id:
+    """获取当前组织的设备使用日志列表"""
+    _, org_id = ctx
+    query = db.query(DeviceUsageLog).filter(DeviceUsageLog.org_id == org_id)
+    if device_id is not None:
+        device = (
+            db.query(HardwareDevice)
+            .filter(HardwareDevice.id == device_id, HardwareDevice.org_id == org_id)
+            .first()
+        )
+        if not device:
+            raise HTTPException(status_code=404, detail="设备不存在或无权访问")
         query = query.filter(DeviceUsageLog.device_id == device_id)
-    if user_id:
+    if user_id is not None:
         query = query.filter(DeviceUsageLog.user_id == user_id)
-    
-    logs = query.offset(skip).limit(limit).all()
-    return logs
+    return query.offset(skip).limit(limit).all()
 
 
-# 统计接口
+# =================== 统计 ===================
+
 @router.get("/statistics/summary")
 def get_device_statistics(
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取设备统计信息"""
-    total_devices = db.query(HardwareDevice).count()
-    available_devices = db.query(HardwareDevice).filter(
-        HardwareDevice.status == DeviceStatus.AVAILABLE
-    ).count()
-    in_use_devices = db.query(HardwareDevice).filter(
-        HardwareDevice.status == DeviceStatus.IN_USE
-    ).count()
-    maintenance_devices = db.query(HardwareDevice).filter(
-        HardwareDevice.status == DeviceStatus.MAINTENANCE
-    ).count()
-    
-    # 按分类统计
+    """获取当前组织设备统计"""
+    _, org_id = ctx
+    base = db.query(HardwareDevice).filter(HardwareDevice.org_id == org_id)
+    total = base.count()
+    available = base.filter(HardwareDevice.status == DeviceStatus.AVAILABLE).count()
+    in_use = base.filter(HardwareDevice.status == DeviceStatus.IN_USE).count()
+    maintenance = base.filter(HardwareDevice.status == DeviceStatus.MAINTENANCE).count()
+
     category_stats = {}
     for category in DeviceCategory:
-        count = db.query(HardwareDevice).filter(
-            HardwareDevice.category == category
-        ).count()
-        if count > 0:
-            category_stats[category.value] = count
-    
+        c = base.filter(HardwareDevice.category == category).count()
+        if c > 0:
+            category_stats[category.value] = c
+
     return {
-        "total_devices": total_devices,
-        "available_devices": available_devices,
-        "in_use_devices": in_use_devices,
-        "maintenance_devices": maintenance_devices,
+        "total_devices": total,
+        "available_devices": available,
+        "in_use_devices": in_use,
+        "maintenance_devices": maintenance,
         "category_stats": category_stats,
     }

@@ -86,6 +86,35 @@ class Student(Base):
     enrollments = relationship("Enrollment", back_populates="student", cascade="all, delete-orphan")
     attendance_records = relationship("AttendanceRecord", back_populates="student", cascade="all, delete-orphan")
 
+    def to_dict(self):
+        """转换为字典"""
+        return {
+            "id": self.id,
+            "org_id": self.org_id,
+            "student_number": self.student_number,
+            "name": self.name,
+            "gender": self.gender.value if self.gender else None,
+            "id_card": self.id_card,
+            "birth_date": self.birth_date.isoformat() if self.birth_date else None,
+            "age": self.age,
+            "phone": self.phone,
+            "email": self.email,
+            "address": self.address,
+            "guardian_name": self.guardian_name,
+            "guardian_phone": self.guardian_phone,
+            "guardian_relationship": self.guardian_relationship,
+            "enrollment_date": self.enrollment_date.isoformat() if self.enrollment_date else None,
+            "status": self.status.value if self.status else None,
+            "grade_level": self.grade_level,
+            "class_name": self.class_name,
+            "emergency_contact_name": self.emergency_contact_name,
+            "emergency_contact_phone": self.emergency_contact_phone,
+            "notes": self.notes,
+            "avatar_url": self.avatar_url,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
+
     def __repr__(self):
         return f"<Student(id={self.id}, name='{self.name}', number='{self.student_number}')>"
 

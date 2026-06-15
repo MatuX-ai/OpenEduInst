@@ -1,6 +1,6 @@
 """
-教育机构管理API路由 (Educational Institution Routes)
-为前端 OrgAdminService 提供RESTful API接口，数据从云数据库实时查询
+教育机构管理API路由（多租户版）
+所有接口 org_id 一律从 Token 提取，禁止通过 URL/query 传入跨组织查询。
 """
 
 from typing import Optional, List
@@ -11,32 +11,36 @@ from sqlalchemy.orm import Session
 from sqlalchemy import func
 
 from utils.database import get_db
+from utils.auth_utils import require_org_context
 from models.license import Organization
 from models.base_models import Teacher, Course
 from models.student import Student, Enrollment, StudentStatus
 
 router = APIRouter(prefix="/api/v1/educational_institution", tags=["教育机构管理"])
 
-
-def _org_exists(org_id: int, db: Session) -> bool:
-    """检查组织是否存在"""
-    return db.query(Organization).filter(Organization.id == org_id).first() is not None
+org_detail_router = APIRouter(prefix="/api/v1", tags=["机构详情"])
 
 
 # ==================== 机构概览 ====================
 
-@router.get("/org/{org_id}/overview")
-def get_org_overview(org_id: int, db: Session = Depends(get_db)):
-    """获取机构概览数据"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+@router.get("/overview")
+def get_org_overview(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取当前机构概览数据（org_id 来自 Token）"""
+    _, org_id = ctx
 
     student_count = db.query(func.count(Student.id)).filter(Student.org_id == org_id).scalar() or 0
-    teacher_count = db.query(func.count(Teacher.id)).filter(Teacher.org_id == org_id, Teacher.is_active == True).scalar() or 0
-    course_count = db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
-    active_members = db.query(func.count(Student.id)).filter(
-        Student.org_id == org_id, Student.status == StudentStatus.ACTIVE
-    ).scalar() or 0
+    teacher_count = (
+        db.query(func.count(Teacher.id)).filter(Teacher.org_id == org_id, Teacher.is_active == True).scalar() or 0
+    )
+    course_count = (
+        db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
+    )
+    active_members = (
+        db.query(func.count(Student.id)).filter(Student.org_id == org_id, Student.status == StudentStatus.ACTIVE).scalar() or 0
+    )
 
     return {
         "success": True,
@@ -52,24 +56,28 @@ def get_org_overview(org_id: int, db: Session = Depends(get_db)):
 
 # ==================== 核心指标 ====================
 
-@router.get("/org/{org_id}/metrics")
-def get_org_metrics(org_id: int, db: Session = Depends(get_db)):
-    """获取机构核心指标（活跃学生数、月收入、课程完成率）"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+@router.get("/metrics")
+def get_org_metrics(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取当前机构核心指标（org_id 来自 Token）"""
+    _, org_id = ctx
 
-    active_students = db.query(func.count(Student.id)).filter(
-        Student.org_id == org_id, Student.status == StudentStatus.ACTIVE
-    ).scalar() or 0
+    active_students = (
+        db.query(func.count(Student.id)).filter(
+            Student.org_id == org_id, Student.status == StudentStatus.ACTIVE
+        ).scalar() or 0
+    )
 
     total_courses = db.query(func.count(Course.id)).filter(Course.org_id == org_id).scalar() or 0
-    completed_courses = 0  # Course表没有status字段用于区分完成状态
+    completed_courses = 0
 
     return {
         "success": True,
         "data": {
             "activeStudents": active_students,
-            "monthlyRevenue": "¥0",  # 暂无收入数据
+            "monthlyRevenue": "¥0",
             "courseCompletionRate": "0%",
         },
         "message": "获取核心指标成功",
@@ -78,16 +86,15 @@ def get_org_metrics(org_id: int, db: Session = Depends(get_db)):
 
 # ==================== 课程管理 ====================
 
-@router.get("/org/{org_id}/courses")
+@router.get("/courses")
 def get_org_courses(
-    org_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取机构课程列表（分页）"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """获取当前机构的课程列表（分页）"""
+    _, org_id = ctx
 
     query = db.query(Course).filter(Course.org_id == org_id)
     total = query.count()
@@ -121,17 +128,16 @@ def get_org_courses(
     }
 
 
-@router.post("/org/{org_id}/courses")
+@router.post("/courses")
 def create_org_course(
-    org_id: int,
     name: str = Query(..., description="课程名称"),
     category: str = Query("", description="课程分类"),
     description: str = Query("", description="课程描述"),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """创建新课程"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """创建新课程（org_id 来自 Token）"""
+    _, org_id = ctx
 
     course = Course(
         org_id=org_id,
@@ -157,16 +163,17 @@ def create_org_course(
     }
 
 
-@router.put("/org/{org_id}/courses/{course_id}")
+@router.put("/courses/{course_id}")
 def update_org_course(
-    org_id: int,
     course_id: int,
     name: Optional[str] = Query(None, description="课程名称"),
     category: Optional[str] = Query(None, description="课程分类"),
     description: Optional[str] = Query(None, description="课程描述"),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """更新课程信息"""
+    """更新课程信息（校验所属组织）"""
+    _, org_id = ctx
     course = db.query(Course).filter(Course.id == course_id, Course.org_id == org_id).first()
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
@@ -195,9 +202,14 @@ def update_org_course(
 
 
 @router.delete("/courses/{course_id}")
-def delete_course(course_id: int, db: Session = Depends(get_db)):
-    """删除课程"""
-    course = db.query(Course).filter(Course.id == course_id).first()
+def delete_course(
+    course_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """删除课程（校验所属组织）"""
+    _, org_id = ctx
+    course = db.query(Course).filter(Course.id == course_id, Course.org_id == org_id).first()
     if not course:
         raise HTTPException(status_code=404, detail="Course not found")
 
@@ -213,16 +225,18 @@ def delete_course(course_id: int, db: Session = Depends(get_db)):
 
 # ==================== 课程统计 ====================
 
-@router.get("/org/{org_id}/course/stats")
-def get_course_stats(org_id: int, db: Session = Depends(get_db)):
-    """获取课程统计信息"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+@router.get("/course/stats")
+def get_course_stats(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取课程统计信息（org_id 来自 Token）"""
+    _, org_id = ctx
 
     total = db.query(func.count(Course.id)).filter(Course.org_id == org_id).scalar() or 0
-    active = db.query(func.count(Course.id)).filter(
-        Course.org_id == org_id, Course.is_active == True
-    ).scalar() or 0
+    active = (
+        db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
+    )
 
     return {
         "success": True,
@@ -239,16 +253,15 @@ def get_course_stats(org_id: int, db: Session = Depends(get_db)):
 
 # ==================== 教师管理 ====================
 
-@router.get("/org/{org_id}/teachers")
+@router.get("/teachers")
 def get_org_teachers(
-    org_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取机构教师列表（分页）"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """获取当前机构的教师列表（分页）"""
+    _, org_id = ctx
 
     query = db.query(Teacher).filter(Teacher.org_id == org_id)
     total = query.count()
@@ -283,18 +296,17 @@ def get_org_teachers(
     }
 
 
-@router.post("/org/{org_id}/teachers")
+@router.post("/teachers")
 def add_org_teacher(
-    org_id: int,
     name: str = Query(..., description="教师姓名"),
     email: str = Query("", description="邮箱"),
     phone: str = Query("", description="电话"),
     specialization: str = Query("", description="专业领域"),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """添加新教师"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """添加新教师（org_id 来自 Token）"""
+    _, org_id = ctx
 
     teacher = Teacher(
         org_id=org_id,
@@ -323,16 +335,15 @@ def add_org_teacher(
 
 # ==================== 学生管理 ====================
 
-@router.get("/org/{org_id}/students")
+@router.get("/students")
 def get_org_students(
-    org_id: int,
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取机构学生列表（分页）"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """获取当前机构的学生列表（分页）"""
+    _, org_id = ctx
 
     query = db.query(Student).filter(Student.org_id == org_id)
     total = query.count()
@@ -353,7 +364,7 @@ def get_org_students(
             "attendanceRate": 0,
             "averageScore": 0,
             "lastActivity": s.updated_at.isoformat() if s.updated_at else None,
-            "status": s.status.value if hasattr(s.status, 'value') else str(s.status),
+            "status": s.status.value if hasattr(s.status, "value") else str(s.status),
             "enrollmentDate": s.created_at.isoformat() if s.created_at else None,
         })
 
@@ -370,19 +381,17 @@ def get_org_students(
     }
 
 
-@router.post("/org/{org_id}/students")
+@router.post("/students")
 def add_org_student(
-    org_id: int,
     name: str = Query(..., description="学生姓名"),
     email: str = Query("", description="邮箱"),
     phone: str = Query("", description="电话"),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """添加新学生"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+    """添加新学生（org_id 来自 Token）"""
+    _, org_id = ctx
 
-    # 生成学号
     count = db.query(func.count(Student.id)).filter(Student.org_id == org_id).scalar() or 0
     student_number = f"STU{org_id:04d}{(count + 1):04d}"
 
@@ -411,19 +420,19 @@ def add_org_student(
     }
 
 
-@router.put("/org/{org_id}/students/{student_id}/progress")
+@router.put("/students/{student_id}/progress")
 def update_student_progress(
-    org_id: int,
     student_id: int,
     progress: int = Query(0, ge=0, le=100, description="学习进度"),
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """更新学生学习进度"""
+    """更新学生学习进度（校验所属组织）"""
+    _, org_id = ctx
     student = db.query(Student).filter(Student.id == student_id, Student.org_id == org_id).first()
     if not student:
         raise HTTPException(status_code=404, detail="Student not found")
 
-    # Student表没有progress字段，这里仅做验证和返回
     return {
         "success": True,
         "data": {
@@ -431,7 +440,7 @@ def update_student_progress(
             "org_id": student.org_id,
             "name": student.name,
             "progress": progress,
-            "status": student.status.value if hasattr(student.status, 'value') else str(student.status),
+            "status": student.status.value if hasattr(student.status, "value") else str(student.status),
         },
         "message": "学习进度更新成功",
     }
@@ -439,16 +448,18 @@ def update_student_progress(
 
 # ==================== 报名统计 ====================
 
-@router.get("/org/{org_id}/enrollment/stats")
-def get_enrollment_stats(org_id: int, db: Session = Depends(get_db)):
-    """获取报名统计信息"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+@router.get("/enrollment/stats")
+def get_enrollment_stats(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取报名统计信息（org_id 来自 Token）"""
+    _, org_id = ctx
 
     total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
-    active_enrollments = db.query(func.count(Enrollment.id)).filter(
-        Enrollment.org_id == org_id, Enrollment.is_active == True
-    ).scalar() or 0
+    active_enrollments = (
+        db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id, Enrollment.is_active == True).scalar() or 0
+    )
 
     return {
         "success": True,
@@ -467,21 +478,25 @@ def get_enrollment_stats(org_id: int, db: Session = Depends(get_db)):
 
 # ==================== 完整Dashboard ====================
 
-@router.get("/org/{org_id}/dashboard")
-def get_org_dashboard(org_id: int, db: Session = Depends(get_db)):
-    """获取机构Dashboard完整数据"""
-    if not _org_exists(org_id, db):
-        raise HTTPException(status_code=404, detail="Organization not found")
+@router.get("/dashboard")
+def get_org_dashboard(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取当前机构Dashboard完整数据"""
+    _, org_id = ctx
 
-    # 概览
     student_count = db.query(func.count(Student.id)).filter(Student.org_id == org_id).scalar() or 0
-    teacher_count = db.query(func.count(Teacher.id)).filter(Teacher.org_id == org_id, Teacher.is_active == True).scalar() or 0
-    course_count = db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
-    active_members = db.query(func.count(Student.id)).filter(
-        Student.org_id == org_id, Student.status == StudentStatus.ACTIVE
-    ).scalar() or 0
+    teacher_count = (
+        db.query(func.count(Teacher.id)).filter(Teacher.org_id == org_id, Teacher.is_active == True).scalar() or 0
+    )
+    course_count = (
+        db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
+    )
+    active_members = (
+        db.query(func.count(Student.id)).filter(Student.org_id == org_id, Student.status == StudentStatus.ACTIVE).scalar() or 0
+    )
 
-    # 课程列表
     courses = db.query(Course).filter(Course.org_id == org_id).order_by(Course.created_at.desc()).limit(10).all()
     course_list = []
     for c in courses:
@@ -500,7 +515,6 @@ def get_org_dashboard(org_id: int, db: Session = Depends(get_db)):
             "revenue": 0,
         })
 
-    # 教师列表
     teachers = db.query(Teacher).filter(Teacher.org_id == org_id).order_by(Teacher.created_at.desc()).limit(10).all()
     teacher_list = []
     for t in teachers:
@@ -520,7 +534,6 @@ def get_org_dashboard(org_id: int, db: Session = Depends(get_db)):
             "performanceScore": 0,
         })
 
-    # 学生列表
     students = db.query(Student).filter(Student.org_id == org_id).order_by(Student.id.desc()).limit(10).all()
     student_list = []
     for s in students:
@@ -537,7 +550,7 @@ def get_org_dashboard(org_id: int, db: Session = Depends(get_db)):
             "attendanceRate": 0,
             "averageScore": 0,
             "lastActivity": s.updated_at.isoformat() if s.updated_at else None,
-            "status": s.status.value if hasattr(s.status, 'value') else str(s.status),
+            "status": s.status.value if hasattr(s.status, "value") else str(s.status),
             "enrollmentDate": s.created_at.isoformat() if s.created_at else None,
         })
 
@@ -581,17 +594,15 @@ def get_org_dashboard(org_id: int, db: Session = Depends(get_db)):
     }
 
 
-# 独立的路由器 - 处理侧边栏组件调用的 /api/v1/organizations/{org_id}
-# 无鉴权版本，用于演示环境
-org_detail_router = APIRouter(prefix="/api/v1", tags=["机构详情"])
+# ==================== 组织详情 ====================
 
-
-@org_detail_router.get("/organizations/{org_id}")
+@router.get("/organization")
 def get_organization_detail(
-    org_id: int,
     db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
 ):
-    """获取组织详情（无鉴权版本，供侧边栏组件使用）"""
+    """获取当前组织详情（org_id 来自 Token）"""
+    _, org_id = ctx
     org = db.query(Organization).filter(Organization.id == org_id).first()
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
@@ -599,10 +610,34 @@ def get_organization_detail(
     return {
         "id": org.id,
         "name": org.name,
-        "org_type": org.org_type.value if hasattr(org.org_type, 'value') else str(org.org_type),
+        "org_type": org.org_type.value if hasattr(org.org_type, "value") else str(org.org_type),
         "contact_email": org.contact_email or "",
         "phone": org.phone or "",
         "address": org.address or "",
         "max_users": org.max_users or 0,
-        "is_active": getattr(org, 'is_active', True),
+        "is_active": getattr(org, "is_active", True),
+    }
+
+
+@org_detail_router.get("/organizations/{org_id}")
+def get_organization_detail_legacy(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """获取组织详情（保留旧路径，org_id 以 Token 为准，URL 参数仅用于匹配）"""
+    _, token_org_id = ctx
+    org = db.query(Organization).filter(Organization.id == token_org_id).first()
+    if not org:
+        raise HTTPException(status_code=404, detail="Organization not found")
+
+    return {
+        "id": org.id,
+        "name": org.name,
+        "org_type": org.org_type.value if hasattr(org.org_type, "value") else str(org.org_type),
+        "contact_email": org.contact_email or "",
+        "phone": org.phone or "",
+        "address": org.address or "",
+        "max_users": org.max_users or 0,
+        "is_active": getattr(org, "is_active", True),
     }
