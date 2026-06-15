@@ -38,8 +38,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder /app/.next/standalone ./
 # 复制静态资源（.next/static 是客户端 JS/CSS）
 COPY --from=builder /app/.next/static ./.next/static
-# 复制 public 目录（如果有）
-COPY --from=builder /app/public ./public 2>/dev/null || true
+# 复制 public 目录（如果存在）
+COPY --from=builder /app/public ./public
 
 RUN chown -R nextjs:nodejs /app
 USER nextjs
