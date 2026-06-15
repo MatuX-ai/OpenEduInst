@@ -33,12 +33,12 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL("https://jigou.matux.tech"),
   alternates: {
-    canonical: "/site",
+    canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "zh_CN",
-    url: "https://jigou.matux.tech/site",
+    url: "https://jigou.matux.tech",
     siteName: "OpenMT",
     title: "OpenMT - 开源 STEM 教育机构管理工具",
     description: "硬件管理 · 实验项目 · 创客空间 · 免费开源。专为 STEM 教育设计的机构管理系统。",
