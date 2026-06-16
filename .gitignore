@@ -33,7 +33,10 @@ dist/
 .angular/
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/sftp.json
+!.vscode/tasks.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
