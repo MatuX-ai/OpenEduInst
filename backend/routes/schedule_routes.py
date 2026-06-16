@@ -10,7 +10,7 @@ from services.schedule_service import ScheduleService
 from pydantic import BaseModel
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1", tags=["排课与线索管理"])
 
 
 # Pydantic Schemas
@@ -73,7 +73,7 @@ def create_schedule(
     return db_schedule
 
 
-@router.get("/leads/")
+@router.get("/schedules/leads/")
 def read_leads(
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
@@ -83,7 +83,7 @@ def read_leads(
     return db.query(Lead).filter(Lead.org_id == org_id).all()
 
 
-@router.post("/leads/")
+@router.post("/schedules/leads/")
 def create_lead(
     lead: LeadCreate,
     db: Session = Depends(get_db),

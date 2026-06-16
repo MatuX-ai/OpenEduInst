@@ -38,6 +38,16 @@ class UserRegister(BaseModel):
     email: str
     password: str
     full_name: str | None = None
+    verification_code: str | None = None  # 邮箱验证码（可选，云托管版必填）
+
+
+class SendVerificationCodeRequest(BaseModel):
+    email: str
+
+
+class VerifyEmailCodeRequest(BaseModel):
+    email: str
+    code: str
 
 
 class LinkImatuRequest(BaseModel):
@@ -59,12 +69,51 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
+@router.post("/email/send-code", summary="发送邮箱验证码")
+def send_email_verification_code(
+    req: SendVerificationCodeRequest,
+    db: Session = Depends(get_db),
+):
+    """发送邮箱验证码（注册 Step 4）"""
+    from services.email_verification_service import EmailVerificationService
+    svc = EmailVerificationService(db)
+    try:
+        result = svc.send_verification_code(req.email)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=429, detail=str(e))
+
+
+@router.post("/email/verify-code", summary="校验邮箱验证码")
+def verify_email_code(
+    req: VerifyEmailCodeRequest,
+    db: Session = Depends(get_db),
+):
+    """校验邮箱验证码"""
+    from services.email_verification_service import EmailVerificationService
+    svc = EmailVerificationService(db)
+    try:
+        result = svc.verify_code(req.email, req.code)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @router.post("/register", response_model=dict)
 def register(user_data: UserRegister, db: Session = Depends(get_db)):
-    """用户注册"""
+    """用户注册（支持邮箱验证）"""
     # 检查用户名或邮箱是否已存在
     if db.query(User).filter((User.username == user_data.username) | (User.email == user_data.email)).first():
         raise HTTPException(status_code=400, detail="用户名或邮箱已被注册")
+
+    # 邮箱验证（如果提供了验证码）
+    if user_data.verification_code:
+        from services.email_verification_service import EmailVerificationService
+        svc = EmailVerificationService(db)
+        try:
+            svc.verify_code(user_data.email, user_data.verification_code)
+        except ValueError as e:
+            raise HTTPException(status_code=400, detail=f"邮箱验证失败: {e}")
     
     new_user = User(
         username=user_data.username,

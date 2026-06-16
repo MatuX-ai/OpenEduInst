@@ -12,7 +12,7 @@ from utils.auth_utils import require_org_context
 from models.license import Organization, OrganizationType
 from services.tenant_init_service import TenantInitService
 
-router = APIRouter(prefix="/tenant", tags=["tenant"])
+router = APIRouter(prefix="/api/v1/tenant", tags=["tenant"])
 
 
 # 定义基础菜单结构 (按业务场景分组)

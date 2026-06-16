@@ -77,6 +77,9 @@ from routes.educational_institution_routes import (
     org_detail_router,
 )
 from routes.org_overview_routes import router as org_overview_router
+from routes.cloud_backup_routes import router as cloud_backup_router
+from routes.ai_assistant_routes import router as ai_assistant_router
+from routes.websocket_routes import router as websocket_router
 
 
 try:
@@ -155,6 +158,9 @@ app.include_router(parent_portal_router)
 app.include_router(edu_router)
 app.include_router(org_detail_router)
 app.include_router(org_overview_router)
+app.include_router(cloud_backup_router)
+app.include_router(ai_assistant_router)
+app.include_router(websocket_router)
 
 
 @app.get("/favicon.ico", include_in_schema=False)

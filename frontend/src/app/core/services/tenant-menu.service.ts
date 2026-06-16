@@ -15,7 +15,7 @@ export interface MenuItem {
   providedIn: 'root',
 })
 export class TenantMenuService {
-  private apiUrl = environment.apiUrl || 'http://localhost:8000/api/v1';
+  private apiUrl = environment.apiUrl + '/api/v1';
 
   // Mock 菜单数据
   private mockMenu: MenuItem[] = [
