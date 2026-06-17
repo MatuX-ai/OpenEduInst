@@ -37,6 +37,7 @@ export class TenantMenuService {
     { id: 'classrooms', title: '教室管理', icon: 'meeting_room', path: 'classrooms' },
     { id: 'equipment', title: '设备与器材管理', icon: 'devices', path: 'devices' },
     { id: 'competitions', title: '竞赛认证', icon: 'emoji_events', path: 'competitions' },
+    { id: 'ai-assistant', title: 'AI 助教 · 小启', icon: 'psychology', path: 'ai-assistant' },
     {
       id: 'finance', title: '财务与资产', icon: 'account_balance_wallet', children: [
         { id: 'finance-dashboard', title: '财务管理', icon: 'payments', path: 'finance' },
@@ -48,6 +49,7 @@ export class TenantMenuService {
       id: 'system', title: '系统设置', icon: 'settings', children: [
         { id: 'users', title: '团队与权限', icon: 'group', path: 'users' },
         { id: 'notifications', title: '消息中心', icon: 'notifications', path: 'notifications' },
+        { id: 'backup-management', title: '云端备份', icon: 'backup', path: 'backup-management' },
         { id: 'parent-portal', title: '家长中心', icon: 'family_restroom', path: 'parent-portal' },
         { id: 'settings', title: '基础配置', icon: 'tune', path: 'settings' }
       ]

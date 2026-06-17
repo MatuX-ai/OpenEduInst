@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { OrgAdminGuard } from '../../guards/organization.guard';
+import { LicenseGuard } from '../../guards/license.guard';
 
 import { OrganizationLayoutComponent } from './organization-layout.component';
 import { OrganizationListComponent } from './organization-list.component';
@@ -248,6 +249,16 @@ const routes: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      // 云端备份管理（需要 cloud_backup feature）
+      {
+        path: 'backup-management',
+        canActivate: [LicenseGuard],
+        data: { requiredFeature: 'cloud_backup' },
+        loadComponent: () =>
+          import('./components/backup-management/backup-management.component').then(
+            (m) => m.BackupManagementComponent
+          ),
+      },
       // 许可证管理
       {
         path: 'licenses',
@@ -262,6 +273,16 @@ const routes: Routes = [
         loadComponent: () =>
           import('./components/token-purchase/token-purchase.component').then(
             (m) => m.TokenPurchaseComponent
+          ),
+      },
+      // AI 助教（需要 ai_assistant feature）
+      {
+        path: 'ai-assistant',
+        canActivate: [LicenseGuard],
+        data: { requiredFeature: 'ai_assistant' },
+        loadComponent: () =>
+          import('./components/ai-assistant/ai-assistant.component').then(
+            (m) => m.AiAssistantComponent
           ),
       },
       // 用户管理

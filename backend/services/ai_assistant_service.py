@@ -2,33 +2,46 @@
 高级 AI 助教服务
 提供智能排课建议、学生学情分析、代码自动审查三大核心能力
 通过 Token 计费，每月赠送 10,000 Token
+
+阶段三升级：接入真实 LLM（OpenAI 兼容协议，支持 DeepSeek / Qwen / OpenAI）
+- 规则引擎作为基础数据计算 + 离线兜底
+- LLM 在规则结果之上生成「AI 解读」「改进建议」「代码审阅」等语义化输出
+- LLM 异常时自动降级到规则结果
 """
 
+import json
 import logging
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
+from services.llm_service import LLMService, get_llm_service, LLMError
+
 logger = logging.getLogger(__name__)
 
-# Token 消耗定额
+# Token 消耗定额（规则引擎基础调用）
 TOKEN_PRICING = {
     "scheduling_suggest": 1000,     # 每次排课建议约 500-2000
     "student_analysis": 300,        # 每份个人学情报告约 300
     "class_analysis": 800,          # 每份班级报告约 800
     "code_review": 350,             # 每次代码审查约 200-500
+    "chat": 50,                     # 通用对话按实际 token 计费
 }
 
 
 class AIAssistantService:
     """高级 AI 助教服务"""
 
-    def __init__(self, db: Session, org_id: int):
+    def __init__(self, db: Session, org_id: int, llm: Optional[LLMService] = None):
         self.db = db
         self.org_id = org_id
+        # 默认使用全局单例，便于配置切换；测试时可注入 mock
+        self.llm = llm or get_llm_service()
 
-    # ---------- 智能排课建议 ----------
+    # ============================================================
+    # 智能排课建议
+    # ============================================================
 
     def suggest_scheduling(
         self,
@@ -36,19 +49,20 @@ class AIAssistantService:
         classrooms: List[Dict[str, Any]],
         courses: List[Dict[str, Any]],
         constraints: Optional[Dict[str, Any]] = None,
+        use_llm_advice: bool = True,
     ) -> Dict[str, Any]:
         """
         生成最优排课方案
 
         算法：约束满足 + 贪心优化
         输入：教师列表、教室列表、课程列表、时间约束
-        输出：排课方案（冲突最少、负载均衡、教室利用率最高）
+        输出：排课方案（冲突最少、负载均衡、教室利用率最高）+ LLM 解读
         """
         token_cost = TOKEN_PRICING["scheduling_suggest"]
         if not self._consume_tokens(token_cost):
             raise ValueError(f"Token 余额不足，排课建议需要 {token_cost} Token")
 
-        # 排课算法核心逻辑
+        # 排课算法核心逻辑（规则引擎）
         schedule = []
         conflicts = []
         teacher_load = {t.get("id", i): 0 for i, t in enumerate(teachers)}
@@ -101,7 +115,7 @@ class AIAssistantService:
         avg_load = sum(loads) / max(len(loads), 1)
         load_balance_score = 1.0 - (max(loads) - min(loads)) / max(max(loads), 1) if loads else 0
 
-        return {
+        result = {
             "schedule": schedule,
             "conflicts": conflicts,
             "statistics": {
@@ -114,14 +128,51 @@ class AIAssistantService:
             "token_consumed": token_cost,
         }
 
-    # ---------- 学生学情分析 ----------
+        # LLM 增强：在规则结果上叠加「AI 解读」
+        self._call_llm_with_fallback(
+            use_llm_advice,
+            self._llm_scheduling_advice(result, constraints),
+            result,
+            "llm_advice",
+            "排课解读",
+        )
 
-    def analyze_student(self, student_id: int) -> Dict[str, Any]:
+        return result
+
+    async def _llm_scheduling_advice(
+        self, schedule_result: Dict[str, Any], constraints: Optional[Dict[str, Any]]
+    ) -> Optional[str]:
+        """调用 LLM 生成排课解读"""
+        stats = schedule_result.get("statistics", {})
+        system = (
+            "你是 OpenMT 教育平台的智能排课顾问。"
+            "基于给定的排课统计与冲突列表，给出 100~200 字的中文建议，"
+            "包括负载均衡评价、冲突缓解方案、时间优化提示。"
+            "不要重复输入数据，直接给建议。"
+        )
+        user = (
+            f"排课统计：{json.dumps(stats, ensure_ascii=False)}\n"
+            f"冲突数量：{len(schedule_result.get('conflicts', []))}\n"
+            f"约束：{json.dumps(constraints or {}, ensure_ascii=False)}\n"
+            "请输出建议。"
+        )
+        resp = await self.llm.chat(system, user, max_tokens=400, temperature=0.5)
+        return resp.content or None
+
+    # ============================================================
+    # 学生学情分析
+    # ============================================================
+
+    def analyze_student(
+        self,
+        student_id: int,
+        use_llm_insight: bool = True,
+    ) -> Dict[str, Any]:
         """
         生成个人学情报告
 
         维度：出勤率、课时消耗速度、项目完成率、竞赛获奖、能力评估
-        输出：雷达图数据 + 趋势 + 文字建议 + 流失预警
+        输出：雷达图数据 + 趋势 + 文字建议 + 流失预警 + LLM 解读
         """
         token_cost = TOKEN_PRICING["student_analysis"]
         if not self._consume_tokens(token_cost):
@@ -132,7 +183,7 @@ class AIAssistantService:
         if not student_data:
             raise ValueError(f"学生不存在: {student_id}")
 
-        # 多维度分析
+        # 多维度分析（规则引擎）
         attendance_rate = student_data.get("attendance_rate", 0)
         course_progress = student_data.get("course_progress", 0)
         project_completion = student_data.get("project_completion", 0)
@@ -163,7 +214,7 @@ class AIAssistantService:
         if competition_awards == 0:
             suggestions.append("暂无竞赛获奖，建议参加白名单赛事提升综合能力")
 
-        return {
+        result = {
             "student_id": student_id,
             "student_name": student_data.get("name", "未知"),
             "radar_chart": {k: round(v, 1) for k, v in radar.items()},
@@ -179,19 +230,51 @@ class AIAssistantService:
             "token_consumed": token_cost,
         }
 
-    # ---------- 代码自动审查 ----------
+        # LLM 增强：生成个性化学习洞察
+        self._call_llm_with_fallback(
+            use_llm_insight,
+            self._llm_student_insight(result),
+            result,
+            "llm_insight",
+            "学情洞察",
+        )
+
+        return result
+
+    async def _llm_student_insight(self, analysis: Dict[str, Any]) -> Optional[str]:
+        """调用 LLM 生成学情洞察"""
+        system = (
+            "你是 K12 STEM 教育领域的学习规划师。"
+            "基于学生学情数据，给出 80~150 字的中文洞察，"
+            "指出关键短板、给出可操作的下一步建议，避免空话。"
+        )
+        user = (
+            f"学生：{analysis.get('student_name', '未知')}\n"
+            f"风险等级：{analysis.get('risk_level')}\n"
+            f"综合分：{analysis.get('overall_score')}\n"
+            f"雷达维度：{json.dumps(analysis.get('radar_chart', {}), ensure_ascii=False)}\n"
+            f"指标：{json.dumps(analysis.get('metrics', {}), ensure_ascii=False)}\n"
+            "请输出个性化洞察。"
+        )
+        resp = await self.llm.chat(system, user, max_tokens=300, temperature=0.6)
+        return resp.content or None
+
+    # ============================================================
+    # 代码自动审查
+    # ============================================================
 
     def review_code(
         self,
         code: str,
         language: str = "python",
         student_name: str = "",
+        use_llm_review: bool = True,
     ) -> Dict[str, Any]:
         """
         代码自动审查
 
         支持语言：Python、C/C++(Arduino)、JavaScript
-        评分：代码正确性(40%) + 代码风格(20%) + 逻辑结构(20%) + 创新性(20%)
+        评分：代码正确性(40%) + 代码风格(20%) + 逻辑结构(20%) + 创新性(20%) + LLM 评语
         """
         token_cost = TOKEN_PRICING["code_review"]
         if not self._consume_tokens(token_cost):
@@ -201,7 +284,7 @@ class AIAssistantService:
         line_count = len(lines)
 
         issues = []
-        # 基础静态分析
+        # 基础静态分析（规则引擎）
         if language == "python":
             issues.extend(self._check_python_code(lines))
         elif language in ("c", "cpp", "arduino"):
@@ -209,7 +292,7 @@ class AIAssistantService:
         elif language == "javascript":
             issues.extend(self._check_js_code(lines))
 
-        # 评分（基于规则的简化版本，生产环境应接入大模型）
+        # 评分（基于规则）
         correctness = max(100 - len(issues) * 15, 0)
         style_score = self._evaluate_style(lines, language)
         logic_score = self._evaluate_logic(lines)
@@ -221,7 +304,7 @@ class AIAssistantService:
 
         grade = "A" if weighted_score >= 85 else "B" if weighted_score >= 70 else "C" if weighted_score >= 55 else "D"
 
-        return {
+        result = {
             "student_name": student_name,
             "language": language,
             "line_count": line_count,
@@ -238,7 +321,127 @@ class AIAssistantService:
             "token_consumed": token_cost,
         }
 
-    # ---------- 内部方法 ----------
+        # LLM 增强：生成深度代码审阅
+        self._call_llm_with_fallback(
+            use_llm_review and line_count > 0,
+            self._llm_code_review(code, language, result),
+            result,
+            "llm_review",
+            "代码审阅",
+        )
+
+        return result
+
+    async def _llm_code_review(
+        self, code: str, language: str, base_result: Dict[str, Any]
+    ) -> Optional[Dict[str, Any]]:
+        """调用 LLM 进行深度代码审阅"""
+        # 截断过长代码（避免爆 token）
+        max_chars = 4000
+        snippet = code if len(code) <= max_chars else code[:max_chars] + "\n# ...(truncated)"
+
+        system = (
+            "你是经验丰富的 STEM 编程教师，负责审阅中小学生的代码作业。"
+            "请从「优点」「可改进点」「下一步学习建议」三方面给反馈，"
+            "用词要鼓励但不夸大。控制在 200 字以内。"
+        )
+        user = (
+            f"学生姓名：{base_result.get('student_name') or '未填写'}\n"
+            f"语言：{language}\n"
+            f"行数：{base_result.get('line_count')}\n"
+            f"规则引擎评分：{base_result.get('score')}({base_result.get('grade')})\n"
+            f"代码：\n```{language}\n{snippet}\n```\n"
+            "请输出反馈。"
+        )
+        resp = await self.llm.chat(system, user, max_tokens=500, temperature=0.5)
+        if not resp.content:
+            return None
+        return {
+            "comment": resp.content,
+            "prompt_tokens": resp.prompt_tokens,
+            "completion_tokens": resp.completion_tokens,
+            "total_tokens": resp.total_tokens,
+            "model": resp.model,
+        }
+
+    # ============================================================
+    # 通用对话（新增）
+    # ============================================================
+
+    async def chat(
+        self,
+        message: str,
+        history: Optional[List[Dict[str, str]]] = None,
+        system: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        通用 AI 助教对话
+
+        适用于：教学答疑、家长咨询、操作引导等开放场景
+        Token 按 LLM 实际返回的 total_tokens 计费
+        """
+        default_system = (
+            "你是 OpenMT 智能助教「小启」，面向 K12 STEM 教育培训机构。"
+            "回答需专业、简洁、有温度，优先使用中文。"
+            "遇到不确定的信息，明确说明并建议联系老师。"
+        )
+        resp = await self.llm.chat(
+            system=system or default_system,
+            user=message,
+            history=history,
+        )
+        # 实际计费
+        actual_cost = max(TOKEN_PRICING["chat"], resp.total_tokens)
+        if not self._consume_tokens(actual_cost):
+            raise ValueError(f"Token 余额不足，对话需要 {actual_cost} Token")
+
+        return {
+            "reply": resp.content,
+            "provider": resp.provider,
+            "model": resp.model,
+            "prompt_tokens": resp.prompt_tokens,
+            "completion_tokens": resp.completion_tokens,
+            "total_tokens": resp.total_tokens,
+            "latency_ms": resp.latency_ms,
+            "token_consumed": actual_cost,
+        }
+
+    # ============================================================
+    # 内部方法
+    # ============================================================
+
+    def _call_llm_with_fallback(
+        self,
+        use_llm: bool,
+        llm_coro,
+        result_dict: Dict,
+        result_key: str,
+        log_prefix: str = "LLM",
+    ) -> None:
+        """统一 LLM 调用包装：检查开关 → 调用 → 异常捕获 → 设置结果
+
+        消除三个方法（suggest_scheduling / analyze_student / review_code）中
+        重复的 try/except 模式。
+
+        Args:
+            use_llm: 是否启用 LLM 增强
+            llm_coro: 异步 LLM 调用协程（_llm_xxx 方法）
+            result_dict: 要写入的结果字典
+            result_key: 写入结果字典的键名（如 "llm_advice"）
+            log_prefix: 日志前缀（如 "排课解读"）
+        """
+        if not use_llm or not self.llm.is_real:
+            return
+        try:
+            import asyncio
+            value = asyncio.run(llm_coro)
+            if value:
+                result_dict[result_key] = value
+        except RuntimeError:
+            # 已在事件循环中，跳过 LLM 增强（同步路由调用场景）
+            logger.debug("检测到事件循环，跳过 LLM 增强 (%s)", log_prefix)
+        except LLMError as e:
+            logger.warning("LLM %s 失败，降级到规则结果: %s", log_prefix, e)
 
     def _consume_tokens(self, amount: int) -> bool:
         """消耗 Token（从组织的 token_accounts 扣除）"""
