@@ -1,0 +1,188 @@
+// ============================================================
+// OpenMT 教育机构管理系统 - 设计令牌（Design Tokens）
+// 为 SCSS 组件提供统一的颜色、间距、字号等变量
+// ============================================================
+
+// ---- 颜色: 中性灰阶 ----
+$color-neutral-50:  #fafafa;
+$color-neutral-100: #f5f5f5;
+$color-neutral-200: #eeeeee;
+$color-neutral-300: #e0e0e0;
+$color-neutral-400: #bdbdbd;
+$color-neutral-500: #9e9e9e;
+$color-neutral-600: #757575;
+$color-neutral-700: #616161;
+$color-neutral-800: #424242;
+$color-neutral-900: #212121;
+
+// ---- 颜色: 品牌主色（STEM 蓝）----
+$color-brand-primary:        #1976d2;
+$color-brand-primary-dark:   #1565c0;
+$color-brand-primary-light:  #42a5f5;
+$color-brand-secondary:      #42a5f5;
+$color-brand-accent:         #ff6f00;
+
+// ---- 颜色: STEM 主题色（科学/技术/工程/数学）----
+$color-stem-blue:   #1976d2;
+$color-stem-green:  #2e7d32;
+$color-stem-orange: #ed6c02;
+$color-stem-purple: #7b1fa2;
+
+// ---- 颜色: 状态色 ----
+$color-success:      #2e7d32;
+$color-success-light:#c8e6c9;
+$color-warning:      #ed6c02;
+$color-warning-light:#fff3e0;
+$color-error:        #d32f2f;
+$color-error-light:  #ffcdd2;
+$color-info:         #0288d1;
+$color-info-light:   #bbdefb;
+
+// ---- 间距（基于 4px 网格）----
+$spacing-xs:  4px;
+$spacing-sm:  8px;
+$spacing-md:  16px;
+$spacing-lg:  24px;
+$spacing-xl:  32px;
+$spacing-2xl: 40px;
+$spacing-3xl: 48px;
+$spacing-xxl: 48px;
+
+// ---- 字号 ----
+$font-size-base:  16px;
+$font-size-xs:   12px;
+$font-size-sm:   14px;
+$font-size-md:   16px;
+$font-size-lg:   18px;
+$font-size-xl:   20px;
+$font-size-2xl:  24px;
+$font-size-3xl:  30px;
+$font-size-4xl:  36px;
+
+// ---- 行高 ----
+$line-height-tight:  1.25;
+$line-height-normal: 1.5;
+$line-height-loose:  1.75;
+
+// ---- 字体 ----
+$font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+$font-family-mono: "Fira Code", Menlo, Consolas, monospace;
+
+// ---- 圆角 ----
+$radius-sm:   4px;
+$radius-md:   8px;
+$radius-lg:   12px;
+$radius-full: 9999px;
+
+// ---- 阴影 ----
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+$shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+// ---- 过渡（动画时长）----
+$transition-fast:    0.15s ease-in-out;
+$transition-normal:  0.25s ease-in-out;
+$transition-slow:    0.4s  ease-in-out;
+
+// ---- 断点 ----
+$breakpoint-sm: 600px;
+$breakpoint-md: 960px;
+$breakpoint-lg: 1280px;
+$breakpoint-xl: 1920px;
+
+// ---- 背景色（补全组件中引用的令牌）----
+$card-bg: #ffffff; // 卡片/容器背景（补充令牌，与 $color-bg-card 语义一致）
+$card-border: #e0e0e0; // 卡片边框（补充令牌，与 $color-border-default 语义一致）
+
+// ---- 主题色背景（补全组件中引用的令牌）----
+$color-stem-green-bg: #c8e6c9; // STEM 绿色 背景（与 $color-success-light 语义一致）
+$color-brand-primary-bg: #e3f2fd; // 品牌主色背景（与 $color-info-light 语义一致）
+$color-error-light-2: #ffebee; // 错误背景二色（浅于 $color-error-light）
+
+// ============================================================
+// 语义化扩展令牌（WCAG AA 达标）
+// 为 UI 审计修复新增的语义化令牌，保留上方历史令牌以维持向后兼容。
+// ============================================================
+
+// ---- 语义化文字色（与白底对比度均 ≥ 4.5:1）----
+$color-text-primary:   #212121; // 与白底对比 16.1:1，重要正文
+$color-text-secondary: #424242; // 与白底对比 12.0:1，次要正文
+$color-text-tertiary:  #616161; // 与白底对比 7.0:1，辅助文本
+$color-text-on-primary: #ffffff; // 主色按钮/底色之上的文字
+
+// ---- 边框色阶（提升可见性）----
+$color-border-default: #e0e0e0; // 卡片/容器默认边框（替代 #eeeeee）
+$color-border-strong:  #cbd5e1; // 重要边框/按钮（slate-300）
+$color-border-focus:   #1976d2; // 焦点边框（与品牌主色一致）
+
+// ---- 图表色板（统一令牌化）----
+$color-chart-1: #1976d2; // 蓝
+$color-chart-2: #9c27b0; // 紫
+$color-chart-3: #2e7d32; // 绿
+$color-chart-4: #ed6c02; // 橙
+$color-chart-5: #0288d1; // 青
+
+// ---- 字号（6 级语义化层级）----
+$font-size-display: 30px; // 页面标题
+$font-size-title:   20px; // 区块标题
+$font-size-heading: 16px; // 卡片标题
+$font-size-body:    14px; // 正文
+$font-size-caption: 13px; // 辅助文字
+$font-size-micro:   12px; // 元数据/轴标签
+
+// ============================================================
+// 兼容令牌（与原 app/styles/_design-tokens.scss 同名别名）
+// 保留以便原业务代码（teacher-list / schedule-main / student-list 等）继续可用。
+// ============================================================
+
+// ---- 卡片样式别名 ----
+$card-shadow:        $shadow-sm;
+$card-shadow-hover:  $shadow-md;
+$card-border-radius: $radius-lg;
+
+// ---- 颜色别名（与原 app 设计令牌保持一致）----
+$color-primary:         $color-brand-primary;       // #0066FF 别名
+$color-primary-light:   $color-brand-primary-light;
+$color-primary-dark:    $color-brand-primary-dark;
+$color-secondary:       $color-stem-green;          // 原 app 设计令牌中的绿色
+$color-secondary-light: $color-success-light;
+$color-secondary-dark:  #00A352;
+$color-bg-primary:      $color-neutral-50;          // 页面主背景
+$color-bg-card:         $card-bg;                    // 卡片背景
+$color-border:          $color-border-default;       // 边框默认色
+$color-text-muted:      $color-text-tertiary;        // 辅助文本
+$color-brand-primary-subtle: rgba(25, 118, 210, 0.1); // 品牌色弱化背景
+
+// ---- 按钮样式令牌 ----
+$btn-primary-bg:           $color-brand-primary;
+$btn-primary-bg-hover:     $color-brand-primary-dark;
+$btn-primary-color:        #ffffff;
+$btn-primary-radius:       $radius-md;
+$btn-primary-transform-hover: translateY(-1px);
+$btn-primary-shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.12);
+$btn-padding:              $spacing-sm $spacing-md;
+$btn-font-size:            $font-size-sm;
+$btn-font-weight:          500;
+
+// ---- 次要按钮令牌 ----
+$btn-secondary-bg:         #ffffff;
+$btn-secondary-color:      $color-brand-primary;
+$btn-secondary-border:     1px solid $color-border-strong;
+$btn-secondary-bg-hover:   $color-neutral-50;
+
+// ---- 额外阴影令牌 ----
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+// ---- 字号兼容 ----
+$font-size-2xl: 24px; // 兼容原 24px
+$font-size-3xl: 36px; // 兼容原 36px
+
+// ---- 字重兼容 ----
+$font-weight-normal:   400;
+$font-weight-medium:   500;
+$font-weight-semibold: 600;
+$font-weight-bold:     700;
+
+// ---- 品牌色变体 ----
+$color-warning-app:  #FF6600; // 原 app 设计令牌中的警告橙
+$color-error-app:    #FF3333; // 原 app 设计令牌中的错误红

@@ -228,7 +228,7 @@ export interface BureauMetrics {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .bureau-dashboard { 
       padding: $spacing-lg; 

@@ -263,7 +263,7 @@ interface LeadStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .leads-container {
       padding: 24px;
       background: $color-bg-primary;

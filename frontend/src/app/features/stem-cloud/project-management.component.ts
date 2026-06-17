@@ -407,7 +407,7 @@ export { STEMProject, ProjectCategory };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .project-management {
       padding: 24px;
       background: $color-neutral-100;

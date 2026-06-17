@@ -74,7 +74,7 @@ import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .stem-features-container {
       padding: 24px;
       background: $color-neutral-50;

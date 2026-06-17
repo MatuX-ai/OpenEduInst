@@ -424,7 +424,7 @@ import { BatchOperationsToolbarComponent } from '../batch-operations-toolbar/bat
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
 
       /* ===== Page Layout ===== */
       .cd-page {

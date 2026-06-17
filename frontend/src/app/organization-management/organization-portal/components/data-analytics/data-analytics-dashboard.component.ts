@@ -516,7 +516,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       /* ============================================
          数据看板 - 专业 UI/UX 设计系统
          Design System: MatuX Analytics Dashboard

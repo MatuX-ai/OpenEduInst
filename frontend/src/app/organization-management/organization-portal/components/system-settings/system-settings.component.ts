@@ -185,7 +185,7 @@ import { MatTabsModule } from '@angular/material/tabs';
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .settings-container { padding: 24px; background: #F1F5F9; }
     .page-header { margin-bottom: 24px; }
     .page-header h1 { font-size: 24px; font-weight: 600; color: #0F172A; margin: 0 0 8px; }

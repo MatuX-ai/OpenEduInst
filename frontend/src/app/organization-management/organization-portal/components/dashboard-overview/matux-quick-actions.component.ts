@@ -25,7 +25,7 @@ export interface QuickActionItem {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .actions-container { margin-bottom: $spacing-lg; }
     .section-title { font-size: $font-size-base; font-weight: 600; color: $color-neutral-900; margin-bottom: $spacing-md; }
     .actions-grid { display: flex; gap: 12px; flex-wrap: wrap; }

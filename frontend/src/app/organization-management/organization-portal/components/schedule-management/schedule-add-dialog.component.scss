@@ -1,4 +1,4 @@
-@use '../../../../../styles/design-tokens' as *;
+@use 'design-tokens' as *;
 
 .dialog-container {
   min-width: 600px;
@@ -31,7 +31,7 @@ mat-progress-bar {
   margin-left: $spacing-xs;
 }
 
-/* 步进器样�?*/
+/* 步进器样式 */
 mat-stepper {
   ::ng-deep {
     .mat-step-header {
@@ -56,7 +56,7 @@ mat-stepper {
   gap: $spacing-sm;
 }
 
-/* 时间范围�?*/
+/* 时间范围组 */
 .time-range-group {
   display: flex;
   align-items: center;
@@ -175,20 +175,20 @@ mat-stepper {
   font-weight: 500;
 
   &.conflict-warning {
-    background-color: $color-error-light;  // #ffebee
-    color: $color-error-dark;  // #c62828
+    background-color: $color-error-light;
+    color: $color-error;
 
     mat-icon {
-      color: $color-error-dark;  // #c62828
+      color: $color-error;
     }
   }
 
   &.conflict-success {
-    background-color: $color-success-light;  // #e8f5e9
-    color: $color-success-dark;  // #2e7d32
+    background-color: $color-success-light;
+    color: $color-success;
 
     mat-icon {
-      color: $color-success-dark;  // #2e7d32
+      color: $color-success;
     }
   }
 }
@@ -199,7 +199,7 @@ mat-stepper {
   gap: $spacing-sm;
 }
 
-/* 滚动条美�?*/
+/* 滚动条美化 */
 .student-list::-webkit-scrollbar {
   width: 8px;
 }

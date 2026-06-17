@@ -201,7 +201,7 @@ interface ResourceStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .resources-container {
       max-width: 1400px;

@@ -262,7 +262,7 @@ interface CompetitionStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .competitions-container {
       padding: 24px;
       max-width: 1400px;

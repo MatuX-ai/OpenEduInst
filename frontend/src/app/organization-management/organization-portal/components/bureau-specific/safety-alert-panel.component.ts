@@ -24,7 +24,7 @@ import { MatIconModule } from '@angular/material/icon';
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .safety-panel { padding: 20px; }
     .high { color: $color-error; }
     .time { font-size: $font-size-xs; color: $color-neutral-500; }

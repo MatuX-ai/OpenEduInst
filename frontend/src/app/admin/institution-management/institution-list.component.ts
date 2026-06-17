@@ -142,8 +142,8 @@ import {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
-      @use '../../../styles/shared/mixins' as mixins;
+      @use 'design-tokens' as tokens;
+      @use 'shared/mixins' as mixins;
 
       .institution-list {
         padding: tokens.$spacing-xl;

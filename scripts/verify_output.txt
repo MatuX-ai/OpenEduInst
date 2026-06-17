@@ -1,0 +1,128 @@
+﻿=== training-dashboard-v2.component.ts ===
+  L1: import { Component, Input, OnInit } from '@angular/core';
+
+  L2: import { CommonModule } from '@angular/common';
+
+  L3: import { MatCardModule } from '@angular/material/card';
+
+  L4: import { MatIconModule } from '@angular/material/icon';
+
+  L5: import { MatButtonModule } from '@angular/material/button';
+
+  L6: import { MatBadgeModule } from '@angular/material/badge';
+
+  L7: 
+
+  L8: export interface TrainingMetrics {
+
+  L9:   activeStudents: number;
+
+  L10:   monthlyRevenue: string;
+
+  L11:   courseCompletionRate: string;
+
+  L12:   equipmentUsageRate: string;
+
+  L13: }
+
+  L14: 
+
+  L15: export interface QuickActionItem {
+
+
+=== data-analytics-dashboard.component.ts ===
+  L1: /**
+
+  L2:  * 数据看板仪表盘组件
+
+  L3:  *
+
+  L4:  * @fileoverview 经营数据总览、统计分析、趋势预测的可视化展示
+
+  L5:  * @author AI Assistant
+
+  L6:  * @date 2026-04-02
+
+  L7:  */
+
+  L8: 
+
+  L9: import { CommonModule } from '@angular/common';
+
+  L10: import { Component, OnDestroy, OnInit } from '@angular/core';
+
+  L11: import { FormsModule } from '@angular/forms';
+
+  L12: import { MatButtonModule } from '@angular/material/button';
+
+  L13: import { MatCardModule } from '@angular/material/card';
+
+  L14: import { MatChipsModule } from '@angular/material/chips';
+
+  L15: import { MatIconModule } from '@angular/material/icon';
+
+
+=== training-dashboard.component.ts ===
+  L1: import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+
+  L2: import { CommonModule } from '@angular/common';
+
+  L3: import { MatCardModule } from '@angular/material/card';
+
+  L4: import { MatIconModule } from '@angular/material/icon';
+
+  L5: import { MatButtonModule } from '@angular/material/button';
+
+  L6: import { MatBadgeModule } from '@angular/material/badge';
+
+  L7: 
+
+  L8: export interface TrainingMetrics {
+
+  L9:   activeStudents: number;
+
+  L10:   monthlyRevenue: string;
+
+  L11:   courseCompletionRate: string;
+
+  L12:   equipmentUsageRate: string;
+
+  L13: }
+
+  L14: 
+
+  L15: export interface QuickActionItem {
+
+
+=== k12-dashboard.component.ts ===
+  L1: import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+
+  L2: import { CommonModule } from '@angular/common';
+
+  L3: import { MatCardModule } from '@angular/material/card';
+
+  L4: import { MatIconModule } from '@angular/material/icon';
+
+  L5: import { MatButtonModule } from '@angular/material/button';
+
+  L6: 
+
+  L7: export interface K12Metrics {
+
+  L8:   totalStudents: number;
+
+  L9:   courseCompletionRate: string;
+
+  L10:   equipmentIntactRate: string;
+
+  L11:   competitionAwards: number;
+
+  L12: }
+
+  L13: 
+
+  L14: @Component({
+
+  L15:   selector: 'app-k12-dashboard',
+
+

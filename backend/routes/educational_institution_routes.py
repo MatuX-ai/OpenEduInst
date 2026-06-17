@@ -641,3 +641,162 @@ def get_organization_detail_legacy(
         "max_users": org.max_users or 0,
         "is_active": getattr(org, "is_active", True),
     }
+
+
+# ============================================================
+# 以下为适配前端的 org/{org_id}/... 路径变体
+# 逻辑与上述无 org_id 路由完全一致，仅 URL 形式不同
+# 实际 org_id 以 Token 为准，URL 中的 org_id 仅用于路由匹配
+# ============================================================
+
+org_scoped_router = APIRouter(
+    prefix="/api/v1/educational_institution/org",
+    tags=["机构管理-组织范围"],
+)
+
+
+@org_scoped_router.get("/{org_id}/overview")
+def get_org_overview_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构概览（带 org_id 路径参数，兼容旧版 org/... 路径形式）"""
+    return get_org_overview(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/metrics")
+def get_org_metrics_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构核心指标（带 org_id 路径参数）"""
+    return get_org_metrics(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/courses")
+def get_org_courses_scoped(
+    org_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """课程列表（带 org_id 路径参数）"""
+    return get_org_courses(page=page, page_size=page_size, db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/courses")
+def create_org_course_scoped(
+    org_id: int,
+    name: str = Query(...),
+    category: str = Query(""),
+    description: str = Query(""),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建课程（带 org_id 路径参数）"""
+    return create_org_course(name=name, category=category, description=description, db=db, ctx=ctx)
+
+
+@org_scoped_router.put("/{org_id}/courses/{course_id}")
+def update_org_course_scoped(
+    org_id: int,
+    course_id: int,
+    name: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    description: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """更新课程（带 org_id 路径参数）"""
+    return update_org_course(
+        course_id=course_id,
+        name=name,
+        category=category,
+        description=description,
+        db=db,
+        ctx=ctx,
+    )
+
+
+@org_scoped_router.get("/{org_id}/course/stats")
+def get_course_stats_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """课程统计（带 org_id 路径参数）"""
+    return get_course_stats(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/teachers")
+def get_org_teachers_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """教师列表（带 org_id 路径参数）"""
+    return get_org_teachers(db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/teachers")
+def create_org_teacher_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建教师（带 org_id 路径参数）"""
+    return add_org_teacher(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/students")
+def get_org_students_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """学生列表（带 org_id 路径参数）"""
+    return get_org_students(db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/students")
+def create_org_student_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建学生（带 org_id 路径参数）"""
+    return add_org_student(db=db, ctx=ctx)
+
+
+@org_scoped_router.put("/{org_id}/students/{student_id}/progress")
+def update_student_progress_scoped(
+    org_id: int,
+    student_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """更新学生进度（带 org_id 路径参数）"""
+    return update_student_progress(student_id=student_id, db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/enrollment/stats")
+def get_enrollment_stats_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """招生统计（带 org_id 路径参数）"""
+    return get_enrollment_stats(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/dashboard")
+def get_org_dashboard_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构 Dashboard 汇总（带 org_id 路径参数）"""
+    return get_org_dashboard(db=db, ctx=ctx)

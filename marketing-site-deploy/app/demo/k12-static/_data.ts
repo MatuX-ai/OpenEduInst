@@ -1,0 +1,182 @@
+// ====== 梅山县第二中学 —— 五六线县城中学科创社团 ======
+// STEM教育在这里以第二课堂、兴趣班、学生社团的形式开展
+// 2023年政府拨款建起全县唯一一间创客活动室，41台设备，6位指导教师（多数为学科教师兼任）
+// 186名学生因热爱而来，在课后追逐科创梦想，屡获市级奖项
+
+export const mockData = {
+  institution: {
+    name: "梅山二中",
+    fullName: "梅山县第二中学",
+    type: "k12",
+    location: "河洛省·梅山县",
+    clubCount: "3个社团",
+    clubNames: "机器人社 · Arduino创客社 · 编程兴趣班",
+    labSize: "1间活动室（60㎡）",
+    labFunding: "县政府科创教育专项资金 ¥12万",
+    note: "全县唯一中学科创社团基地",
+  },
+  user: {
+    name: "张永志",
+    role: "科创社团指导老师",
+    subRole: "信息技术教师 · Arduino创客社负责人",
+    avatar: "张",
+    yearsTeaching: 18,
+    bio: "原数学教师，2018年自学 Arduino 后在校发起第一个编程兴趣班。六年过去，带出了3个社团、186个孩子。",
+  },
+  stats: {
+    totalStudents: 186, studentChange: 12.0, studentNote: "来自3个社团",
+    totalTeachers: 6, teacherChange: 0, teacherNote: "专职2人 + 兼职4人",
+    totalDevices: 41, deviceChange: 14.0,
+    completedProjects: 12, projectChange: 33.3,
+    competitionAwards: 7, awardBreakdown: "市级2项 · 区级5项",
+  },
+  deviceUsage: [
+    { month: "11月", inUse: 29, total: 41 },
+    { month: "12月", inUse: 31, total: 41 },
+    { month: "1月", inUse: 26, total: 41 },
+    { month: "2月", inUse: 24, total: 41 },
+    { month: "3月", inUse: 35, total: 41 },
+    { month: "4月", inUse: 38, total: 41 },
+  ],
+  deviceTypes: [
+    { name: "Arduino Uno", value: 15, color: "#10b981" },
+    { name: "Micro:bit", value: 20, color: "#3b82f6" },
+    { name: "Raspberry Pi", value: 5, color: "#f59e0b" },
+    { name: "3D打印机", value: 1, color: "#8b5cf6" },
+  ],
+  projects: [
+    { name: "校园智能灌溉系统", students: 6, progress: 75, stage: "测试调试", category: "Arduino社" },
+    { name: "教室灯光节能控制", students: 4, progress: 90, stage: "成果展示", category: "Arduino社" },
+    { name: "简易气象数据采集站", students: 5, progress: 55, stage: "编码实现", category: "机器人社" },
+    { name: "食堂厨余分类提醒器", students: 3, progress: 40, stage: "原型设计", category: "编程兴趣班" },
+  ],
+  competitions: [
+    { name: "全市青少年科技创新大赛", level: "市级", status: "备赛中", students: 8, date: "2026-06-20" },
+    { name: "梅山县创客马拉松", level: "区级", status: "已报名", students: 12, date: "2026-05-30" },
+    { name: "全市中小学生机器人挑战赛", level: "市级", status: "报名中", students: 6, date: "2026-07-10" },
+  ],
+  todaySchedule: [
+    { time: "16:00-17:30", title: "Arduino创客社·LED流水灯", room: "创客活动室", teacher: "张老师", grade: "初一成员", type: "硬件" },
+    { time: "16:00-17:30", title: "编程兴趣班·Micro:bit传感器", room: "机房", teacher: "刘老师", grade: "初二成员", type: "编程" },
+    { time: "17:00-18:30", title: "机器人社·智能小车集训", room: "创客活动室", teacher: "张老师", grade: "竞赛组", type: "综合" },
+  ],
+  devices: [
+    { name: "Arduino Uno R3", total: 15, available: 5, borrowing: 10, source: "政府拨款" },
+    { name: "Micro:bit v2", total: 20, available: 8, borrowing: 12, source: "企业捐赠" },
+    { name: "Raspberry Pi 4B", total: 5, available: 2, borrowing: 3, source: "教师自筹" },
+    { name: "3D打印机(教育版)", total: 1, available: 1, borrowing: 0, source: "教育局配发" },
+  ],
+  teacherTeam: [
+    { name: "张老师", skills: ["Arduino", "C++", "机器人"], status: "在线", role: "Arduino创客社" },
+    { name: "刘老师", skills: ["Micro:bit", "Scratch"], status: "在线", role: "编程兴趣班" },
+    { name: "陈老师", skills: ["3D建模", "Python"], status: "上课中", role: "机器人社(数学组兼)" },
+    { name: "王老师", skills: ["电子电路", "焊接"], status: "离线", role: "Arduino社(物理组兼)" },
+    { name: "李老师", skills: ["图形化编程"], status: "在线", role: "编程兴趣班(科学组兼)" },
+    { name: "赵老师", skills: ["竞赛指导"], status: "离线", role: "竞赛辅导(年级组长兼)" },
+  ],
+  recentActivities: [
+    { id: 1, icon: "🎉", text: "Arduino创客社《教室灯光节能控制》获市科创大赛二等奖！晋级省赛", time: "2天前", type: "社团" },
+    { id: 2, icon: "📦", text: "社团器材申请获批——新学期将新增 Arduino 套件10套", time: "5天前", type: "设备" },
+    { id: 3, icon: "🏆", text: "机器人社李同学团队获梅山县创客马拉松一等奖", time: "1周前", type: "社团" },
+    { id: 4, icon: "👨‍🏫", text: "张老师赴省城参加STEM教师研修（3天）——学校唯一名额", time: "2周前", type: "培训" },
+    { id: 5, icon: "📋", text: "新学期社团招新：已收到63份申请，仅有40个名额", time: "3周前", type: "招新" },
+    { id: 6, icon: "🔧", text: "Raspberry Pi #003 SD卡损坏——送修周期预计2周", time: "1月前", type: "维护" },
+  ],
+  budgetOverview: {
+    annual: 15000, spent: 11800, remaining: 3200,
+    items: [
+      { name: "元器件耗材", spent: 4800, color: "#10b981" },
+      { name: "3D打印耗材", spent: 3200, color: "#3b82f6" },
+      { name: "设备维修", spent: 2300, color: "#f59e0b" },
+      { name: "外出参赛", spent: 1500, color: "#8b5cf6" },
+    ],
+  },
+  featuredWorks: [
+    {
+      id: 1, title: "教室灯光节能控制系统", author: "李铭轩", authorAvatar: "李", club: "Arduino创客社",
+      grade: "初二(3)班", description: "利用光照传感器+人体红外模块，实现教室无人自动熄灯。已在本校3间教室试运行，月省电约12%。",
+      coverIcon: "💡", coverColor: "from-amber-400 to-orange-500", likes: 47, comments: 12, views: 236,
+      featured: true, tags: ["Arduino", "节能", "市赛二等奖"], time: "3天前",
+    },
+    {
+      id: 2, title: "智能盆栽自动浇水器", author: "王小雨", authorAvatar: "王", club: "机器人社",
+      grade: "初一(5)班", description: "土壤湿度传感器+水泵模块，假期再也不用担心教室绿植干死了。支持手动/自动双模式。",
+      coverIcon: "🌱", coverColor: "from-emerald-400 to-green-600", likes: 35, comments: 8, views: 189,
+      featured: true, tags: ["Micro:bit", "环保", "校创客节最佳"], time: "1周前",
+    },
+    {
+      id: 3, title: "超声波测距避障小车", author: "陈浩然", authorAvatar: "陈", club: "机器人社",
+      grade: "初二(1)班", description: "基于Arduino的超声波避障小车，可自主探测前方障碍并调整方向。竞赛集训作品。",
+      coverIcon: "🚗", coverColor: "from-blue-400 to-indigo-600", likes: 52, comments: 15, views: 310,
+      featured: true, tags: ["Arduino", "机器人", "竞赛作品"], time: "2天前",
+    },
+  ],
+  studentWorks: [
+    {
+      id: 4, title: "食堂温湿度监测小装置", author: "刘思远", authorAvatar: "刘", club: "编程兴趣班",
+      grade: "初一(4)班", description: "DHT11传感器+Micro:bit，实时显示食堂后厨温湿度，保障食品安全。",
+      coverIcon: "🌡️", coverColor: "from-rose-400 to-pink-600", likes: 18, comments: 3, views: 87,
+      tags: ["Micro:bit", "传感器"], time: "5天前",
+    },
+    {
+      id: 5, title: "Scratch成语接龙小游戏", author: "赵雨桐", authorAvatar: "赵", club: "编程兴趣班",
+      grade: "初一(2)班", description: "用Scratch做了个成语接龙游戏，内置300+成语库，还带语音播报，语文老师都说好！",
+      coverIcon: "🎮", coverColor: "from-purple-400 to-violet-600", likes: 29, comments: 6, views: 152,
+      tags: ["Scratch", "游戏", "语文融合"], time: "1周前",
+    },
+    {
+      id: 6, title: "校园噪声地图", author: "孙晓宇", authorAvatar: "孙", club: "Arduino创客社",
+      grade: "初二(2)班", description: "用声音传感器采集校园各区域噪声数据，生成可视化噪声热力图，帮学校找出最吵的地方。",
+      coverIcon: "🔊", coverColor: "from-cyan-400 to-blue-600", likes: 41, comments: 9, views: 198,
+      tags: ["Arduino", "数据分析", "校园"], time: "4天前",
+    },
+    {
+      id: 7, title: "电子生日贺卡", author: "周瑾萱", authorAvatar: "周", club: "编程兴趣班",
+      grade: "初一(3)班", description: "Micro:bit LED点阵屏滚动显示生日祝福，按下按钮还会播放《生日快乐》旋律。",
+      coverIcon: "🎂", coverColor: "from-pink-400 to-rose-500", likes: 22, comments: 4, views: 103,
+      tags: ["Micro:bit", "创意"], time: "6天前",
+    },
+    {
+      id: 8, title: "3D打印文具收纳盒", author: "吴子涵", authorAvatar: "吴", club: "Arduino创客社",
+      grade: "初二(4)班", description: "用Tinkercad自主设计+3D打印的多格文具盒，带笔槽和橡皮位，比买的还实用！",
+      coverIcon: "📐", coverColor: "from-teal-400 to-cyan-600", likes: 38, comments: 11, views: 267,
+      tags: ["3D打印", "设计"], time: "3天前",
+    },
+    {
+      id: 9, title: "简易电子琴", author: "郑嘉豪", authorAvatar: "郑", club: "机器人社",
+      grade: "初一(6)班", description: "7个按钮+蜂鸣器组成简易电子琴，能弹 Do Re Mi，音乐课上也拿来玩。",
+      coverIcon: "🎹", coverColor: "from-yellow-400 to-orange-600", likes: 15, comments: 2, views: 64,
+      tags: ["Arduino", "音乐"], time: "1周前",
+    },
+  ],
+  teachingAids: {
+    totalItems: 47, lowStockCount: 5,
+    inventory: [
+      { id: 1, name: "LED发光二极管(红)", category: "电子元器件", stock: 80, safetyStock: 30, unit: "个", status: "充足" },
+      { id: 2, name: "面包板(830孔)", category: "电子元器件", stock: 15, safetyStock: 10, unit: "块", status: "正常" },
+      { id: 3, name: "杜邦线(公母各半)", category: "电子元器件", stock: 8, safetyStock: 15, unit: "捆", status: "紧缺" },
+      { id: 4, name: "电阻套装(10Ω~1MΩ)", category: "电子元器件", stock: 6, safetyStock: 8, unit: "套", status: "紧缺" },
+      { id: 5, name: "光敏电阻传感器", category: "电子元器件", stock: 22, safetyStock: 10, unit: "个", status: "正常" },
+      { id: 6, name: "超声波测距模块HC-SR04", category: "电子元器件", stock: 4, safetyStock: 6, unit: "个", status: "紧缺" },
+      { id: 7, name: "3D打印PLA丝材(1kg)", category: "耗材", stock: 2, safetyStock: 3, unit: "卷", status: "紧缺" },
+      { id: 8, name: "焊锡丝(0.8mm)", category: "耗材", stock: 3, safetyStock: 2, unit: "卷", status: "正常" },
+      { id: 9, name: "9V电池", category: "耗材", stock: 25, safetyStock: 10, unit: "节", status: "充足" },
+      { id: 10, name: "热熔胶棒", category: "耗材", stock: 40, safetyStock: 15, unit: "根", status: "充足" },
+      { id: 11, name: "电烙铁(60W调温)", category: "通用工具", stock: 4, safetyStock: 4, unit: "把", status: "正常" },
+      { id: 12, name: "万用表(数字)", category: "通用工具", stock: 3, safetyStock: 3, unit: "台", status: "正常" },
+    ],
+    borrowRecords: [
+      { id: 1, borrower: "刘老师", item: "超声波模块 x2", purpose: "编程兴趣班课堂演示", date: "今天 15:30", status: "使用中", statusColor: "blue" },
+      { id: 2, borrower: "李铭轩(社员)", item: "LED+电阻套装", purpose: "灯光节能项目调试", date: "昨天 17:00", status: "已归还", statusColor: "emerald" },
+      { id: 3, borrower: "王小雨(社员)", item: "杜邦线 x1捆", purpose: "智能浇水器接线", date: "2天前", status: "已归还", statusColor: "emerald" },
+      { id: 4, borrower: "陈老师", item: "PLA丝材 x1卷", purpose: "3D打印社团展示模型", date: "3天前", status: "使用中", statusColor: "blue" },
+      { id: 5, borrower: "张老师", item: "电烙铁 x1把", purpose: "设备维修焊接", date: "1周前", status: "已归还", statusColor: "emerald" },
+    ],
+    purchaseRequests: [
+      { id: 1, item: "Arduino传感器套件(37合1)", quantity: "3套", estimatedCost: 480, requestedBy: "张老师", reason: "现有传感器种类不足，影响项目多样性", date: "5天前", status: "待审批", statusColor: "amber" },
+      { id: 2, item: "Micro:bit v2扩展板", quantity: "10个", estimatedCost: 350, requestedBy: "刘老师", reason: "配合Micro:bit使用，拓展IO接口", date: "3天前", status: "审批通过", statusColor: "emerald" },
+      { id: 3, item: "3D打印PLA丝材(多色)", quantity: "5卷", estimatedCost: 400, requestedBy: "陈老师", reason: "现有丝材不足，3D打印活动频繁", date: "1周前", status: "待审批", statusColor: "amber" },
+      { id: 4, item: "杜邦线(补充)", quantity: "5捆", estimatedCost: 150, requestedBy: "张老师", reason: "库存告急，社团活动频繁消耗快", date: "1天前", status: "待审批", statusColor: "amber" },
+    ],
+  },
+};

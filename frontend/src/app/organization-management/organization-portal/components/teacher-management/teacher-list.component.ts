@@ -295,7 +295,7 @@ interface TeacherStats {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
 
       .teacher-performance-container { }
       .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: $spacing-lg; }

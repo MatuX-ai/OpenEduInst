@@ -241,7 +241,7 @@ import {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
       .dashboard-container {
         padding: 24px;
       }

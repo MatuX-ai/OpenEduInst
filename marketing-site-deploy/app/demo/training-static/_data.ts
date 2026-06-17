@@ -1,0 +1,67 @@
+export const mockData = {
+  institution: {
+    name: "星海机器人",
+    fullName: "星海机器人培训中心",
+    type: "training",
+  },
+  user: {
+    name: "赵校长",
+    role: "机构负责人",
+    avatar: "赵",
+  },
+  stats: {
+    totalStudents: 328,
+    monthlyRevenue: 125000,
+    courseCompletion: 92,
+    deviceUsage: 78,
+    renewalRate: 78,
+    leadsConversion: 42,
+  },
+  revenueTrend: [
+    { month: "9月", revenue: 98000 },
+    { month: "10月", revenue: 105000 },
+    { month: "11月", revenue: 112000 },
+    { month: "12月", revenue: 118000 },
+    { month: "1月", revenue: 122000 },
+    { month: "2月", revenue: 125000 },
+  ],
+  tokenConsumption: [
+    { name: "AI助教", value: 4800, color: "#3b82f6" },
+    { name: "智能评测", value: 3500, color: "#8b5cf6" },
+    { name: "课程生成", value: 2800, color: "#10b981" },
+    { name: "代码审查", value: 1480, color: "#f59e0b" },
+  ],
+  deviceInventory: [
+    { name: "Arduino Uno", total: 50, available: 8, usageRate: 84, status: "需补充" },
+    { name: "Raspberry Pi 4B", total: 20, available: 6, usageRate: 70, status: "正常" },
+    { name: "传感器套件", total: 30, available: 12, usageRate: 60, status: "正常" },
+    { name: "电机驱动模块", total: 25, available: 5, usageRate: 80, status: "需补充" },
+    { name: "3D 打印机", total: 3, available: 1, usageRate: 67, status: "正常" },
+  ],
+  stemProjects: [
+    { name: "智能温室控制系统", students: 18, status: "进行中", progress: 75, category: "IoT", deadline: "2026-06-15" },
+    { name: "AI视觉识别小车", students: 15, status: "已完成", progress: 100, category: "AI", deadline: "2026-05-10" },
+    { name: "物联网环境监测站", students: 22, status: "进行中", progress: 60, category: "IoT", deadline: "2026-07-01" },
+    { name: "语音助手开发", students: 12, status: "进行中", progress: 45, category: "AI", deadline: "2026-06-30" },
+    { name: "无人机编程控制", students: 9, status: "规划中", progress: 20, category: "机器人", deadline: "2026-08-01" },
+  ],
+  teacherTeam: [
+    { name: "张老师", skill: "Arduino 专家", experience: "5年", status: "授课中", avatar: "张" },
+    { name: "李老师", skill: "Python 导师", experience: "3年", status: "空闲", avatar: "李" },
+    { name: "王老师", skill: "机器人教练", experience: "6年", status: "授课中", avatar: "王" },
+    { name: "陈老师", skill: "IoT 工程师", experience: "4年", status: "空闲", avatar: "陈" },
+  ],
+  recentActivities: [
+    { id: 1, icon: "🤖", text: "新购入 15 套 Arduino 传感器扩展板", time: "30分钟前", type: "设备" },
+    { id: 2, icon: "🏆", text: "《AI视觉识别小车》项目通过最终评审", time: "2小时前", type: "项目" },
+    { id: 3, icon: "💰", text: "Token余额充值 5,000点（¥1,500）", time: "4小时前", type: "Token" },
+    { id: 4, icon: "🔧", text: "3D打印机 #002 完成喷嘴更换维护", time: "1天前", type: "设备" },
+    { id: 5, icon: "📋", text: "「物联网开发实战」新班次开班通知", time: "2天前", type: "课程" },
+  ],
+  todaySchedule: [
+    { time: "09:00-10:30", title: "Arduino 传感器实战", room: "创客空间 A区", teacher: "张老师", students: 20, type: "硬件" },
+    { time: "10:30-12:00", title: "Python 物联网开发", room: "编程教室 201", teacher: "李老师", students: 18, type: "编程" },
+    { time: "14:00-15:30", title: "机器人避障算法", room: "创客空间 B区", teacher: "王老师", students: 15, type: "机器人" },
+    { time: "15:30-17:00", title: "AI模型训练入门", room: "AI实验室 301", teacher: "陈老师", students: 12, type: "AI" },
+  ],
+};

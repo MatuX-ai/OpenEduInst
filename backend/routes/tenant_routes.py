@@ -86,13 +86,16 @@ ORG_SPECIFIC_MENU: Dict[OrganizationType, List[Dict[str, Any]]] = {
 
 
 @router.get("/menu")
+@router.get("/menu/{org_id}")
 def get_organization_menu(
+    org_id: int | None = None,
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前组织的动态导航菜单（org_id 来自 Token，禁止通过路径传参）"""
-    _, org_id = ctx
-    org = db.query(Organization).filter(Organization.id == org_id).first()
+    """获取当前组织的动态导航菜单（org_id 可从路径或 Token 获取）"""
+    _, token_org_id = ctx
+    effective_org_id = org_id if org_id is not None else token_org_id
+    org = db.query(Organization).filter(Organization.id == effective_org_id).first()
 
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
@@ -105,16 +108,19 @@ def get_organization_menu(
 
 
 @router.get("/config")
+@router.get("/config/{org_id}")
 def get_organization_config(
+    org_id: int | None = None,
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前组织的业务配置和功能开关（org_id 来自 Token）"""
-    _, org_id = ctx
+    """获取当前组织的业务配置和功能开关（org_id 可从路径或 Token 获取）"""
+    _, token_org_id = ctx
+    effective_org_id = org_id if org_id is not None else token_org_id
     from models.tenant import TenantConfig, TenantFeatureFlag
 
-    config = db.query(TenantConfig).filter(TenantConfig.org_id == org_id).first()
-    flags = db.query(TenantFeatureFlag).filter(TenantFeatureFlag.org_id == org_id).all()
+    config = db.query(TenantConfig).filter(TenantConfig.org_id == effective_org_id).first()
+    flags = db.query(TenantFeatureFlag).filter(TenantFeatureFlag.org_id == effective_org_id).all()
 
     return {
         "config": config.config_data if config else {},

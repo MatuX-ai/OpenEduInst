@@ -1,0 +1,10 @@
+{
+  "success": true,
+  "data": {
+    "studentCount": 3,
+    "teacherCount": 0,
+    "activeCourses": 0,
+    "activeMembers": 3
+  },
+  "message": "获取机构概览成功"
+}

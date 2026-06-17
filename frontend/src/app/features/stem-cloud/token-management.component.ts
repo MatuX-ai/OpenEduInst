@@ -286,7 +286,7 @@ export { TokenTransaction, TokenService, TokenPackage };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .token-management {
       padding: 24px;
       background: $color-neutral-100;

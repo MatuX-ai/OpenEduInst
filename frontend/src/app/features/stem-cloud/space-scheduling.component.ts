@@ -352,7 +352,7 @@ export { SpaceRoom, Booking, SpaceCategory };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .space-scheduling {
       padding: 24px;
       background: $color-neutral-100;

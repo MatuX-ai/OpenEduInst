@@ -2,4 +2,5 @@
   production: true,
   apiUrl: '',  // 使用相对路径，由 Nginx /api/ 代理到后端
   useMockData: false,
+  mockDataDelay: 0,
 };

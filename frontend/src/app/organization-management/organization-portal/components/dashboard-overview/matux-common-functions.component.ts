@@ -31,7 +31,7 @@ export interface CommonFunctionItem {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .functions-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

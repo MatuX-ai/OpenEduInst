@@ -81,7 +81,7 @@ import { Organization } from './organization-dashboard.service';
   `,
   styles: [
     `
-      @use '../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .dialog-container {
         min-width: 500px;
         max-width: 600px;

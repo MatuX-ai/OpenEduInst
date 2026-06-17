@@ -144,7 +144,7 @@ import {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
 
       .organization-list {
         padding: $spacing-lg;

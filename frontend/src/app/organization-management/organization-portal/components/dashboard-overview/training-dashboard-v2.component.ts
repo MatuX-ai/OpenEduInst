@@ -293,7 +293,7 @@ export interface ResourceItem {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .training-dashboard {
       padding: $spacing-lg;

@@ -345,7 +345,7 @@ interface MarketingStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .marketing-container {
       padding: $spacing-lg;

@@ -94,7 +94,7 @@ import { environment } from '../../../../../environments/environment';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       :host {
         display: block;
         height: 100%;

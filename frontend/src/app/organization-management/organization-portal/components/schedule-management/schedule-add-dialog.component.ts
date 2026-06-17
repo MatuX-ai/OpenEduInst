@@ -131,62 +131,31 @@ export class ScheduleAddDialogComponent implements OnInit {
    * 加载选项数据
    */
   loadOptions(): void {
-    // STEM课程列表
-    this.courses = [
-      {
-        id: 101,
-        name: '机器人编程基础',
-        code: 'ROBOT-101',
-        type: 'STEM课程',
-        duration: 90,
-        teacherId: 1,
-        teacherName: '张老师',
-        studentIds: [],
-        status: 'active',
-        startDate: '2026-03-01',
-        createdAt: '2026-02-15T00:00:00Z',
-        updatedAt: '2026-04-02T10:00:00Z',
-      },
-      {
-        id: 102,
-        name: 'AI人工智能入门',
-        code: 'AI-101',
-        type: 'STEM课程',
-        duration: 60,
-        teacherId: 2,
-        teacherName: '李老师',
-        studentIds: [],
-        status: 'active',
-        startDate: '2026-03-01',
-        createdAt: '2026-02-15T00:00:00Z',
-        updatedAt: '2026-04-02T10:00:00Z',
-      },
-      {
-        id: 103,
-        name: 'Python编程进阶',
-        code: 'PY-201',
-        type: 'STEM课程',
-        duration: 90,
-        teacherId: 1,
-        teacherName: '张老师',
-        studentIds: [],
-        status: 'active',
-        startDate: '2026-03-01',
-        createdAt: '2026-02-15T00:00:00Z',
-        updatedAt: '2026-04-02T10:00:00Z',
-      },
-    ];
+    this.scheduleService.getCourses().subscribe((courses) => {
+      this.courses = courses;
+    });
 
-    this.classrooms = [
-      {
-        id: 1,
-        name: 'A101',
-        capacity: 30,
-        isAvailable: true,
-        createdAt: '2025-01-01T00:00:00Z',
-        updatedAt: '2026-04-02T10:00:00Z',
-      },
-    ];
+    this.scheduleService.getClassrooms().subscribe((classrooms) => {
+      this.classrooms = classrooms;
+    });
+  }
+
+  /**
+   * 课程选择变化时，自动填充课程名称和教师信息
+   */
+  onCourseChange(): void {
+    const selectedCourse = this.getSelectedCourse();
+    if (selectedCourse) {
+      this.formData.courseName = selectedCourse.name;
+      this.formData.teacherId = selectedCourse.teacherId;
+      this.formData.teacherName = selectedCourse.teacherName;
+      // 同步课程的学员列表
+      this.formData.studentIds = [...(selectedCourse.studentIds || [])];
+    } else {
+      this.formData.courseName = '';
+      this.formData.teacherId = 0;
+      this.formData.teacherName = '';
+    }
   }
 
   /**
@@ -248,26 +217,27 @@ export class ScheduleAddDialogComponent implements OnInit {
 
     this.loading = true;
 
-    const request: CreateScheduleRequest | UpdateScheduleRequest = {
-      courseId: this.formData.courseId,
-      teacherId: this.formData.teacherId,
-      classroomId: this.formData.classroomId,
-      studentIds: this.formData.studentIds,
-      dayOfWeek: this.formData.dayOfWeek,
-      startTime: this.formData.startTime,
-      endTime: this.formData.endTime,
-      startDate: this.formData.startDate,
-      repeatType: this.formData.repeatType,
-      repeatWeeks: this.formData.repeatWeeks,
-      notes: this.formData.notes,
-    };
-
     if (this.data.mode === 'edit' && this.data.schedule) {
-      request.status = this.formData.status;
+      const updateRequest: UpdateScheduleRequest = {
+        courseId: this.formData.courseId,
+        courseName: this.formData.courseName,
+        teacherId: this.formData.teacherId,
+        teacherName: this.formData.teacherName,
+        classroomId: this.formData.classroomId,
+        studentIds: this.formData.studentIds,
+        dayOfWeek: this.formData.dayOfWeek,
+        startTime: this.formData.startTime,
+        endTime: this.formData.endTime,
+        startDate: this.formData.startDate,
+        repeatType: this.formData.repeatType,
+        repeatWeeks: this.formData.repeatWeeks,
+        notes: this.formData.notes,
+        status: this.formData.status,
+      };
 
-      this.scheduleService.updateSchedule(this.data.schedule.id, request).subscribe({
+      this.scheduleService.updateSchedule(this.data.schedule.id, updateRequest).subscribe({
         next: () => {
-          this.dialogRef.close(request);
+          this.dialogRef.close(updateRequest);
         },
         error: (error) => {
           console.error('更新失败:', error);
@@ -276,9 +246,25 @@ export class ScheduleAddDialogComponent implements OnInit {
         },
       });
     } else {
-      this.scheduleService.createSchedule(request as CreateScheduleRequest).subscribe({
+      const createRequest: CreateScheduleRequest = {
+        courseId: this.formData.courseId,
+        courseName: this.formData.courseName,
+        teacherId: this.formData.teacherId,
+        teacherName: this.formData.teacherName,
+        classroomId: this.formData.classroomId,
+        studentIds: this.formData.studentIds,
+        dayOfWeek: this.formData.dayOfWeek,
+        startTime: this.formData.startTime,
+        endTime: this.formData.endTime,
+        startDate: this.formData.startDate,
+        repeatType: this.formData.repeatType,
+        repeatWeeks: this.formData.repeatWeeks,
+        notes: this.formData.notes,
+      };
+
+      this.scheduleService.createSchedule(createRequest).subscribe({
         next: () => {
-          this.dialogRef.close(request);
+          this.dialogRef.close(createRequest);
         },
         error: (error) => {
           console.error('创建失败:', error);
@@ -306,6 +292,30 @@ export class ScheduleAddDialogComponent implements OnInit {
    */
   getSelectedCourse(): Course | undefined {
     return this.courses.find((c) => c.id === this.formData.courseId);
+  }
+
+  /**
+   * 获取选中教室名称
+   */
+  getSelectedClassroomName(): string {
+    const classroom = this.classrooms.find((c) => c.id === this.formData.classroomId);
+    return classroom ? classroom.name : '未选择';
+  }
+
+  /**
+   * 获取选中星期标签
+   */
+  getSelectedDayLabel(): string {
+    const day = this.weekDays.find((d) => d.value === this.formData.dayOfWeek);
+    return day ? day.label : '';
+  }
+
+  /**
+   * 获取选中重复类型标签
+   */
+  getSelectedRepeatLabel(): string {
+    const type = this.repeatTypes.find((r) => r.value === this.formData.repeatType);
+    return type ? type.label : '';
   }
 
   /**

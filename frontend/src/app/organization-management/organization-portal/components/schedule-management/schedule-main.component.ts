@@ -123,7 +123,7 @@ type ViewMode = 'day' | 'week' | 'month';
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .schedule-container {
       height: 100%;

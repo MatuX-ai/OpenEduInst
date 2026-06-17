@@ -104,7 +104,7 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
 
       .organization-dashboard {
         height: 100%;

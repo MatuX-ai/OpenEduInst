@@ -1,0 +1,361 @@
+{
+  "test_time": "2026-06-14T17:31:29.876956",
+  "duration_seconds": 144.400291,
+  "total": 70,
+  "pass": 70,
+  "fail": 0,
+  "skip": 0,
+  "pass_rate": 100.0,
+  "details": [
+    {
+      "status": "PASS",
+      "name": "用户登录",
+      "detail": "获取 access_token 成功"
+    },
+    {
+      "status": "PASS",
+      "name": "获取当前用户信息",
+      "detail": "username=zhao_admin"
+    },
+    {
+      "status": "PASS",
+      "name": "Token 刷新",
+      "detail": "通过 refresh cookie 获取新 token"
+    },
+    {
+      "status": "PASS",
+      "name": "无效 Token 拒绝",
+      "detail": "正确返回 401"
+    },
+    {
+      "status": "PASS",
+      "name": "未认证访问拒绝",
+      "detail": "正确返回 401/403"
+    },
+    {
+      "status": "PASS",
+      "name": "错误密码拒绝",
+      "detail": "正确返回 401"
+    },
+    {
+      "status": "PASS",
+      "name": "不存在用户拒绝",
+      "detail": "正确返回 401"
+    },
+    {
+      "status": "PASS",
+      "name": "用户登出",
+      "detail": "登出成功"
+    },
+    {
+      "status": "PASS",
+      "name": "机构概览",
+      "detail": "org_name=星海机器人培训中心"
+    },
+    {
+      "status": "PASS",
+      "name": "获取组织列表",
+      "detail": "count=4"
+    },
+    {
+      "status": "PASS",
+      "name": "许可证列表",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "租户配置获取",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "租户菜单获取",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "学员列表",
+      "detail": "total=1"
+    },
+    {
+      "status": "PASS",
+      "name": "创建学员",
+      "detail": "student_id=2"
+    },
+    {
+      "status": "PASS",
+      "name": "获取学员详情",
+      "detail": "name=验收测试学员"
+    },
+    {
+      "status": "PASS",
+      "name": "更新学员",
+      "detail": "更新成功"
+    },
+    {
+      "status": "PASS",
+      "name": "学员搜索",
+      "detail": "results=1"
+    },
+    {
+      "status": "PASS",
+      "name": "出勤记录查询",
+      "detail": "status=200"
+    },
+    {
+      "status": "PASS",
+      "name": "设备列表",
+      "detail": "count=0"
+    },
+    {
+      "status": "PASS",
+      "name": "创建设备",
+      "detail": "device_id=1"
+    },
+    {
+      "status": "PASS",
+      "name": "获取设备详情",
+      "detail": "name=验收测试Arduino-1781429526"
+    },
+    {
+      "status": "PASS",
+      "name": "设备类别筛选",
+      "detail": "count=1"
+    },
+    {
+      "status": "PASS",
+      "name": "设备使用记录",
+      "detail": "创建成功"
+    },
+    {
+      "status": "PASS",
+      "name": "通知列表",
+      "detail": "total=0"
+    },
+    {
+      "status": "PASS",
+      "name": "通知统计",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "创建通知",
+      "detail": "创建成功"
+    },
+    {
+      "status": "PASS",
+      "name": "学员档案查看",
+      "detail": "student_id=1"
+    },
+    {
+      "status": "PASS",
+      "name": "学员反馈查询",
+      "detail": "status=200"
+    },
+    {
+      "status": "PASS",
+      "name": "学员出勤查询",
+      "detail": "status=404"
+    },
+    {
+      "status": "PASS",
+      "name": "排课列表",
+      "detail": "count=0"
+    },
+    {
+      "status": "PASS",
+      "name": "线索列表",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "线索统计",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "竞赛列表",
+      "detail": "total=0"
+    },
+    {
+      "status": "PASS",
+      "name": "Token套餐列表",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "Token余额查询",
+      "detail": "status=200"
+    },
+    {
+      "status": "PASS",
+      "name": "许可证列表",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "营销活动列表",
+      "detail": "获取成功"
+    },
+    {
+      "status": "PASS",
+      "name": "优惠券列表",
+      "detail": "status=200"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-用户信息",
+      "detail": "309ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-机构概览",
+      "detail": "490ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-学员列表",
+      "detail": "304ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-设备列表",
+      "detail": "353ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-通知列表",
+      "detail": "458ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-线索列表",
+      "detail": "415ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-竞赛列表",
+      "detail": "459ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-Token套餐",
+      "detail": "347ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "性能-营销活动",
+      "detail": "455ms (< 500ms)"
+    },
+    {
+      "status": "PASS",
+      "name": "并发访问",
+      "detail": "5/5 请求成功"
+    },
+    {
+      "status": "PASS",
+      "name": "X-Content-Type-Options 头",
+      "detail": "nosniff"
+    },
+    {
+      "status": "PASS",
+      "name": "X-Frame-Options 头",
+      "detail": "DENY"
+    },
+    {
+      "status": "PASS",
+      "name": "Referrer-Policy 头",
+      "detail": "strict-origin-when-cross-origin"
+    },
+    {
+      "status": "PASS",
+      "name": "CORS 限制",
+      "detail": "恶意域名被拒绝"
+    },
+    {
+      "status": "PASS",
+      "name": "SQL 注入防护",
+      "detail": "搜索结果正常 total=0"
+    },
+    {
+      "status": "PASS",
+      "name": "XSS 输入处理",
+      "detail": "status=200"
+    },
+    {
+      "status": "PASS",
+      "name": "多租户隔离(教师)",
+      "detail": "教师只能看到同组织学员"
+    },
+    {
+      "status": "PASS",
+      "name": "健康检查端点",
+      "detail": "无需认证可访问"
+    },
+    {
+      "status": "PASS",
+      "name": "Edge兼容-用户信息",
+      "detail": "正常响应"
+    },
+    {
+      "status": "PASS",
+      "name": "Edge兼容-机构概览",
+      "detail": "正常响应"
+    },
+    {
+      "status": "PASS",
+      "name": "Edge兼容-学员列表",
+      "detail": "正常响应"
+    },
+    {
+      "status": "PASS",
+      "name": "Edge兼容-设备列表",
+      "detail": "正常响应"
+    },
+    {
+      "status": "PASS",
+      "name": "Edge兼容-通知列表",
+      "detail": "正常响应"
+    },
+    {
+      "status": "PASS",
+      "name": "JSON Content-Type",
+      "detail": "application/json"
+    },
+    {
+      "status": "PASS",
+      "name": "Swagger API 文档",
+      "detail": "可访问"
+    },
+    {
+      "status": "PASS",
+      "name": "ReDoc API 文档",
+      "detail": "可访问"
+    },
+    {
+      "status": "PASS",
+      "name": "分页信息完整",
+      "detail": "pagination={'total': 3, 'page': 1, 'page_size': 5, 'total_pages': 1}"
+    },
+    {
+      "status": "PASS",
+      "name": "404 错误消息",
+      "detail": "detail='学员不存在或无权访问'"
+    },
+    {
+      "status": "PASS",
+      "name": "参数验证(负数页码)",
+      "detail": "正确返回 422"
+    },
+    {
+      "status": "PASS",
+      "name": "根路径欢迎消息",
+      "detail": "欢迎使用 OpenMT 教育机构管理系统"
+    },
+    {
+      "status": "PASS",
+      "name": "完整业务流程",
+      "detail": "登录→浏览→登出 全流程成功"
+    }
+  ]
+}

@@ -196,7 +196,7 @@ interface NotificationStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .notifications-container {
       padding: $spacing-lg;

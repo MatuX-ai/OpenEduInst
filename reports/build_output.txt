@@ -1,0 +1,60 @@
+﻿
+> openmt-edu-inst@1.0.0 build
+> ng build
+
+node.exe : - Generating browser application bundles (phase: setup)...
+所在位置 行:1 字符: 1
++ & "G:\nodejs/node.exe" "G:\nodejs/node_modules/npm/bin/npm-cli.js" ru ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (- Generating br...hase: setup)...:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+鈭?Browser application bundle generation complete.
+鈭?Browser application bundle generation complete.
+- Copying assets...
+鈭?Copying assets complete.
+- Generating index html...
+鈭?Index html generation complete.
+
+Initial chunk files           | Names                                                        |   Raw size | Estimated transfer size
+main.818029bea5bd6c2b.js      | main                                                         |    1.84 MB |               395.75 kB
+styles.425b587c9d0eaa24.css   | styles                                                       |   84.46 kB |                 7.86 kB
+polyfills.4795f4e8543b81a2.js | polyfills                                                    |   34.00 kB |                11.08 kB
+runtime.931a70b388358e1c.js   | runtime                                                      |    3.23 kB |                 1.56 kB
+
+                              | Initial total                                                |    1.96 MB |               416.24 kB
+
+Lazy chunk files              | Names                                                        |   Raw size | Estimated transfer size
+697.bae61677387b921a.js       | echarts                                                      | 1012.24 kB |               273.59 kB
+597.3725638b69f63528.js       | components-schedule-management-schedule-main-component       |  105.02 kB |                21.11 kB
+265.10106db1f076658b.js       | components-role-permission-role-list-component               |   61.86 kB |                11.54 kB
+951.fbcd3c00975146ed.js       | components-student-management-student-list-component         |   57.98 kB |                12.29 kB
+759.0d3d642ba711b2c7.js       | components-teacher-management-teacher-list-component         |   49.38 kB |                10.95 kB
+811.fe65213acb968526.js       | components-system-settings-system-settings-component         |   32.85 kB |                 6.34 kB
+793.5c05eb088e7d1e18.js       | features-stem-cloud-token-management-component               |   24.82 kB |                 5.70 kB
+573.5dc4508303924be1.js       | features-stem-cloud-hardware-management-component            |   23.31 kB |                 5.32 kB
+758.9908538cf9e2ba55.js       | components-marketing-marketing-component                     |   23.00 kB |                 5.42 kB
+766.bb8a1ddeb072e352.js       | components-parent-portal-parent-portal-component             |   19.35 kB |                 4.69 kB
+113.1ba5b683db6f031a.js       | components-competition-management-competition-list-component |   18.53 kB |                 4.39 kB
+277.e0fb538328fd8df7.js       | components-schedule-management-batch-schedule-component      |   18.09 kB |                 4.20 kB
+442.7f5baffc9f3f9175.js       | components-finance-dashboard-billing-component               |   17.24 kB |                 4.07 kB
+571.8fb351ff9e67b58e.js       | components-system-settings-system-settings-component         |   17.10 kB |                 3.55 kB
+438.56bbde9f14a117f8.js       | components-teaching-resources-teaching-resources-component   |   17.00 kB |                 4.17 kB
+534.bf3100d40c46f8b9.js       | components-leads-management-leads-management-component       |   16.47 kB |                 4.17 kB
+978.3f2e5b76c5b6a72a.js       | components-notifications-notifications-component             |   14.71 kB |                 3.68 kB
+695.f55e38bae605ff60.js       | components-teacher-management-teacher-list-component         |   11.64 kB |                 3.02 kB
+194.af5a44be10d0f59f.js       | components-token-purchase-token-purchase-component           |    7.06 kB |                 2.30 kB
+common.e88eebbe0f2c90e1.js    | common                                                       |    6.03 kB |                 1.94 kB
+159.1659826a47d7b40f.js       | pages-create-org-create-org-component                        |    5.21 kB |                 1.79 kB
+374.58733ac8fa3d2828.js       | components-multi-campus-multi-campus-component               |    4.58 kB |                 1.36 kB
+195.eae02c5658e7c5df.js       | pages-login-login-component                                  |    4.08 kB |                 1.58 kB
+150.13dca88d52c64dda.js       | components-license-management-license-management-component   |  953 bytes |               553 bytes
+474.d51378294ec9abba.js       | components-user-management-user-management-component         |  925 bytes |               524 bytes
+
+Build at: 2026-06-17T06:34:48.389Z - Hash: 704dcf5c588ce101 - Time: 55259ms
+
+Warning: G:\OpenMTEduInst\frontend\src\app\organization-management\organization-portal\services\batch-operations.servic
+e.ts depends on 'file-saver'. CommonJS or AMD dependencies can cause optimization bailouts.
+For more info see: https://angular.io/guide/build#configuring-commonjs-dependencies
+
+

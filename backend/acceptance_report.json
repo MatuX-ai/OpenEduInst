@@ -1,0 +1,432 @@
+{
+  "test_time": "2026-06-14T17:13:45.540698",
+  "base_url": "http://127.0.0.1:8000",
+  "summary": {
+    "total": 64,
+    "passed": 54,
+    "failed": 10,
+    "skipped": 0,
+    "pass_rate": 84.4
+  },
+  "details": [
+    {
+      "name": "培训机构管理员登录",
+      "status": "PASS",
+      "ms": 420.2425999974366
+    },
+    {
+      "name": "获取当前用户信息 /me",
+      "status": "PASS",
+      "ms": 18.732999989879318
+    },
+    {
+      "name": "获取所属组织列表 /organizations/my (组织数=3)",
+      "status": "PASS",
+      "ms": 25.30779999506194
+    },
+    {
+      "name": "Token 刷新 /auth/refresh",
+      "status": "PASS",
+      "ms": 15.185299998847768
+    },
+    {
+      "name": "登出 /auth/logout",
+      "status": "PASS",
+      "ms": 14.948399999411777
+    },
+    {
+      "name": "教师账号登录",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "K12 管理员登录",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "职校管理员登录",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "教育局管理员登录",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "获取组织详情 /organizations/1 -> 星海机器人培训中心",
+      "status": "PASS",
+      "ms": 27.812299987999722
+    },
+    {
+      "name": "获取机构概览 /org/overview (users=0, courses=0)",
+      "status": "PASS",
+      "ms": 25.755099995876662
+    },
+    {
+      "name": "创建新组织 (ID=7)",
+      "status": "PASS",
+      "ms": 294.51459999836516
+    },
+    {
+      "name": "查询许可证列表 (count=1)",
+      "status": "PASS",
+      "ms": 12.40759999200236
+    },
+    {
+      "name": "获取学员列表 /students/ (total=0)",
+      "status": "PASS",
+      "ms": 24.690199992619455
+    },
+    {
+      "name": "创建学员 (ID=1)",
+      "status": "PASS",
+      "ms": 122.75339999177959
+    },
+    {
+      "name": "获取学员详情 /students/1",
+      "status": "PASS",
+      "ms": 17.65610001166351
+    },
+    {
+      "name": "更新学员信息 /students/1",
+      "status": "PASS",
+      "ms": 63.94699998782016
+    },
+    {
+      "name": "学员统计 /students/stats/summary (total=1)",
+      "status": "PASS",
+      "ms": 20.80990000104066
+    },
+    {
+      "name": "删除学员 /students/1",
+      "status": "PASS",
+      "ms": 72.87499999802094
+    },
+    {
+      "name": "获取设备列表 /hardware/devices/ (count=0)",
+      "status": "PASS",
+      "ms": 23.342400003457442
+    },
+    {
+      "name": "创建硬件设备 (ID=2)",
+      "status": "PASS",
+      "ms": 115.14460000034887
+    },
+    {
+      "name": "获取设备详情 /hardware/devices/2",
+      "status": "PASS",
+      "ms": 19.90030000160914
+    },
+    {
+      "name": "更新设备 /hardware/devices/2",
+      "status": "PASS",
+      "ms": 61.76169999525882
+    },
+    {
+      "name": "设备统计 /hardware/statistics/summary (total=2, available=0)",
+      "status": "PASS",
+      "ms": 47.40130000573117
+    },
+    {
+      "name": "删除设备 /hardware/devices/2",
+      "status": "PASS",
+      "ms": 68.43600000138395
+    },
+    {
+      "name": "获取通知列表 (total=2)",
+      "status": "PASS",
+      "ms": 29.509100000723265
+    },
+    {
+      "name": "通知统计数据 (unread=0)",
+      "status": "PASS",
+      "ms": 33.17880000395235
+    },
+    {
+      "name": "创建通知 (ID=3)",
+      "status": "PASS",
+      "ms": 87.71169999090489
+    },
+    {
+      "name": "标记通知已读 /notifications/3/read",
+      "status": "PASS",
+      "ms": 67.28970000403933
+    },
+    {
+      "name": "获取学员档案 /parent-portal/student/profile",
+      "status": "PASS",
+      "ms": 22.523699997691438
+    },
+    {
+      "name": "获取课堂反馈列表",
+      "status": "PASS",
+      "ms": 31.24940000998322
+    },
+    {
+      "name": "创建课堂反馈",
+      "status": "PASS",
+      "ms": 124.79679999523796
+    },
+    {
+      "name": "获取学员荣誉列表",
+      "status": "PASS",
+      "ms": 25.86009999504313
+    },
+    {
+      "name": "添加学员荣誉",
+      "status": "PASS",
+      "ms": 64.71530000271741
+    },
+    {
+      "name": "获取家校沟通消息",
+      "status": "PASS",
+      "ms": 25.868400000035763
+    },
+    {
+      "name": "发送家校沟通消息",
+      "status": "PASS",
+      "ms": 109.56550000992138
+    },
+    {
+      "name": "获取排课列表 /schedules/ (count=0)",
+      "status": "PASS",
+      "ms": 19.744000004720874
+    },
+    {
+      "name": "获取线索列表 /leads/",
+      "status": "PASS",
+      "ms": 20.014400011859834
+    },
+    {
+      "name": "高级线索管理 /api/v1/leads/ (total=0)",
+      "status": "PASS",
+      "ms": 24.69520000158809
+    },
+    {
+      "name": "获取竞赛列表 /competitions/ (total=0)",
+      "status": "PASS",
+      "ms": 25.774299996555783
+    },
+    {
+      "name": "获取 Token 套餐列表 (count=0)",
+      "status": "PASS",
+      "ms": 30.4391000099713
+    },
+    {
+      "name": "获取 Token 余额",
+      "status": "PASS",
+      "ms": 29.798299990943633
+    },
+    {
+      "name": "获取营销活动列表",
+      "status": "PASS",
+      "ms": 27.125599997816607
+    },
+    {
+      "name": "获取教学资源列表",
+      "status": "PASS",
+      "ms": 28.273699994315393
+    },
+    {
+      "name": "API 响应时间 (目标<500ms, 慢=0/9)",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "并发请求测试 (10 线程) -> 8/10 成功, 平均 63ms, 总耗时 88ms",
+      "status": "PASS",
+      "ms": 88.46959999937098
+    },
+    {
+      "name": "无 Token 访问受保护接口 -> 401",
+      "status": "FAIL",
+      "ms": 8.20209999801591,
+      "reason": "期望 401, 实际 429"
+    },
+    {
+      "name": "无效 Token 访问 -> 401",
+      "status": "FAIL",
+      "ms": 8.905400012736209,
+      "reason": "期望 401, 实际 429"
+    },
+    {
+      "name": "租户隔离测试 (跨组织查询应被拒绝)",
+      "status": "FAIL",
+      "ms": 7.7822000021114945,
+      "reason": "status=429"
+    },
+    {
+      "name": "安全响应头 (X-Content-Type-Options, X-Frame-Options) -> 全部存在",
+      "status": "PASS",
+      "ms": 10.337999992771074
+    },
+    {
+      "name": "弱密码注册 (安全验证) -> status=429",
+      "status": "PASS",
+      "ms": 6.3190999935613945
+    },
+    {
+      "name": "SQL 注入防护测试 -> 请求被拒绝 (429)",
+      "status": "PASS",
+      "ms": 9.72600000386592
+    },
+    {
+      "name": "XSS 注入防护测试",
+      "status": "FAIL",
+      "ms": 7.028700012597255,
+      "reason": "status=429"
+    },
+    {
+      "name": "JSON Content-Type 请求",
+      "status": "FAIL",
+      "ms": 9.156600004644133,
+      "reason": "status=429"
+    },
+    {
+      "name": "分页边界测试 (page=9999)",
+      "status": "FAIL",
+      "ms": 9.607300002244301,
+      "reason": "status=429"
+    },
+    {
+      "name": "Health Check 端点",
+      "status": "PASS",
+      "ms": 8.756900002481416
+    },
+    {
+      "name": "Root 端点可访问",
+      "status": "FAIL",
+      "ms": 8.797599992249161,
+      "reason": "status=429"
+    },
+    {
+      "name": "CORS 预检请求 (OPTIONS) -> CORS 配置正确",
+      "status": "PASS",
+      "ms": 10.199600001215003
+    },
+    {
+      "name": "404 错误返回友好消息",
+      "status": "FAIL",
+      "ms": 9.394599997904152,
+      "reason": "期望 404, 实际 429"
+    },
+    {
+      "name": "分页 API 响应结构一致性",
+      "status": "PASS",
+      "ms": 0
+    },
+    {
+      "name": "缺少必填字段返回 422",
+      "status": "FAIL",
+      "ms": 9.174299993901514,
+      "reason": "期望 422, 实际 429 body={\"detail\":\"请求过于频繁，请稍后再试\"}"
+    },
+    {
+      "name": "重复用户名注册 -> 400",
+      "status": "FAIL",
+      "ms": 6.890599994221702,
+      "reason": "期望 400, 实际 429"
+    },
+    {
+      "name": "OpenAPI 文档可访问 /docs",
+      "status": "PASS",
+      "ms": 10.045100003480911
+    },
+    {
+      "name": "OpenAPI Schema /openapi.json (路由数=113)",
+      "status": "PASS",
+      "ms": 1324.2003000050317
+    }
+  ],
+  "errors": [
+    {
+      "name": "无 Token 访问受保护接口 -> 401",
+      "reason": "期望 401, 实际 429"
+    },
+    {
+      "name": "无效 Token 访问 -> 401",
+      "reason": "期望 401, 实际 429"
+    },
+    {
+      "name": "租户隔离测试 (跨组织查询应被拒绝)",
+      "reason": "status=429"
+    },
+    {
+      "name": "XSS 注入防护测试",
+      "reason": "status=429"
+    },
+    {
+      "name": "JSON Content-Type 请求",
+      "reason": "status=429"
+    },
+    {
+      "name": "分页边界测试 (page=9999)",
+      "reason": "status=429"
+    },
+    {
+      "name": "Root 端点可访问",
+      "reason": "status=429"
+    },
+    {
+      "name": "404 错误返回友好消息",
+      "reason": "期望 404, 实际 429"
+    },
+    {
+      "name": "缺少必填字段返回 422",
+      "reason": "期望 422, 实际 429 body={\"detail\":\"请求过于频繁，请稍后再试\"}"
+    },
+    {
+      "name": "重复用户名注册 -> 400",
+      "reason": "期望 400, 实际 429"
+    }
+  ],
+  "performance": [
+    {
+      "endpoint": "/api/v1/auth/me",
+      "ms": 15.1,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/organizations/my",
+      "ms": 12.6,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/students/?page=1&page_size=10",
+      "ms": 12.3,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/hardware/devices/",
+      "ms": 12.1,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/notifications/",
+      "ms": 13.3,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/org/overview",
+      "ms": 13.3,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/students/stats/summary",
+      "ms": 10.0,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/api/v1/hardware/statistics/summary",
+      "ms": 21.5,
+      "status": "OK"
+    },
+    {
+      "endpoint": "/health",
+      "ms": 8.0,
+      "status": "OK"
+    }
+  ]
+}

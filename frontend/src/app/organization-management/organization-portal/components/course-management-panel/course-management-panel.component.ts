@@ -135,7 +135,7 @@ import { UnifiedCourseCardComponent } from '../../../../shared/components/unifie
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .course-management-section {
         margin-bottom: 24px;
       }

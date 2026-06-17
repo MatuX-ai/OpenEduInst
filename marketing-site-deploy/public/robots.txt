@@ -1,0 +1,7 @@
+# https://eduInst.matux.tech/robots.txt
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://eduInst.matux.tech/sitemap.xml

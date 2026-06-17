@@ -1,0 +1,79 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import LoadingScreen from "./_loading";
+import Sidebar from "./_sidebar";
+import HeaderBar from "./_header";
+import DashboardKpi from "./sections/dashboard-kpi";
+import ReportsCharts from "./sections/reports-charts";
+import FeatureModules from "./sections/feature-modules";
+import DeviceSchedule from "./sections/device-schedule";
+import TeachersActivities from "./sections/teachers-activities";
+import Projects from "./sections/projects";
+import Competitions from "./sections/competitions";
+import StudentCommunity from "./sections/student-community";
+import TeachingAids from "./sections/teaching-aids";
+import SettingsPage from "./sections/settings";
+import InterestClasses from "./sections/interest-classes";
+import StemAcademic from "./sections/stem-academic";
+import ClubManagement from "./sections/club-management";
+
+function renderSection(menuId: string) {
+  switch (menuId) {
+    case "dashboard":
+      return (
+        <>
+          <DashboardKpi />
+          <ReportsCharts />
+          <FeatureModules />
+        </>
+      );
+    case "community":
+      return <StudentCommunity />;
+    case "clubs":
+      return <ClubManagement />;
+    case "devices":
+    case "schedule":
+      return <DeviceSchedule />;
+    case "aids":
+      return <TeachingAids />;
+    case "competitions":
+      return <Competitions />;
+    case "interest-classes":
+      return <InterestClasses />;
+    case "stem-academic":
+      return <StemAcademic />;
+    case "reports":
+      return <ReportsCharts />;
+    case "settings":
+      return <SettingsPage />;
+    default:
+      return <DashboardKpi />;
+  }
+}
+
+export default function DemoK12Static() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [activeMenu, setActiveMenu] = useState("dashboard");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) return <LoadingScreen />;
+
+  return (
+    <div className="min-h-screen bg-slate-100 flex">
+      <Sidebar activeMenu={activeMenu} onMenuClick={setActiveMenu} />
+
+      <div className="flex-1 flex flex-col min-w-0">
+        <HeaderBar />
+
+        <main className="flex-1 p-6 overflow-y-auto space-y-5">
+          {renderSection(activeMenu)}
+        </main>
+      </div>
+    </div>
+  );
+}

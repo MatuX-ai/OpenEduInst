@@ -75,6 +75,7 @@ from routes.parent_portal_routes import router as parent_portal_router
 from routes.educational_institution_routes import (
     router as edu_router,
     org_detail_router,
+    org_scoped_router,
 )
 from routes.org_overview_routes import router as org_overview_router
 from routes.cloud_backup_routes import router as cloud_backup_router
@@ -157,6 +158,7 @@ app.include_router(marketing_router)
 app.include_router(parent_portal_router)
 app.include_router(edu_router)
 app.include_router(org_detail_router)
+app.include_router(org_scoped_router)
 app.include_router(org_overview_router)
 app.include_router(cloud_backup_router)
 app.include_router(ai_assistant_router)

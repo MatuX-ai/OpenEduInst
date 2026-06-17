@@ -58,12 +58,13 @@ if org_type in [OrganizationType.TRAINING, OrganizationType.K12]:
     *   `hardware-management.component.ts`
     *   `token-management.component.ts`
     *   `space-scheduling.component.ts`
+    *   `project-management.component.ts`
 
 ## 4. 许可证 (License) 说明
 
 | 属性 | 开源社区版 | 云托管版 |
 | :--- | :--- | :--- |
-| **类型标识** | `OPEN_SOURCE` / `WINDOWS_LOCAL` | `CLOUD_HOSTED` |
+| **类型标识** | `OPEN_SOURCE` / `WINDOWS_LOCAL` | `CLOUD_HOSTED` / `EDUCATION` |
 | **有效期** | 永久 | 按年订阅 (默认赠送 1 年试用) |
 | **最大用户数** | 受限 (通常 < 50) | 扩展性强 (默认 100+) |
 | **AI 功能** | 基础版 (需自备 API Key) | 高级版 (内置云端算力) |
@@ -74,4 +75,12 @@ if org_type in [OrganizationType.TRAINING, OrganizationType.K12]:
 *   如果您希望**开箱即用**，关注教学本身而非服务器运维，**云托管版**是更优的选择。
 
 ---
-*文档最后更新时间：2026-05-23*
+
+## 6. 相关文档
+
+*   [OpenMT 云托管版 PRD（完整需求规格说明书）](./CLOUD_HOSTING_PRD.md)
+*   [培训机构管理系统 PRD](./TRAINING_PLATFORM_PRD.md)
+*   [机构驾驶舱 PRD](./INSTITUTION_DASHBOARD_PRD.md)
+
+---
+*文档最后更新时间：2026-06-17*

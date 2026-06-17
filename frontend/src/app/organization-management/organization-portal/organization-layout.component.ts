@@ -69,7 +69,7 @@ import { mockOrganizations } from './mock-dashboard-data';
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
 
       .organization-layout-container {
         display: flex;
