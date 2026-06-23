@@ -69,7 +69,7 @@ import { mockOrganizations } from './mock-dashboard-data';
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
 
       .organization-layout-container {
         display: flex;
@@ -78,15 +78,15 @@ import { mockOrganizations } from './mock-dashboard-data';
         background-color: tokens.$color-neutral-100;
       }
 
-      /* === 顶部 Header（深色，对齐原型） === */
+      /* === 顶部 Header（深色，与侧边栏统一） === */
       .layout-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         height: 48px;
         padding: 0 24px;
-        background: #0F172A;
-        border-bottom: 1px solid #1E293B;
+        background: tokens.$sidebar-header-bg;
+        border-bottom: 1px solid tokens.$sidebar-border;
         flex-shrink: 0;
         z-index: 50;
       }
@@ -101,7 +101,7 @@ import { mockOrganizations } from './mock-dashboard-data';
         display: flex;
         align-items: center;
         gap: 6px;
-        color: #64748B;
+        color: tokens.$sidebar-text-muted;
         font-size: 12px;
         font-family: 'Courier New', monospace;
       }
@@ -110,17 +110,17 @@ import { mockOrganizations } from './mock-dashboard-data';
         font-size: 14px !important;
         width: 14px !important;
         height: 14px !important;
-        color: #64748B;
+        color: tokens.$sidebar-text-muted;
       }
 
       .clock-time {
-        color: #94A3B8;
+        color: tokens.$sidebar-text-tertiary;
       }
 
       .page-title {
         font-size: 14px;
         font-weight: 500;
-        color: #F1F5F9;
+        color: tokens.$sidebar-text-primary;
       }
 
       .header-right {
@@ -131,9 +131,9 @@ import { mockOrganizations } from './mock-dashboard-data';
 
       .demo-badge {
         padding: 4px 10px;
-        background: rgba(37, 99, 235, 0.2);
-        border: 1px solid rgba(37, 99, 235, 0.3);
-        color: #60A5FA;
+        background: tokens.$sidebar-active-bg-soft;
+        border: 1px solid tokens.$sidebar-active-border-soft;
+        color: tokens.$sidebar-active-text;
         border-radius: 6px;
         font-size: 11px;
         font-weight: 600;
@@ -149,11 +149,11 @@ import { mockOrganizations } from './mock-dashboard-data';
         font-size: 16px !important;
         width: 16px !important;
         height: 16px !important;
-        color: #94A3B8;
+        color: tokens.$sidebar-text-tertiary;
       }
 
       .header-btn:hover .header-btn-icon {
-        color: #94A3B8;
+        color: tokens.$sidebar-text-tertiary;
       }
 
       /* 主体内容区 */
@@ -162,13 +162,7 @@ import { mockOrganizations } from './mock-dashboard-data';
         overflow: hidden;
       }
 
-      ::ng-deep .mat-drawer-container {
-        background-color: tokens.$color-neutral-100;
-      }
-
-      ::ng-deep .mat-drawer {
-        background-color: #0F172A;
-      }
+      /* Material sidenav 容器样式已迁移至 styles/_material-overrides.scss */
 
       .side-nav {
         border-right: none !important;

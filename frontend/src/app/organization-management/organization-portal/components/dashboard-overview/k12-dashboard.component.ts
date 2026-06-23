@@ -247,7 +247,7 @@ export interface K12Metrics {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .k12-dashboard { 
       padding: $spacing-lg; 

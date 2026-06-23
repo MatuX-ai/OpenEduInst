@@ -1,0 +1,12 @@
+{
+  "name": "@openmt/scied-ui",
+  "version": "0.1.0",
+  "description": "OpenMTSciEd shared Angular UI components for EduInst and desktop-manager",
+  "peerDependencies": {
+    "@angular/common": "^17.0.0",
+    "@angular/core": "^17.0.0",
+    "@angular/forms": "^17.0.0",
+    "@angular/material": "^17.0.0"
+  },
+  "sideEffects": false
+}

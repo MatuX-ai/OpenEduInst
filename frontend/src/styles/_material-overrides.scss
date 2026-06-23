@@ -1,0 +1,284 @@
+// ============================================================
+// OpenMT 全局 Material Design 覆盖样式
+// 替代组件内部的 ::ng-deep，集中管理 Material 内部 DOM 样式
+// 任何对 Material 组件的深度定制都应在此文件中维护
+// ============================================================
+
+@use './design-tokens' as tokens;
+
+// ---- 表格 (mat-table) 轻量主题覆盖 ----
+.mat-mdc-table {
+  background: transparent;
+  color: tokens.$color-neutral-700;
+}
+
+.mat-mdc-header-cell {
+  color: #64748b !important;
+  font-weight: 600;
+  font-size: 12px;
+  border-bottom-color: tokens.$color-neutral-200 !important;
+}
+
+.mat-mdc-cell {
+  color: tokens.$color-neutral-700;
+  border-bottom-color: #f1f5f9 !important;
+}
+
+.mat-mdc-row:hover {
+  background: #f8fafc;
+}
+
+// ---- Material Tabs 浅色主题 ----
+.mat-mdc-tab-group {
+  background: transparent;
+}
+
+.mat-mdc-tab-header {
+  background: tokens.$card-bg;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid tokens.$color-neutral-200;
+  border-bottom: none;
+}
+
+.mat-mdc-tab {
+  min-width: 140px;
+  padding: 0 20px;
+  height: 56px;
+}
+
+.mat-mdc-tab .mdc-tab__text-label {
+  color: tokens.$color-neutral-700;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.mat-mdc-tab .mdc-tab__icon {
+  color: tokens.$color-neutral-500;
+}
+
+.mat-mdc-tab--active .mdc-tab__text-label {
+  color: tokens.$color-brand-primary !important;
+}
+
+.mat-mdc-tab--active .mdc-tab__icon {
+  color: tokens.$color-brand-primary !important;
+}
+
+.mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: tokens.$color-brand-primary !important;
+}
+
+.mat-mdc-tab-body-wrapper {
+  background: tokens.$card-bg;
+  border-radius: 0 0 12px 12px;
+  border: 1px solid tokens.$color-neutral-200;
+  border-top: none;
+  min-height: 300px;
+}
+
+// ---- Material Buttons 浅色主题 ----
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-raised-button.mat-mdc-raised-button.mat-primary {
+  background: tokens.$color-brand-primary;
+  color: #fff;
+}
+
+.mat-mdc-raised-button.mat-primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
+.mat-mdc-stroked-button {
+  border-color: tokens.$color-neutral-200;
+  color: #475569;
+}
+
+.mat-mdc-stroked-button:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.mat-mdc-icon-button {
+  color: tokens.$color-neutral-500;
+}
+
+.mat-mdc-icon-button:hover {
+  background: #f1f5f9;
+  color: tokens.$color-brand-primary;
+}
+
+// ---- Material Button Toggle (视图切换) ----
+.mat-button-toggle-group {
+  border: none;
+  border-radius: tokens.$radius-md;
+  overflow: hidden;
+}
+
+.mat-button-toggle {
+  background-color: tokens.$color-neutral-100;
+}
+
+.mat-button-toggle-checked {
+  background-color: tokens.$color-brand-primary;
+  color: #fff;
+}
+
+// ---- Material Slide Toggle ----
+.mat-mdc-slide-toggle {
+  margin: 0;
+}
+
+// ---- Material Sidenav 容器 ----
+.mat-drawer-container {
+  background-color: tokens.$color-neutral-100;
+}
+
+.mat-drawer {
+  background-color: #0F172A;
+}
+
+// ---- Material Progress Bar (按进度分级) ----
+.mat-mdc-progress-bar {
+  --mdc-linear-progress-track-color: #{tokens.$color-neutral-200};
+}
+
+.mat-mdc-progress-bar.progress-low {
+  --mdc-linear-progress-active-indicator-color: #f59e0b;
+}
+
+.mat-mdc-progress-bar.progress-medium {
+  --mdc-linear-progress-active-indicator-color: #{tokens.$color-brand-primary};
+}
+
+.mat-mdc-progress-bar.progress-high {
+  --mdc-linear-progress-active-indicator-color: #059669;
+}
+
+// ---- Material Stepper ----
+.mat-step-header {
+  padding: tokens.$spacing-md;
+}
+
+.mat-step-label {
+  font-size: tokens.$font-size-sm;
+  font-weight: 500;
+}
+
+.mat-step-content {
+  padding: tokens.$spacing-md 0;
+}
+
+// ---- Material Card 默认间距（统一为 16px / 紧凑 12px）----
+mat-card-header {
+  padding: 16px !important;
+  border-bottom: 1px solid tokens.$color-neutral-200;
+}
+
+mat-card-content {
+  padding: 16px !important;
+}
+
+mat-card-actions {
+  padding: 12px 16px !important;
+  border-top: 1px solid tokens.$color-neutral-200;
+}
+
+mat-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: tokens.$color-neutral-800;
+}
+
+// ---- 进度条（统一圆角与底部间距）----
+.stat-item mat-progress-bar,
+.category-item mat-progress-bar {
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+// ---- 业务定制标签页变体 ----
+.modern-tabs {
+  background: transparent;
+}
+
+.modern-tabs .mat-mdc-tab-header {
+  background: tokens.$card-bg;
+  border-radius: 12px 12px 0 0;
+  border: 1px solid tokens.$color-neutral-200;
+  border-bottom: none;
+  padding: 0 8px;
+}
+
+.modern-tabs .mat-mdc-tab {
+  min-width: 140px;
+  padding: 0 20px;
+  height: 56px;
+}
+
+.modern-tabs .mat-mdc-tab-body-wrapper {
+  background: tokens.$card-bg;
+  border: 1px solid tokens.$color-neutral-200;
+  border-radius: 0 0 12px 12px;
+  border-top: none;
+}
+
+// ---- 教室仪表盘专用标签页变体 ----
+.cd-main-card .mat-mdc-tab-header {
+  border-bottom: tokens.$card-border;
+}
+
+.cd-main-card .mat-mdc-tab-label-container {
+  padding: 0 4px;
+}
+
+.cd-main-card .mat-mdc-tab {
+  height: 44px;
+  font-size: tokens.$font-size-sm;
+  font-weight: 500;
+  color: tokens.$color-neutral-500;
+  min-width: auto;
+  padding: 0 20px;
+}
+
+.cd-main-card .mat-mdc-tab.mdc-tab--active {
+  color: tokens.$color-brand-primary;
+}
+
+.cd-main-card .mat-mdc-tab .mdc-tab-indicator__content--underline {
+  border-color: tokens.$color-brand-primary;
+}
+
+// ---- 统一仪表盘标签页变体（与 .modern-tabs 区别仅在选择器）----
+.unified-dashboard-tabs {
+  background: transparent;
+}
+
+.unified-dashboard-tabs .mat-mdc-tab-header {
+  background: tokens.$card-bg;
+  border-radius: 12px 12px 0 0;
+  border: tokens.$card-border;
+  border-bottom: none;
+  padding: 0 8px;
+  box-shadow: tokens.$shadow-sm;
+}
+
+.unified-dashboard-tabs .mat-mdc-tab {
+  min-width: 140px;
+  padding: 0 20px;
+  height: 56px;
+}
+
+.unified-dashboard-tabs .mat-mdc-tab-body-wrapper {
+  background: tokens.$card-bg;
+  border: tokens.$card-border;
+  border-radius: 0 0 12px 12px;
+  border-top: none;
+}
+
+// ---- Checkbox 标签对齐（用于权限配置等）----
+.mat-mdc-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}

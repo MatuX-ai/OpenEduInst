@@ -241,7 +241,8 @@ import {
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
+@use 'shared/mixins' as mx;
       .dashboard-container {
         padding: 24px;
       }
@@ -378,7 +379,7 @@ import {
         gap: 24px;
         margin-bottom: 32px;
 
-        @media (max-width: 1024px) {
+        @include mx.responsive(md) {
           grid-template-columns: 1fr;
         }
       }
@@ -433,7 +434,7 @@ import {
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
 
-        @media (max-width: 1024px) {
+        @include mx.responsive(md) {
           grid-template-columns: 1fr;
         }
       }

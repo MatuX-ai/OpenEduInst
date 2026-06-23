@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from models.base_models import User
@@ -19,8 +20,14 @@ from models.license import (
     OrganizationResponse,
     OrganizationUpdate,
 )
-from services.license_service import LicenseService
-from utils.auth_utils import get_current_user_sync
+from services.license_service import (
+    LicenseService,
+    LicenseAlreadyActivatedError,
+    LicenseExpiredError,
+    LicenseInvalidStateError,
+    LicenseRevokedError,
+)
+from utils.auth_utils import get_current_user_sync, require_org_context
 from utils.database import get_db
 
 router = APIRouter(prefix="/api/v1", tags=["许可证管理"])
@@ -183,6 +190,134 @@ async def list_licenses(
     return licenses
 
 
+# ============================================================
+# 阶段三 3.3：许可证自激活 + Feature 聚合查询
+# （必须位于 /licenses/{license_key} 参数化路由之前，否则会被抢先匹配）
+# ============================================================
+
+
+class LicenseActivationRequest(BaseModel):
+    """许可证自激活请求"""
+
+    license_key: str = Field(..., min_length=10, max_length=255)
+
+
+class LicenseActivationResponse(BaseModel):
+    """许可证自激活响应"""
+
+    license: LicenseResponse
+    features: List[str] = []
+    max_users: int
+    max_devices: int
+    expires_at: datetime
+    days_until_expiry: Optional[int] = None
+    license_type: str
+    already_activated: bool = False
+    message: str = ""
+
+
+class MyFeaturesResponse(BaseModel):
+    """当前组织 feature 列表响应"""
+
+    org_id: int
+    features: List[str] = []
+    license_count: int = 0
+    fetched_at: datetime
+
+
+def _to_activation_response(result: dict, message: str = "") -> LicenseActivationResponse:
+    return LicenseActivationResponse(
+        license=LicenseResponse.model_validate(result["license"]),
+        features=result.get("features", []),
+        max_users=result["max_users"],
+        max_devices=result["max_devices"],
+        expires_at=result["expires_at"],
+        days_until_expiry=result.get("days_until_expiry"),
+        license_type=result["license_type"],
+        already_activated=result.get("already_activated", False),
+        message=message,
+    )
+
+
+@router.post(
+    "/licenses/activate",
+    response_model=LicenseActivationResponse,
+    summary="许可证自激活（机构管理员用密钥激活）",
+)
+def activate_license(
+    payload: LicenseActivationRequest,
+    license_service: LicenseService = Depends(get_license_service),
+    ctx=Depends(require_org_context),
+):
+    """
+    机构管理员通过输入许可证密钥完成自激活。
+
+    状态机：
+    - PENDING → ACTIVE（首次激活，绑定当前 org）
+    - ACTIVE  → 幂等返回（已绑同 org）
+    - ACTIVE  → 409 已被其他 org 绑定
+    - REVOKED → 403 已撤销
+    - EXPIRED → 410 已过期
+    """
+    _, org_id = ctx
+    try:
+        result = license_service.activate_license_for_org(
+            license_key=payload.license_key,
+            org_id=org_id,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except LicenseAlreadyActivatedError as e:
+        raise HTTPException(status_code=409, detail=str(e))
+    except LicenseRevokedError as e:
+        raise HTTPException(status_code=403, detail=str(e))
+    except LicenseExpiredError as e:
+        raise HTTPException(status_code=410, detail=str(e))
+    except LicenseInvalidStateError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    message = (
+        "该许可证已激活，本次为幂等返回"
+        if result["already_activated"]
+        else "许可证激活成功"
+    )
+    return _to_activation_response(result, message)
+
+
+@router.get(
+    "/licenses/my-features",
+    response_model=MyFeaturesResponse,
+    summary="查询当前组织可用 feature 列表（供路由守卫）",
+)
+def get_my_features(
+    license_service: LicenseService = Depends(get_license_service),
+    ctx=Depends(require_org_context),
+):
+    """返回当前 org 聚合后的 feature 列表（去重）"""
+    _, org_id = ctx
+    features = license_service.get_active_features_for_org(org_id)
+    active_licenses = license_service.get_active_licenses_for_org(org_id)
+    return MyFeaturesResponse(
+        org_id=org_id,
+        features=features,
+        license_count=len(active_licenses),
+        fetched_at=datetime.utcnow(),
+    )
+
+
+@router.get(
+    "/licenses/my-active",
+    response_model=List[LicenseResponse],
+    summary="查询当前组织所有有效许可证",
+)
+def get_my_active_licenses(
+    license_service: LicenseService = Depends(get_license_service),
+    ctx=Depends(require_org_context),
+):
+    _, org_id = ctx
+    return license_service.get_active_licenses_for_org(org_id)
+
+
 @router.get(
     "/licenses/{license_key}", response_model=LicenseResponse, summary="获取许可证详情"
 )
@@ -307,3 +442,4 @@ async def license_system_health(
 # async def general_exception_handler(request: Request, exc: Exception):
 #     """通用异常处理器"""
 #     return {"error": "内部服务器错误", "message": str(exc), "path": request.url.path}
+

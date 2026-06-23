@@ -54,7 +54,7 @@ export interface DashboardMetrics {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .metrics-container {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

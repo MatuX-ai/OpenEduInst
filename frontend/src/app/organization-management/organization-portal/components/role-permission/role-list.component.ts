@@ -200,7 +200,7 @@ import { UserAssignDialogComponent } from './user-assign-dialog.component';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .role-list-container {
         height: 100%;
         overflow-y: auto;

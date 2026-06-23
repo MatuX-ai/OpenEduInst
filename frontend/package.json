@@ -6,6 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "build:scied-ui": "ng-packagr -p projects/scied-ui/ng-package.json",
     "watch": "ng build --watch --configuration development"
   },
   "private": true,
@@ -33,6 +34,8 @@
     "@angular/cli": "^17.0.0",
     "@angular/compiler-cli": "^17.0.0",
     "@types/file-saver": "^2.0.7",
+    "ng-packagr": "^17.3.0",
+    "sass": "^1.101.0",
     "typescript": "~5.2.0"
   }
 }

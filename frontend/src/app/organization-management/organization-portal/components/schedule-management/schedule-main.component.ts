@@ -123,7 +123,8 @@ type ViewMode = 'day' | 'week' | 'month';
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
+@use 'shared/mixins' as mx;
 
     .schedule-container {
       height: 100%;
@@ -215,20 +216,7 @@ type ViewMode = 'day' | 'week' | 'month';
       align-items: center;
     }
 
-    ::ng-deep .mat-button-toggle-group {
-      border: none;
-      border-radius: $radius-md;
-      overflow: hidden;
-    }
-
-    ::ng-deep .mat-button-toggle {
-      background-color: $color-neutral-100;
-    }
-
-    ::ng-deep .mat-button-toggle-checked {
-      background-color: $color-brand-primary;
-      color: white;
-    }
+    /* Material button toggle 样式已迁移至 styles/_material-overrides.scss */
 
     .current-date-label {
       font-size: $font-size-sm;
@@ -239,7 +227,7 @@ type ViewMode = 'day' | 'week' | 'month';
       min-height: 500px;
     }
 
-    @media (max-width: 768px) {
+    @include mx.responsive(sm) {
       .page-header {
         flex-direction: column;
         align-items: flex-start;

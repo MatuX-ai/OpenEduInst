@@ -3,17 +3,36 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  Monitor,
+  FlaskConical,
+  Coins,
+  Puzzle,
+  Cloud,
+  Eye,
+  Download,
+  BookOpen,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
 
-const navLinks = [
-  { href: "/features/hardware", label: "硬件管理" },
-  { href: "/features/projects", label: "实验项目" },
-  { href: "/features/token", label: "Token计费" },
-  { href: "/features/makerspace", label: "创客空间" },
-  { href: "/features/cloud-hosting", label: "云托管版" },
-  { href: "/demo", label: "Demo" },
-  { href: "/download", label: "下载" },
-  { href: "/docs", label: "文档" },
+interface NavLink {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+}
+
+const navLinks: NavLink[] = [
+  { href: "/features/hardware", label: "硬件管理", icon: Monitor },
+  { href: "/features/projects", label: "实验项目", icon: FlaskConical },
+  { href: "/features/token", label: "Token计费", icon: Coins },
+  { href: "/features/makerspace", label: "创客空间", icon: Puzzle },
+  { href: "/features/cloud-hosting", label: "云托管版", icon: Cloud },
+  { href: "/demo", label: "Demo", icon: Eye },
+  { href: "/download", label: "下载", icon: Download },
+  { href: "/docs", label: "文档", icon: BookOpen },
 ];
 
 export default function Header() {
@@ -28,7 +47,7 @@ export default function Header() {
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-1">
+        <nav className="hidden lg:flex items-center gap-1">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -40,7 +59,7 @@ export default function Header() {
           ))}
           <div className="ml-3 flex items-center gap-2">
             <Link
-              href="/demo/login"
+              href="/login"
               className="px-4 py-2 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors"
             >
               登录
@@ -57,44 +76,52 @@ export default function Header() {
         {/* Mobile Hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="md:hidden p-2 text-slate-400 hover:text-white transition-colors"
+          className="lg:hidden p-2 text-slate-400 hover:text-white transition-colors"
           aria-label="Toggle navigation"
         >
           {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
 
-      {/* Mobile Nav */}
+      {/* Mobile Nav - 图文网格 */}
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur-sm">
-          <nav className="container mx-auto px-4 py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
+        <div className="lg:hidden border-t border-slate-800 bg-slate-900/95 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-6">
+            <nav className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="flex flex-col items-center gap-2 px-3 py-4 text-sm text-slate-400 hover:text-blue-400 hover:bg-slate-800/50 rounded-xl transition-all"
+                  >
+                    <Icon className="w-6 h-6" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+            <div className="mt-6 grid grid-cols-2 gap-3">
               <Link
-                key={link.href}
-                href={link.href}
+                href="/login"
                 onClick={() => setMobileOpen(false)}
-                className="px-3 py-2.5 text-sm text-slate-400 hover:text-blue-400 hover:bg-slate-800/50 rounded-lg transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-3 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors border border-slate-700 rounded-xl"
               >
-                {link.label}
-              </Link>
-            ))}
-            <div className="mt-2 flex flex-col gap-2">
-              <Link
-                href="/demo/login"
-                onClick={() => setMobileOpen(false)}
-                className="px-4 py-2.5 text-sm text-slate-300 hover:text-blue-400 font-medium transition-colors text-center border border-slate-700 rounded-lg"
-              >
+                <LogIn className="w-5 h-5" />
                 登录
               </Link>
               <Link
                 href="/demo/create-org"
                 onClick={() => setMobileOpen(false)}
-                className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors text-center"
+                className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-colors"
               >
+                <UserPlus className="w-5 h-5" />
                 注册
               </Link>
             </div>
-          </nav>
+          </div>
         </div>
       )}
     </header>

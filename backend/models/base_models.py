@@ -7,6 +7,7 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from utils.database import Base
+from utils.encrypted_string import EncryptedString
 
 
 class User(Base):
@@ -19,7 +20,7 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     full_name = Column(String(200))
-    phone = Column(String(20), unique=True, index=True, nullable=True)  # 手机号码
+    phone = Column(EncryptedString(512), unique=True, index=True, nullable=True)  # 手机号码（AES-256 加密）
     imatu_user_id = Column(String(100), unique=True, index=True, nullable=True)  # iMato 用户 ID
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -37,7 +38,7 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     org_id = Column(Integer, nullable=False, index=True)
     name = Column(String(100), nullable=False)
-    phone = Column(String(20))
+    phone = Column(EncryptedString(512))
     email = Column(String(255))
     specialty = Column(String(200))  # 专业领域
     hourly_rate = Column(Integer)  # 课时费

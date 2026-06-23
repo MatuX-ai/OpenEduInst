@@ -11,21 +11,34 @@ export interface MenuItem {
   children?: MenuItem[];
 }
 
+/** 教师角色可见的精简菜单 */
+export const TEACHER_PORTAL_MENU: MenuItem[] = [
+  { id: 'teacher-dashboard', title: '教学工作台', icon: 'co_present', path: 'teacher/dashboard' },
+  { id: 'teacher-resources', title: 'STEM 资源库', icon: 'library_books', path: 'resources' },
+  { id: 'teacher-knowledge-graph', title: '知识图谱', icon: 'hub', path: 'knowledge-graph' },
+  { id: 'teacher-topic-studio', title: '课题工作室', icon: 'lightbulb', path: 'topic-studio' },
+  { id: 'teacher-schedule', title: '我的课表', icon: 'calendar_month', path: 'schedule' },
+  { id: 'teacher-ai', title: 'AI 助教', icon: 'psychology', path: 'ai-assistant' },
+];
+
 @Injectable({
   providedIn: 'root',
 })
 export class TenantMenuService {
-  private apiUrl = environment.apiUrl || 'http://localhost:8000/api/v1';
+  private apiUrl = environment.apiUrl + '/api/v1';
 
   // Mock 菜单数据
   private mockMenu: MenuItem[] = [
     { id: 'dashboard', title: '经营仪表盘', icon: 'space_dashboard', path: 'dashboard' },
+    { id: 'teacher-workbench', title: '教学工作台', icon: 'co_present', path: 'teacher/dashboard' },
     {
       id: 'academic', title: '教务中心', icon: 'school', children: [
         { id: 'students', title: '学员管理', icon: 'people', path: 'students' },
         { id: 'teachers', title: '教师管理', icon: 'person', path: 'teachers' },
         { id: 'schedule', title: '排课管理', icon: 'calendar_month', path: 'schedule' },
-        { id: 'resources', title: '教学资源', icon: 'library_books', path: 'resources' }
+        { id: 'resources', title: '教学资源', icon: 'library_books', path: 'resources' },
+        { id: 'knowledge-graph', title: '知识图谱', icon: 'hub', path: 'knowledge-graph' },
+        { id: 'topic-studio', title: '课题工作室', icon: 'lightbulb', path: 'topic-studio' }
       ]
     },
     {
@@ -37,6 +50,7 @@ export class TenantMenuService {
     { id: 'classrooms', title: '教室管理', icon: 'meeting_room', path: 'classrooms' },
     { id: 'equipment', title: '设备与器材管理', icon: 'devices', path: 'devices' },
     { id: 'competitions', title: '竞赛认证', icon: 'emoji_events', path: 'competitions' },
+    { id: 'ai-assistant', title: 'AI 助教 · 小启', icon: 'psychology', path: 'ai-assistant' },
     {
       id: 'finance', title: '财务与资产', icon: 'account_balance_wallet', children: [
         { id: 'finance-dashboard', title: '财务管理', icon: 'payments', path: 'finance' },
@@ -48,6 +62,7 @@ export class TenantMenuService {
       id: 'system', title: '系统设置', icon: 'settings', children: [
         { id: 'users', title: '团队与权限', icon: 'group', path: 'users' },
         { id: 'notifications', title: '消息中心', icon: 'notifications', path: 'notifications' },
+        { id: 'backup-management', title: '云端备份', icon: 'backup', path: 'backup-management' },
         { id: 'parent-portal', title: '家长中心', icon: 'family_restroom', path: 'parent-portal' },
         { id: 'settings', title: '基础配置', icon: 'tune', path: 'settings' }
       ]
@@ -61,6 +76,14 @@ export class TenantMenuService {
       return of({ menu: this.mockMenu });
     }
     return this.http.get<{ menu: MenuItem[] }>(`${this.apiUrl}/tenant/menu/${orgId}`);
+  }
+
+  /** 按用户角色过滤菜单（纯教师仅见教学工作台相关项） */
+  filterMenuForRole(menu: MenuItem[], role: string): MenuItem[] {
+    if (role === 'teacher') {
+      return [...TEACHER_PORTAL_MENU];
+    }
+    return menu;
   }
 
   getConfig(orgId: number): Observable<{ config: any; features: Record<string, boolean> }> {

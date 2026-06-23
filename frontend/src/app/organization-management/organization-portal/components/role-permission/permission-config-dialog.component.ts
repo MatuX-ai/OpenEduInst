@@ -153,7 +153,7 @@ export interface PermissionConfigDialogData {
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .permission-config-dialog {
         min-width: 800px;
         max-width: 1200px;
@@ -299,7 +299,7 @@ export interface PermissionConfigDialogData {
           align-items: center;
           gap: 8px;
 
-          ::ng-deep .mat-mdc-checkbox-label {
+          .mat-mdc-checkbox-label {
             display: flex;
             align-items: center;
             gap: 8px;

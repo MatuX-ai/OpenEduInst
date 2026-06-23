@@ -160,7 +160,7 @@ import { StudentInfo, TeacherInfo } from '@app/core/services/org-admin.service';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .teacher-student-section {
         margin-bottom: 24px;
       }

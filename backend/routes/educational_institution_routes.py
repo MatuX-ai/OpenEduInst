@@ -28,8 +28,10 @@ def get_org_overview(
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前机构概览数据（org_id 来自 Token）"""
+    """获取当前机构概览数据（org_id 来自 Token）— 与 /org/{org_id}/overview 格式一致"""
     _, org_id = ctx
+
+    org = db.query(Organization).filter(Organization.id == org_id).first()
 
     student_count = db.query(func.count(Student.id)).filter(Student.org_id == org_id).scalar() or 0
     teacher_count = (
@@ -41,14 +43,39 @@ def get_org_overview(
     active_members = (
         db.query(func.count(Student.id)).filter(Student.org_id == org_id, Student.status == StudentStatus.ACTIVE).scalar() or 0
     )
+    total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
 
     return {
         "success": True,
         "data": {
+            # 机构基本信息（与 org_overview_routes._build_overview 保持一致）
+            "id": org.id if org else org_id,
+            "name": org.name if org else "",
+            "contact_email": org.contact_email if org else "",
+            "phone": org.phone if org else "",
+            "address": org.address if org else "",
+            "website": getattr(org, "website", "") or "",
+            "max_users": org.max_users if org else 0,
+            "is_active": getattr(org, "is_active", True) if org else True,
+            "created_at": org.created_at.isoformat() if org and getattr(org, "created_at", None) else "",
+            "updated_at": org.updated_at.isoformat() if org and getattr(org, "updated_at", None) else "",
+            "org_type": org.org_type.value if org and hasattr(org.org_type, "value") else (str(org.org_type) if org else ""),
+            # 业务统计
             "studentCount": student_count,
             "teacherCount": teacher_count,
             "activeCourses": course_count,
             "activeMembers": active_members,
+            # 嵌套统计
+            "statistics": {
+                "total_licenses": 0,
+                "active_licenses": 0,
+                "total_users": teacher_count,
+                "total_courses": course_count,
+                "total_enrollments": total_enrollments,
+                "total_students": student_count,
+                "storage_used_mb": 0,
+                "storage_limit_mb": 1024,
+            },
         },
         "message": "获取机构概览成功",
     }
@@ -71,14 +98,32 @@ def get_org_metrics(
     )
 
     total_courses = db.query(func.count(Course.id)).filter(Course.org_id == org_id).scalar() or 0
-    completed_courses = 0
+    active_courses = (
+        db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
+    )
+    total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
+    active_enrollments = (
+        db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id, Enrollment.is_active == True).scalar() or 0
+    )
+    total_teachers = db.query(func.count(Teacher.id)).filter(Teacher.org_id == org_id).scalar() or 0
+
+    # 计算完成率（有 enrollments 的课程视为活跃，反推完成率）
+    completion_rate = 0
+    if total_courses > 0:
+        completion_rate = round((total_courses - active_courses) / total_courses * 100)
 
     return {
         "success": True,
         "data": {
             "activeStudents": active_students,
+            "totalStudents": active_students,
+            "totalTeachers": total_teachers,
+            "totalCourses": total_courses,
+            "activeCourses": active_courses,
+            "totalEnrollments": total_enrollments,
+            "activeEnrollments": active_enrollments,
             "monthlyRevenue": "¥0",
-            "courseCompletionRate": "0%",
+            "courseCompletionRate": f"{completion_rate}%",
         },
         "message": "获取核心指标成功",
     }
@@ -237,15 +282,23 @@ def get_course_stats(
     active = (
         db.query(func.count(Course.id)).filter(Course.org_id == org_id, Course.is_active == True).scalar() or 0
     )
+    completed = db.query(func.count(Course.id)).filter(
+        Course.org_id == org_id, Course.is_active == False
+    ).scalar() or 0
+
+    # 计算平均进度（基于课程活跃度比例）
+    avg_progress = 0
+    if total > 0:
+        avg_progress = round(active / total * 100)
 
     return {
         "success": True,
         "data": {
             "totalCourses": total,
             "activeCourses": active,
-            "completedCourses": 0,
-            "averageProgress": 0,
-            "completionRate": 0,
+            "completedCourses": completed,
+            "averageProgress": avg_progress,
+            "completionRate": avg_progress,
         },
         "message": "获取课程统计成功",
     }
@@ -457,16 +510,20 @@ def get_enrollment_stats(
     _, org_id = ctx
 
     total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
-    active_enrollments = (
-        db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id, Enrollment.is_active == True).scalar() or 0
-    )
+    # 注意：部分数据库可能没有 Enrollment.is_active 字段，使用 try/except 保护
+    try:
+        active_enrollments = (
+            db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id, Enrollment.is_active == True).scalar() or 0
+        )
+    except Exception:
+        active_enrollments = total_enrollments
 
     return {
         "success": True,
         "data": {
             "totalEnrollments": total_enrollments,
             "activeEnrollments": active_enrollments,
-            "completedEnrollments": 0,
+            "completedEnrollments": max(0, total_enrollments - active_enrollments),
             "dropoutRate": 0,
             "conversionRate": 0,
             "retentionRate": 0,
@@ -483,8 +540,14 @@ def get_org_dashboard(
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前机构Dashboard完整数据"""
+    """
+    获取当前机构Dashboard完整数据
+    返回格式与 org_overview_routes._build_dashboard 保持一致
+    兼容前端 InstitutionDashboardComponent 的字段期望
+    """
     _, org_id = ctx
+
+    org = db.query(Organization).filter(Organization.id == org_id).first()
 
     student_count = db.query(func.count(Student.id)).filter(Student.org_id == org_id).scalar() or 0
     teacher_count = (
@@ -496,7 +559,11 @@ def get_org_dashboard(
     active_members = (
         db.query(func.count(Student.id)).filter(Student.org_id == org_id, Student.status == StudentStatus.ACTIVE).scalar() or 0
     )
+    total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
+    total_courses_all = db.query(func.count(Course.id)).filter(Course.org_id == org_id).scalar() or 0
+    total_users = student_count + teacher_count
 
+    # 课程列表（近10条）
     courses = db.query(Course).filter(Course.org_id == org_id).order_by(Course.created_at.desc()).limit(10).all()
     course_list = []
     for c in courses:
@@ -515,6 +582,7 @@ def get_org_dashboard(
             "revenue": 0,
         })
 
+    # 教师列表（近10条）
     teachers = db.query(Teacher).filter(Teacher.org_id == org_id).order_by(Teacher.created_at.desc()).limit(10).all()
     teacher_list = []
     for t in teachers:
@@ -534,6 +602,7 @@ def get_org_dashboard(
             "performanceScore": 0,
         })
 
+    # 学生列表（近10条）
     students = db.query(Student).filter(Student.org_id == org_id).order_by(Student.id.desc()).limit(10).all()
     student_list = []
     for s in students:
@@ -554,11 +623,45 @@ def get_org_dashboard(
             "enrollmentDate": s.created_at.isoformat() if s.created_at else None,
         })
 
-    total_enrollments = db.query(func.count(Enrollment.id)).filter(Enrollment.org_id == org_id).scalar() or 0
-
     return {
         "success": True,
         "data": {
+            # 机构基础信息（与 org_overview_routes._build_dashboard 对齐）
+            "organization": {
+                "id": org.id if org else org_id,
+                "name": org.name if org else "",
+                "contact_email": org.contact_email if org else "",
+                "phone": org.phone if org else "",
+                "address": org.address if org else "",
+                "website": getattr(org, "website", "") or "",
+                "max_users": org.max_users if org else 0,
+                "is_active": getattr(org, "is_active", True) if org else True,
+                "created_at": org.created_at.isoformat() if org and getattr(org, "created_at", None) else "",
+                "updated_at": org.updated_at.isoformat() if org and getattr(org, "updated_at", None) else "",
+            },
+            "statistics": {
+                "activeLicenses": 0,
+                "totalUsers": total_users,
+                "totalStudents": student_count,
+                "totalTeachers": teacher_count,
+                "totalCourses": total_courses_all,
+                "activeCourses": course_count,
+                "totalEnrollments": total_enrollments,
+                "totalProjects": course_count,
+                "hardwareConsumption": 0,
+                "licenseRemaining": 0,
+                "newProjectsThisMonth": 0,
+                "activeUsers": total_users,
+                "storageUsed": 0,
+                "storageTotal": 1024,
+            },
+            "charts": {
+                "userGrowthData": [],
+                "projectTrendData": [],
+                "hardwareUsageData": [],
+                "licenseUsageData": [],
+            },
+            # 兼容旧版字段（原 get_org_dashboard 格式）
             "overview": {
                 "studentCount": student_count,
                 "teacherCount": teacher_count,
@@ -578,7 +681,7 @@ def get_org_dashboard(
                 "churnRate": 0,
             },
             "courseStats": {
-                "totalCourses": course_count,
+                "totalCourses": total_courses_all,
                 "activeCourses": course_count,
                 "completedCourses": 0,
                 "averageProgress": 0,
@@ -641,3 +744,162 @@ def get_organization_detail_legacy(
         "max_users": org.max_users or 0,
         "is_active": getattr(org, "is_active", True),
     }
+
+
+# ============================================================
+# 以下为适配前端的 org/{org_id}/... 路径变体
+# 逻辑与上述无 org_id 路由完全一致，仅 URL 形式不同
+# 实际 org_id 以 Token 为准，URL 中的 org_id 仅用于路由匹配
+# ============================================================
+
+org_scoped_router = APIRouter(
+    prefix="/api/v1/educational_institution/org",
+    tags=["机构管理-组织范围"],
+)
+
+
+@org_scoped_router.get("/{org_id}/overview")
+def get_org_overview_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构概览（带 org_id 路径参数，兼容旧版 org/... 路径形式）"""
+    return get_org_overview(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/metrics")
+def get_org_metrics_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构核心指标（带 org_id 路径参数）"""
+    return get_org_metrics(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/courses")
+def get_org_courses_scoped(
+    org_id: int,
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """课程列表（带 org_id 路径参数）"""
+    return get_org_courses(page=page, page_size=page_size, db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/courses")
+def create_org_course_scoped(
+    org_id: int,
+    name: str = Query(...),
+    category: str = Query(""),
+    description: str = Query(""),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建课程（带 org_id 路径参数）"""
+    return create_org_course(name=name, category=category, description=description, db=db, ctx=ctx)
+
+
+@org_scoped_router.put("/{org_id}/courses/{course_id}")
+def update_org_course_scoped(
+    org_id: int,
+    course_id: int,
+    name: Optional[str] = Query(None),
+    category: Optional[str] = Query(None),
+    description: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """更新课程（带 org_id 路径参数）"""
+    return update_org_course(
+        course_id=course_id,
+        name=name,
+        category=category,
+        description=description,
+        db=db,
+        ctx=ctx,
+    )
+
+
+@org_scoped_router.get("/{org_id}/course/stats")
+def get_course_stats_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """课程统计（带 org_id 路径参数）"""
+    return get_course_stats(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/teachers")
+def get_org_teachers_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """教师列表（带 org_id 路径参数）"""
+    return get_org_teachers(db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/teachers")
+def create_org_teacher_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建教师（带 org_id 路径参数）"""
+    return add_org_teacher(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/students")
+def get_org_students_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """学生列表（带 org_id 路径参数）"""
+    return get_org_students(db=db, ctx=ctx)
+
+
+@org_scoped_router.post("/{org_id}/students")
+def create_org_student_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """创建学生（带 org_id 路径参数）"""
+    return add_org_student(db=db, ctx=ctx)
+
+
+@org_scoped_router.put("/{org_id}/students/{student_id}/progress")
+def update_student_progress_scoped(
+    org_id: int,
+    student_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """更新学生进度（带 org_id 路径参数）"""
+    return update_student_progress(student_id=student_id, db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/enrollment/stats")
+def get_enrollment_stats_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """招生统计（带 org_id 路径参数）"""
+    return get_enrollment_stats(db=db, ctx=ctx)
+
+
+@org_scoped_router.get("/{org_id}/dashboard")
+def get_org_dashboard_scoped(
+    org_id: int,
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+):
+    """机构 Dashboard 汇总（带 org_id 路径参数）"""
+    return get_org_dashboard(db=db, ctx=ctx)

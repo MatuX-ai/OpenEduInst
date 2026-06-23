@@ -98,7 +98,7 @@ interface ImportResult {
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .batch-operations-toolbar {
         display: flex;
         gap: 12px;

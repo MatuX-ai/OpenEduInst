@@ -286,7 +286,8 @@ export { TokenTransaction, TokenService, TokenPackage };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
+@use 'shared/mixins' as mx;
     .token-management {
       padding: 24px;
       background: $color-neutral-100;
@@ -834,8 +835,8 @@ export { TokenTransaction, TokenService, TokenPackage };
       width: 100%;
     }
 
-    /* Responsive Design */
-    @media (max-width: 1200px) {
+    /* Responsive Design - 使用统一断点 mixin (sm=600, md=960, lg=1280) */
+    @include mx.responsive(md) {
       .balance-overview {
         grid-template-columns: 1fr;
       }
@@ -847,7 +848,7 @@ export { TokenTransaction, TokenService, TokenPackage };
       }
     }
 
-    @media (max-width: 768px) {
+    @include mx.responsive(sm) {
       .services-grid {
         grid-template-columns: 1fr;
       }

@@ -1,0 +1,13 @@
+/*!
+ * OpenMT Reset CSS
+ * 极简 CSS reset，与 Angular Material 兼容
+ */*,*:before,*:after{box-sizing:border-box;margin:0;padding:0}html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}body{min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}img,picture,video,canvas,svg{display:block;max-width:100%}input,button,textarea,select{font:inherit}p,h1,h2,h3,h4,h5,h6{overflow-wrap:break-word}a{color:inherit;text-decoration:none}ul,ol{list-style:none}table{border-collapse:collapse;border-spacing:0}button{cursor:pointer;border:none;background:none}/*!
+ * OpenMT Theme CSS
+ * 品牌主题变量与样式
+ */:root{--color-primary: #3f51b5;--color-primary-light: #7986cb;--color-primary-dark: #303f9f;--color-accent: #ff4081;--color-warn: #f44336;--color-bg: #f5f5f5;--color-surface: #ffffff;--color-text: #212121;--color-text-secondary: #757575;--color-border: #e0e0e0;--spacing-xs: 4px;--spacing-sm: 8px;--spacing-md: 16px;--spacing-lg: 24px;--spacing-xl: 32px;--radius-sm: 4px;--radius-md: 8px;--radius-lg: 12px;--shadow-sm: 0 1px 3px rgba(0,0,0,.12);--shadow-md: 0 3px 6px rgba(0,0,0,.15);--shadow-lg: 0 10px 25px rgba(0,0,0,.15)}/*!
+ * OpenMT Material Overrides CSS
+ * Angular Material 组件样式覆盖
+ */.mat-mdc-card{border-radius:var(--radius-md, 8px)!important;box-shadow:var(--shadow-sm, 0 1px 3px rgba(0,0,0,.12))!important}.mat-mdc-row{cursor:pointer}.mat-mdc-row:hover{background-color:#0000000a}.warning-snackbar{--mdc-snackbar-container-color: #ff9800;--mdc-snackbar-supporting-text-color: #fff}.mat-mdc-unelevated-button,.mat-mdc-raised-button{margin:var(--spacing-xs, 4px)!important}/*!
+ * OpenMT Shared Mixins CSS
+ * 共享样式工具类
+ */.flex-center{display:flex;align-items:center;justify-content:center}.flex-row{display:flex;flex-direction:row;align-items:center}.flex-column{display:flex;flex-direction:column}.gap-sm{gap:var(--spacing-sm, 8px)}.gap-md{gap:var(--spacing-md, 16px)}.gap-lg{gap:var(--spacing-lg, 24px)}.text-ellipsis{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.card-hover{transition:box-shadow .2s ease,transform .2s ease}.card-hover:hover{box-shadow:var(--shadow-md, 0 3px 6px rgba(0,0,0,.15));transform:translateY(-2px)}html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,PingFang SC,Microsoft YaHei,sans-serif;background-color:#f5f5f5;color:#212121}app-root{display:block;min-height:100vh}

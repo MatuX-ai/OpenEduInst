@@ -69,7 +69,7 @@ import { MatButtonModule } from '@angular/material/button';
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .multi-campus-container {
       padding: $spacing-lg;

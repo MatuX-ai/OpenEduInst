@@ -94,11 +94,11 @@ import { environment } from '../../../../../environments/environment';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       :host {
         display: block;
         height: 100%;
-        background: #0F172A;
+        background: $sidebar-bg;
       }
 
       .side-nav-container {
@@ -113,13 +113,13 @@ import { environment } from '../../../../../environments/environment';
         align-items: center;
         gap: 12px;
         padding: 20px;
-        border-bottom: 1px solid $color-neutral-800;
+        border-bottom: 1px solid $sidebar-border;
       }
 
       .logo-icon {
         width: 36px;
         height: 36px;
-        background: linear-gradient(135deg, #3B82F6, #22C55E);
+        background: linear-gradient(135deg, $sidebar-accent-from, $sidebar-accent-to);
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -141,7 +141,7 @@ import { environment } from '../../../../../environments/environment';
       .org-name {
         font-size: 14px;
         font-weight: 700;
-        color: #FFFFFF;
+        color: $sidebar-text-primary;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
@@ -150,7 +150,7 @@ import { environment } from '../../../../../environments/environment';
 
       .org-subtitle {
         font-size: 11px;
-        color: #94A3B8;
+        color: $sidebar-text-tertiary;
         margin: 0;
       }
 
@@ -160,13 +160,13 @@ import { environment } from '../../../../../environments/environment';
         align-items: center;
         gap: 12px;
         padding: 16px 20px;
-        border-bottom: 1px solid $color-neutral-800;
+        border-bottom: 1px solid $sidebar-border;
       }
 
       .user-avatar {
         width: 40px;
         height: 40px;
-        background: #2563EB;
+        background: $sidebar-active-bg;
         border-radius: 50%;
         display: flex;
         align-items: center;
@@ -175,7 +175,7 @@ import { environment } from '../../../../../environments/environment';
         font-size: 14px;
         font-weight: 600;
         flex-shrink: 0;
-        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+        box-shadow: 0 0 0 2px $sidebar-avatar-ring;
       }
 
       .user-info {
@@ -185,7 +185,7 @@ import { environment } from '../../../../../environments/environment';
       .user-name {
         font-size: 14px;
         font-weight: 600;
-        color: #E2E8F0;
+        color: $sidebar-text-secondary;
         margin: 0;
         white-space: nowrap;
         overflow: hidden;
@@ -194,7 +194,7 @@ import { environment } from '../../../../../environments/environment';
 
       .user-role {
         font-size: 12px;
-        color: #94A3B8;
+        color: $sidebar-text-tertiary;
         margin: 0;
       }
 
@@ -219,41 +219,41 @@ import { environment } from '../../../../../environments/environment';
       }
 
       .nav-item:hover {
-        background-color: rgba(30, 41, 59, 1);
+        background-color: $sidebar-hover-bg;
       }
 
       .nav-item:hover .nav-label {
-        color: #E2E8F0;
+        color: $sidebar-text-secondary;
       }
 
       .nav-item:hover .nav-icon {
-        color: #E2E8F0;
+        color: $sidebar-text-secondary;
       }
 
       .nav-active {
-        background-color: rgba(37, 99, 235, 0.2) !important;
+        background-color: $sidebar-active-bg-soft !important;
       }
 
       .nav-active .nav-label {
-        color: #60A5FA !important;
+        color: $sidebar-active-text !important;
         font-weight: 500;
       }
 
       .nav-active .nav-icon {
-        color: #3B82F6 !important;
+        color: $sidebar-accent-from !important;
       }
 
       .nav-icon {
         font-size: 16px !important;
         width: 16px !important;
         height: 16px !important;
-        color: #94A3B8;
+        color: $sidebar-text-tertiary;
         flex-shrink: 0;
       }
 
       .nav-label {
         font-size: 14px;
-        color: #94A3B8;
+        color: $sidebar-text-tertiary;
         flex: 1;
         white-space: nowrap;
         overflow: hidden;
@@ -279,7 +279,7 @@ import { environment } from '../../../../../environments/environment';
       }
 
       .nav-group-header:hover {
-        background-color: rgba(255, 255, 255, 0.04);
+        background-color: $sidebar-hover-bg-soft;
       }
 
       .nav-group-header:hover .nav-group-label {
@@ -331,9 +331,20 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
     const user = this.authService.getCurrentUser();
     if (user) {
       this.userName = user.full_name || user.username;
-      this.userRole = user.role === 'admin' ? '机构负责人' : '管理员';
+      this.userRole = this.mapRoleLabel(user.role);
       this.userInitial = (user.full_name || user.username).charAt(0);
     }
+  }
+
+  private mapRoleLabel(role: string): string {
+    const labels: Record<string, string> = {
+      admin: '机构负责人',
+      staff: '教务人员',
+      teacher: '授课教师',
+      student: '学员',
+      parent: '家长',
+    };
+    return labels[role] || '管理员';
   }
 
   ngOnInit(): void {
@@ -348,12 +359,12 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
   }
 
   loadMenu(): void {
+    const role = this.authService.getCurrentUser()?.role ?? 'admin';
     this.subs.add(
       this.tenantMenuService.getMenu(this.orgId).subscribe({
         next: (res) => {
-          this.menuItems = res.menu;
-          // 默认展开第一个分组
-          const firstGroup = res.menu.find(m => m.children && m.children.length > 0);
+          this.menuItems = this.tenantMenuService.filterMenuForRole(res.menu, role);
+          const firstGroup = this.menuItems.find(m => m.children && m.children.length > 0);
           if (firstGroup) {
             this.expandedGroups.add(firstGroup.id);
           }

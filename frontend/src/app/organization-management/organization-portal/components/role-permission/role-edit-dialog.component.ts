@@ -198,7 +198,7 @@ export interface RoleEditDialogData {
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .role-edit-dialog {
         min-width: 700px;
         max-width: 900px;

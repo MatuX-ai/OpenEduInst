@@ -1,0 +1,33 @@
+{
+  "organization": {
+    "id": 50,
+    "name": "星海机器人培训中心",
+    "contact_email": "admin@starrobotics.edu.cn",
+    "phone": "010-88886666",
+    "address": "北京市海淀区中关村大街1号",
+    "website": "",
+    "max_users": 500,
+    "is_active": true,
+    "created_at": "2026-05-27T07:33:34.364051",
+    "updated_at": "2026-05-27T07:33:34.364051"
+  },
+  "statistics": {
+    "activeLicenses": 0,
+    "totalProjects": 0,
+    "totalUsers": 3,
+    "hardwareConsumption": 0,
+    "licenseRemaining": 0,
+    "newProjectsThisMonth": 0,
+    "activeUsers": 3,
+    "storageUsed": 0,
+    "storageTotal": 1024
+  },
+  "charts": {
+    "userGrowthData": [],
+    "projectTrendData": [],
+    "hardwareUsageData": [],
+    "licenseUsageData": []
+  },
+  "recentActivities": [],
+  "alerts": []
+}

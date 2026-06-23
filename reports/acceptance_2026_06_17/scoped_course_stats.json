@@ -1,0 +1,11 @@
+{
+  "success": true,
+  "data": {
+    "totalCourses": 0,
+    "activeCourses": 0,
+    "completedCourses": 0,
+    "averageProgress": 0,
+    "completionRate": 0
+  },
+  "message": "获取课程统计成功"
+}

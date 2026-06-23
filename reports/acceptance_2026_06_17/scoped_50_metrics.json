@@ -1,0 +1,9 @@
+{
+  "success": true,
+  "data": {
+    "activeStudents": 3,
+    "monthlyRevenue": "¥0",
+    "courseCompletionRate": "0%"
+  },
+  "message": "获取核心指标成功"
+}

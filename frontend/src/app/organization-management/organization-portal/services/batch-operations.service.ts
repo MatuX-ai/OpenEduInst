@@ -5,10 +5,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { saveAs } from 'file-saver';
-import { Observable, of } from 'rxjs';
-import { catchError, map, timeout } from 'rxjs/operators';
-import * as XLSX from 'xlsx';
+import { from, Observable, of } from 'rxjs';
+import { catchError, map, switchMap, timeout } from 'rxjs/operators';
 
+import { XlsxLoaderService } from '../../../core/services/xlsx-loader.service';
 import { environment } from '../../../../environments/environment';
 
 export interface ImportResult {
@@ -45,7 +45,7 @@ interface ApiResponse<T> {
 export class BatchOperationsService {
   private readonly API_BASE = environment.apiUrl + '/api/v1';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private xlsxLoader: XlsxLoaderService) {}
 
   /**
    * 导入学生数据（Excel）
@@ -105,7 +105,7 @@ export class BatchOperationsService {
         catchError((err) => {
           console.error('导出学生失败:', err);
           // 返回模拟的 Excel 文件
-          return this.createMockExcelFile('students_export');
+          return from(this.createMockExcelFile('students_export')).pipe(switchMap((obs) => obs));
         })
       );
   }
@@ -124,7 +124,7 @@ export class BatchOperationsService {
         timeout(30000),
         catchError((err) => {
           console.error('导出教师失败:', err);
-          return this.createMockExcelFile('teachers_export');
+          return from(this.createMockExcelFile('teachers_export')).pipe(switchMap((obs) => obs));
         })
       );
   }
@@ -173,7 +173,8 @@ export class BatchOperationsService {
   /**
    * 解析 Excel 文件为 JSON
    */
-  parseExcelFile(file: File): Promise<unknown[][]> {
+  async parseExcelFile(file: File): Promise<unknown[][]> {
+    const XLSX = await this.xlsxLoader.load();
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
 
@@ -200,7 +201,8 @@ export class BatchOperationsService {
   /**
    * 下载导入模板
    */
-  downloadTemplate(type: 'students' | 'teachers'): void {
+  async downloadTemplate(type: 'students' | 'teachers'): Promise<void> {
+    const XLSX = await this.xlsxLoader.load();
     const template = this.getTemplate(type);
     const ws = XLSX.utils.json_to_sheet(template);
     const wb = XLSX.utils.book_new();
@@ -262,7 +264,8 @@ export class BatchOperationsService {
     });
   }
 
-  private createMockExcelFile(_name: string): Observable<Blob> {
+  private async createMockExcelFile(_name: string): Promise<Observable<Blob>> {
+    const XLSX = await this.xlsxLoader.load();
     const data = [
       ['姓名', '邮箱', '年级/部门', '班级/职称'],
       ['张三', 'zhangsan@example.com', '高一', '1 班'],

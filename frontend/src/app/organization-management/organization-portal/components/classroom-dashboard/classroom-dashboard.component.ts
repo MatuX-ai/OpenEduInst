@@ -424,7 +424,7 @@ import { BatchOperationsToolbarComponent } from '../batch-operations-toolbar/bat
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
 
       /* ===== Page Layout ===== */
       .cd-page {
@@ -574,15 +574,16 @@ import { BatchOperationsToolbarComponent } from '../batch-operations-toolbar/bat
         font-family: inherit;
       }
 
-      ::ng-deep .cd-main-card .mat-mdc-tab-header {
+      /* 教室仪表盘 tab 样式已迁移至 styles/_material-overrides.scss (.cd-main-card) */
+      .cd-main-card .mat-mdc-tab-header {
         border-bottom: $card-border;
       }
 
-      ::ng-deep .cd-main-card .mat-mdc-tab-label-container {
+      .cd-main-card .mat-mdc-tab-label-container {
         padding: 0 4px;
       }
 
-      ::ng-deep .cd-main-card .mat-mdc-tab {
+      .cd-main-card .mat-mdc-tab {
         height: 44px;
         font-size: $font-size-sm;
         font-weight: 500;
@@ -591,11 +592,11 @@ import { BatchOperationsToolbarComponent } from '../batch-operations-toolbar/bat
         padding: 0 20px;
       }
 
-      ::ng-deep .cd-main-card .mat-mdc-tab.mdc-tab--active {
+      .cd-main-card .mat-mdc-tab.mdc-tab--active {
         color: $color-brand-primary;
       }
 
-      ::ng-deep .cd-main-card .mat-mdc-tab .mdc-tab-indicator__content--underline {
+      .cd-main-card .mat-mdc-tab .mdc-tab-indicator__content--underline {
         border-color: $color-brand-primary;
       }
 

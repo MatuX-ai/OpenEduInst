@@ -149,7 +149,7 @@ import { CourseStats, EnrollmentStats, OrgOverview } from '@app/core/services/or
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .education-section {
         margin-bottom: 24px;
       }

@@ -32,6 +32,7 @@ import { OrganizationContextService, OrganizationType } from '../../core/service
 import { UnifiedCourseService } from '../../core/services/unified-course.service';
 import { UnifiedCourse } from '../../models/unified-course.models';
 
+import { OpenMtSciEdService } from '../../core/services/openmt-scied.service';
 import { TrainingDashboardV2Component, QuickActionItem, ResourceItem } from './components/dashboard-overview/training-dashboard-v2.component';
 import { DashboardMetrics } from './components/dashboard-overview/matux-core-metrics.component';
 import { CommonFunctionItem } from './components/dashboard-overview/matux-common-functions.component';
@@ -71,7 +72,8 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
                 *ngIf="orgContext.isType('training_institution')"
                 [metrics]="{ activeStudents: matuxMetrics.activeStudents, monthlyRevenue: matuxMetrics.monthlyRevenue.replace('¥', '').replace('万', ''), courseCompletionRate: matuxMetrics.courseCompletionRate.replace('%', ''), equipmentUsageRate: '78' }"
                 [quickActions]="quickActions"
-                [resources]="resourceItems">
+                [resources]="resourceItems"
+                (resourceSelect)="onResourceSelect($event)">
               </app-training-dashboard-v2>
             </div>
           </mat-tab>
@@ -104,7 +106,8 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as tokens;
+      @use 'design-tokens' as tokens;
+@use 'shared/mixins' as mx;
 
       .organization-dashboard {
         height: 100%;
@@ -114,12 +117,12 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         margin: 0 auto;
       }
 
-      /* 统一仪表盘标签页样式 */
-      ::ng-deep .unified-dashboard-tabs {
+      /* 统一仪表盘标签页样式 - 全局覆盖已迁移至 styles/_material-overrides.scss */
+      .unified-dashboard-tabs {
         background: transparent;
       }
 
-      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-header {
+      .unified-dashboard-tabs .mat-mdc-tab-header {
         background: tokens.$card-bg;
         border-radius: 12px 12px 0 0;
         border: tokens.$card-border;
@@ -128,7 +131,7 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         box-shadow: tokens.$shadow-sm;
       }
 
-      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab {
+      .unified-dashboard-tabs .mat-mdc-tab {
         min-width: 140px;
         padding: 0 20px;
         height: 56px;
@@ -148,7 +151,7 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         height: 20px;
       }
 
-      ::ng-deep .unified-dashboard-tabs .mat-mdc-tab-body-wrapper {
+      .unified-dashboard-tabs .mat-mdc-tab-body-wrapper {
         background: tokens.$card-bg;
         border: tokens.$card-border;
         border-radius: 0 0 12px 12px;
@@ -544,13 +547,13 @@ import { OrganizationEditDialogComponent } from './organization-edit-dialog.comp
         margin-bottom: tokens.$spacing-md;
       }
 
-      @media (max-width: 1200px) {
+      @include mx.responsive(md) {
         .charts-grid {
           grid-template-columns: 1fr;
         }
       }
 
-      @media (max-width: 768px) {
+      @include mx.responsive(sm) {
         .organization-dashboard {
           padding: tokens.$spacing-md;
         }
@@ -649,10 +652,10 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
     { id: 'renew', label: '续费提醒', icon: 'repeat', color: 'rose' }
   ];
   resourceItems: ResourceItem[] = [
-    { id: 'courseware', icon: 'edit_note', title: 'Arduino课件库', description: '32套教学方案' },
-    { id: 'dataset', icon: 'sensors', title: '传感器数据集', description: '15组实验数据' },
-    { id: 'competition', icon: 'campaign', title: '竞赛通知', description: '3场赛事报名中' },
-    { id: 'iot-template', icon: 'wifi', title: 'IoT代码模板', description: 'ESP32/MQTT等' }
+    { id: 'courseware', icon: 'edit_note', title: 'STEM 课件库', description: '加载中…' },
+    { id: 'dataset', icon: 'menu_book', title: '教程资源', description: '加载中…' },
+    { id: 'competition', icon: 'campaign', title: '竞赛通知', description: '赛事与认证' },
+    { id: 'iot-template', icon: 'memory', title: '硬件项目', description: '加载中…' }
   ];
 
   /**
@@ -678,8 +681,22 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
    * 资源中心选择处理
    */
   onResourceSelect(item: ResourceItem): void {
-    console.log('Selected resource:', item);
-    // TODO: 导航到资源管理页面
+    if (!this.orgId) {
+      return;
+    }
+    if (item.id === 'competition') {
+      void this.router.navigate(['/organization', this.orgId, 'competitions']);
+      return;
+    }
+    const tabMap: Record<string, string> = {
+      courseware: 'courseware',
+      dataset: 'tutorials',
+      'iot-template': 'hardware',
+    };
+    const tab = tabMap[item.id] ?? 'tutorials';
+    void this.router.navigate(['/organization', this.orgId, 'resources'], {
+      queryParams: { tab },
+    });
   }
 
   constructor(
@@ -690,6 +707,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private orgAdminService: OrgAdminService,
     private unifiedCourseService: UnifiedCourseService,
+    private openMtSciEdService: OpenMtSciEdService,
     public orgContext: OrganizationContextService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -715,6 +733,7 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
           this.dashboardService.setCurrentOrgId(this.orgId);
           this.loadData();
           this.loadPopularCourses();
+          this.loadSciEdResourceStats();
         })
       );
     }
@@ -741,6 +760,50 @@ export class OrganizationDashboardComponent implements OnInit, OnDestroy {
         );
       })
     );
+  }
+
+  /** 从 OpenMTSciEd 代理加载资源数量，更新仪表盘卡片描述 */
+  loadSciEdResourceStats(): void {
+    this.openMtSciEdService.getStats().pipe(catchError(() => of(null))).subscribe((stats) => {
+      if (!stats) {
+        this.resourceItems = this.resourceItems.map((item) => ({
+          ...item,
+          description:
+            item.id === 'competition'
+              ? item.description
+              : 'OpenMTSciEd（未连接）',
+        }));
+        this.cdr.markForCheck();
+        return;
+      }
+      this.resourceItems = [
+        {
+          id: 'courseware',
+          icon: 'edit_note',
+          title: 'STEM 课件库',
+          description: `${stats.coursewares} 套课件`,
+        },
+        {
+          id: 'dataset',
+          icon: 'menu_book',
+          title: '教程资源',
+          description: `${stats.tutorials} 套教程`,
+        },
+        {
+          id: 'competition',
+          icon: 'campaign',
+          title: '竞赛通知',
+          description: '赛事与认证',
+        },
+        {
+          id: 'iot-template',
+          icon: 'memory',
+          title: '硬件项目',
+          description: `${stats.hardware_projects} 个项目`,
+        },
+      ];
+      this.cdr.markForCheck();
+    });
   }
 
   /**

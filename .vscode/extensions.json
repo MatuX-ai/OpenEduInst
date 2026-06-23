@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "liximomo.sftp",
+        "natizyskunk.sftp",
+        "ms-vscode-remote.remote-ssh",
+        "ms-vscode-remote.remote-ssh-edit",
+        "ms-azuretools.vscode-docker"
+    ]
+}

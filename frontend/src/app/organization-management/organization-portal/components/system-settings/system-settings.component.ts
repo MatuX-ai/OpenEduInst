@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -12,11 +12,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import {
+  OpenMtSciEdService,
+  OpenSciEdConfig,
+  OpenSciEdHealth,
+} from '../../../../core/services/openmt-scied.service';
 
 @Component({
   selector: 'app-system-settings',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatIconModule, MatButtonModule, MatButtonToggleModule, MatDividerModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatSnackBarModule, MatTabsModule],
+  imports: [CommonModule, FormsModule, MatCardModule, MatFormFieldModule, MatIconModule, MatButtonModule, MatButtonToggleModule, MatDividerModule, MatInputModule, MatSelectModule, MatSlideToggleModule, MatSnackBarModule, MatTabsModule, MatProgressSpinnerModule],
   template: `
     <div class="settings-container">
       <div class="page-header">
@@ -181,11 +188,81 @@ import { MatTabsModule } from '@angular/material/tabs';
             </mat-card>
           </div>
         </mat-tab>
+
+        <!-- OpenMTSciEd 集成 -->
+        <mat-tab label="OpenMTSciEd 集成">
+          <div class="tab-content">
+            <mat-card>
+              <mat-card-header>
+                <mat-icon mat-card-avatar>hub</mat-icon>
+                <mat-card-title>STEM 资源平台集成</mat-card-title>
+                <mat-card-subtitle>连接 OpenMTSciEd 教程、课件与硬件项目库</mat-card-subtitle>
+              </mat-card-header>
+              <mat-divider></mat-divider>
+              <mat-card-content class="form-content">
+                <div *ngIf="sciEdLoading" class="sci-ed-loading">
+                  <mat-spinner diameter="32"></mat-spinner>
+                  <span>加载集成配置…</span>
+                </div>
+
+                <ng-container *ngIf="!sciEdLoading">
+                  <div class="toggle-row">
+                    <div class="toggle-info">
+                      <mat-icon>power</mat-icon>
+                      <div>
+                        <span class="toggle-label">启用 OpenMTSciEd</span>
+                        <span class="toggle-desc">开启后机构与教师可浏览 STEM 资源库</span>
+                      </div>
+                    </div>
+                    <mat-slide-toggle [(ngModel)]="sciEdForm.enabled" color="primary"></mat-slide-toggle>
+                  </div>
+                  <mat-divider></mat-divider>
+
+                  <div class="form-row" style="margin-top: 16px">
+                    <mat-form-field appearance="outline" class="full-width">
+                      <mat-label>机构 API Key（可选，留空使用平台 Key）</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="sciEdForm.apiKey"
+                        [placeholder]="sciEdConfig?.api_key_masked || '输入新 Key 以更新'"
+                        type="password"
+                      />
+                    </mat-form-field>
+                  </div>
+
+                  <div class="sci-ed-status" *ngIf="sciEdConfig">
+                    <p><strong>当前状态：</strong>{{ sciEdConfig.enabled ? '已启用' : '未启用' }}</p>
+                    <p><strong>同步状态：</strong>{{ sciEdConfig.sync_status }}</p>
+                    <p *ngIf="sciEdConfig.last_sync"><strong>上次同步：</strong>{{ sciEdConfig.last_sync }}</p>
+                    <p><strong>上游地址：</strong>{{ sciEdConfig.upstream }}</p>
+                    <p *ngIf="sciEdHealth">
+                      <strong>连通性：</strong>
+                      {{ sciEdHealth.connected ? '正常' : '不可用' }}
+                      ({{ sciEdHealth.latency_ms }}ms)
+                    </p>
+                  </div>
+                </ng-container>
+              </mat-card-content>
+              <mat-divider></mat-divider>
+              <mat-card-actions align="end">
+                <button mat-stroked-button (click)="testSciEdConnection()" [disabled]="sciEdSaving">
+                  <mat-icon>link</mat-icon> 测试连接
+                </button>
+                <button mat-stroked-button (click)="syncSciEdNow()" [disabled]="sciEdSaving || sciEdSyncing">
+                  <mat-icon>sync</mat-icon> 立即同步
+                </button>
+                <button mat-flat-button color="primary" (click)="saveSciEdConfig()" [disabled]="sciEdSaving">
+                  <mat-icon>save</mat-icon> 保存集成配置
+                </button>
+              </mat-card-actions>
+            </mat-card>
+          </div>
+        </mat-tab>
       </mat-tab-group>
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .settings-container { padding: 24px; background: #F1F5F9; }
     .page-header { margin-bottom: 24px; }
     .page-header h1 { font-size: 24px; font-weight: 600; color: #0F172A; margin: 0 0 8px; }
@@ -244,13 +321,14 @@ import { MatTabsModule } from '@angular/material/tabs';
     .toggle-label { display: block; font-size: 14px; font-weight: 500; color: #0F172A; }
     .toggle-desc { display: block; font-size: 12px; color: #64748B; margin-top: 2px; }
     mat-card-actions { padding: 16px 20px; }
-    
-    ::ng-deep .mat-mdc-slide-toggle {
-      margin: 0;
-    }
+    .sci-ed-loading { display: flex; align-items: center; gap: 12px; padding: 16px 0; color: #64748B; }
+    .sci-ed-status { font-size: 13px; color: #475569; line-height: 1.8; margin-top: 8px; }
+    .sci-ed-status p { margin: 0; }
+
+    /* Material slide toggle 样式已迁移至 styles/_material-overrides.scss */
   `]
 })
-export class SystemSettingsComponent {
+export class SystemSettingsComponent implements OnInit {
   settings = {
     orgName: '星海机器人培训中心',
     orgAddress: '北京市海淀区中关村大街1号',
@@ -269,7 +347,99 @@ export class SystemSettingsComponent {
     },
   };
 
-  constructor(private snackBar: MatSnackBar) {}
+  sciEdLoading = true;
+  sciEdSaving = false;
+  sciEdSyncing = false;
+  sciEdConfig: OpenSciEdConfig | null = null;
+  sciEdHealth: OpenSciEdHealth | null = null;
+  sciEdForm = {
+    enabled: false,
+    apiKey: '',
+  };
+
+  constructor(
+    private snackBar: MatSnackBar,
+    private sciEdService: OpenMtSciEdService
+  ) {}
+
+  ngOnInit(): void {
+    this.loadSciEdConfig();
+  }
+
+  loadSciEdConfig(): void {
+    this.sciEdLoading = true;
+    this.sciEdService.getConfig().subscribe({
+      next: (cfg) => {
+        this.sciEdConfig = cfg;
+        this.sciEdForm.enabled = cfg.opensciedu_api_enabled ?? cfg.enabled;
+        this.sciEdLoading = false;
+      },
+      error: () => {
+        this.sciEdLoading = false;
+        this.snackBar.open('无法加载 OpenMTSciEd 配置', '关闭', { duration: 3000 });
+      },
+    });
+  }
+
+  testSciEdConnection(): void {
+    this.sciEdService.getHealth().subscribe({
+      next: (health) => {
+        this.sciEdHealth = health;
+        const msg = health.connected
+          ? `连接成功 (${health.latency_ms}ms)`
+          : '无法连接 OpenMTSciEd 上游';
+        this.snackBar.open(msg, '关闭', { duration: 4000 });
+      },
+      error: () => {
+        this.snackBar.open('连接测试失败', '关闭', { duration: 3000 });
+      },
+    });
+  }
+
+  saveSciEdConfig(): void {
+    this.sciEdSaving = true;
+    const body: { opensciedu_api_enabled: boolean; opensciedu_api_key?: string } = {
+      opensciedu_api_enabled: this.sciEdForm.enabled,
+    };
+    if (this.sciEdForm.apiKey.trim()) {
+      body.opensciedu_api_key = this.sciEdForm.apiKey.trim();
+    }
+    this.sciEdService.updateConfig(body).subscribe({
+      next: (res) => {
+        this.sciEdSaving = false;
+        this.sciEdForm.apiKey = '';
+        this.snackBar.open(res.message || '集成配置已保存', '关闭', { duration: 2500 });
+        this.loadSciEdConfig();
+      },
+      error: () => {
+        this.sciEdSaving = false;
+        this.snackBar.open('保存失败，请确认管理员权限', '关闭', { duration: 3000 });
+      },
+    });
+  }
+
+  syncSciEdNow(): void {
+    this.sciEdSyncing = true;
+    this.sciEdService.triggerSync().subscribe({
+      next: (res) => {
+        this.sciEdSyncing = false;
+        const msg =
+          res.status === 'success'
+            ? '元数据同步完成'
+            : res.status === 'skipped'
+              ? '集成未启用，已跳过同步'
+              : '同步完成';
+        this.snackBar.open(msg, '关闭', { duration: 3000 });
+        this.loadSciEdConfig();
+      },
+      error: (err) => {
+        this.sciEdSyncing = false;
+        const detail = err?.error?.detail?.message || '同步失败';
+        this.snackBar.open(detail, '关闭', { duration: 4000 });
+        this.loadSciEdConfig();
+      },
+    });
+  }
 
   saveSettings(): void {
     this.snackBar.open('设置已保存', '关闭', { duration: 2000 });

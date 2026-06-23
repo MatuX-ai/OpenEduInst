@@ -1,4 +1,4 @@
-@use '../../../../../styles/design-tokens' as *;
+@use 'design-tokens' as *;
 
 .batch-schedule-container {
   padding: $spacing-md;
@@ -101,38 +101,24 @@ mat-progress-bar {
   margin: 0 auto;
 }
 
-/* 课程列表卡片 */
+/* 课程列表卡片 - Material card 样式已迁移至 styles/_material-overrides.scss */
 .course-list-card {
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
 
-  ::ng-deep mat-card-header {
-    padding: 16px !important;
-    border-bottom: 1px solid $color-neutral-200;
+  mat-card-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: $color-neutral-800;
 
-    mat-card-title {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      color: $color-neutral-800;
-
-      .selected-count {
-        font-size: 14px;
-        color: $color-brand-primary;
-        font-weight: normal;
-      }
+    .selected-count {
+      font-size: 14px;
+      color: $color-brand-primary;
+      font-weight: normal;
     }
-  }
-
-  ::ng-deep mat-card-content {
-    padding: 16px !important;
-  }
-
-  ::ng-deep mat-card-actions {
-    padding: 12px 16px !important;
-    border-top: 1px solid $color-neutral-200;
   }
 }
 
@@ -161,10 +147,6 @@ mat-progress-bar {
   &.selected {
     border-color: $color-brand-primary;
     background-color: rgba($color-brand-primary, 0.08);
-  }
-
-  ::ng-deep mat-card-content {
-    padding: 12px !important;
   }
 }
 
@@ -213,30 +195,10 @@ mat-progress-bar {
   }
 }
 
-/* 设置卡片 */
+/* 设置卡片 - Material card 样式已迁移至 styles/_material-overrides.scss */
 .settings-card {
   border-radius: $radius-md;
   box-shadow: $shadow-sm;
-
-  ::ng-deep mat-card-header {
-    padding: 16px !important;
-    border-bottom: 1px solid $color-neutral-200;
-
-    mat-card-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: $color-neutral-800;
-    }
-  }
-
-  ::ng-deep mat-card-content {
-    padding: 16px !important;
-  }
-
-  ::ng-deep mat-card-actions {
-    padding: 12px 16px !important;
-    border-top: 1px solid $color-neutral-200;
-  }
 }
 
 .full-width {

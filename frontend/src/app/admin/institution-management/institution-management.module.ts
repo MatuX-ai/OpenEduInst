@@ -25,6 +25,10 @@ import { InstitutionDashboardComponent } from './institution-dashboard.component
 import { InstitutionListComponent } from './institution-list.component';
 import { InstitutionManagementRoutingModule } from './institution-management-routing.module';
 
+/**
+ * 阶段二 2.7：ECharts 按需加载（tree-shakable）
+ * 只注册用到的图表/组件/渲染器，避免拉入完整 ~1MB echarts 包
+ */
 @NgModule({
   imports: [
     CommonModule,
@@ -49,7 +53,24 @@ import { InstitutionManagementRoutingModule } from './institution-management-rou
     MatBadgeModule,
     MatNativeDateModule,
     NgxEchartsModule.forRoot({
-      echarts: () => import('echarts'),
+      echarts: () => import('echarts').then((m) => {
+        // 仅注册必要模块：折线、柱状、饼图 + 标题/提示/网格/图例/工具箱 + Canvas 渲染
+        m.use([
+          // 图表
+          ...(m as any).LineChart ? [(m as any).LineChart] : [],
+          ...(m as any).BarChart ? [(m as any).BarChart] : [],
+          ...(m as any).PieChart ? [(m as any).PieChart] : [],
+          // 组件
+          ...(m as any).TitleComponent ? [(m as any).TitleComponent] : [],
+          ...(m as any).TooltipComponent ? [(m as any).TooltipComponent] : [],
+          ...(m as any).GridComponent ? [(m as any).GridComponent] : [],
+          ...(m as any).LegendComponent ? [(m as any).LegendComponent] : [],
+          ...(m as any).ToolboxComponent ? [(m as any).ToolboxComponent] : [],
+          // 渲染器
+          ...(m as any).CanvasRenderer ? [(m as any).CanvasRenderer] : [],
+        ]);
+        return m;
+      }),
     }),
     InstitutionManagementRoutingModule,
     InstitutionListComponent,

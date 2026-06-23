@@ -228,7 +228,7 @@ export interface VocationalMetrics {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .vocational-dashboard { 
       padding: $spacing-lg; 

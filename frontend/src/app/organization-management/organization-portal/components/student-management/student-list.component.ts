@@ -326,7 +326,7 @@ type StudentStatus = 'active' | 'inactive' | 'graduated' | 'dropped_out' | 'susp
   `,
   styles: [
     `
-      @use '../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .student-list-container{height:100%;overflow-y:auto}
       .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:$spacing-md;margin-bottom:$spacing-lg}
       .stat-card{border-radius:$radius-lg;box-shadow:$shadow-sm;border:1px solid $color-neutral-200;padding:20px;&:hover{box-shadow:$shadow-md}}

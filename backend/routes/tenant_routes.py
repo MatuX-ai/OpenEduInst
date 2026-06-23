@@ -10,9 +10,17 @@ from typing import List, Dict, Any
 from utils.database import get_db
 from utils.auth_utils import require_org_context
 from models.license import Organization, OrganizationType
+from models.user_organization import UserOrganization, UserOrganizationRole
 from services.tenant_init_service import TenantInitService
 
-router = APIRouter(prefix="/tenant", tags=["tenant"])
+router = APIRouter(prefix="/api/v1/tenant", tags=["tenant"])
+
+TEACHER_PORTAL_MENU: List[Dict[str, Any]] = [
+    {"id": "teacher-dashboard", "title": "教学工作台", "icon": "co_present", "path": "teacher/dashboard"},
+    {"id": "teacher-resources", "title": "STEM 资源库", "icon": "library_books", "path": "resources"},
+    {"id": "teacher-schedule", "title": "我的课表", "icon": "calendar_month", "path": "schedule"},
+    {"id": "teacher-ai", "title": "AI 助教", "icon": "psychology", "path": "ai-assistant"},
+]
 
 
 # 定义基础菜单结构 (按业务场景分组)
@@ -22,6 +30,12 @@ BASE_MENU = [
         "title": "经营仪表盘",
         "icon": "space_dashboard",
         "path": "dashboard",
+    },
+    {
+        "id": "teacher-workbench",
+        "title": "教学工作台",
+        "icon": "co_present",
+        "path": "teacher/dashboard",
     },
     {
         "id": "academic",
@@ -86,16 +100,33 @@ ORG_SPECIFIC_MENU: Dict[OrganizationType, List[Dict[str, Any]]] = {
 
 
 @router.get("/menu")
+@router.get("/menu/{org_id}")
 def get_organization_menu(
+    org_id: int | None = None,
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前组织的动态导航菜单（org_id 来自 Token，禁止通过路径传参）"""
-    _, org_id = ctx
-    org = db.query(Organization).filter(Organization.id == org_id).first()
+    """获取当前组织的动态导航菜单（org_id 可从路径或 Token 获取）"""
+    user, token_org_id = ctx
+    effective_org_id = org_id if org_id is not None else token_org_id
+    org = db.query(Organization).filter(Organization.id == effective_org_id).first()
 
     if not org:
         raise HTTPException(status_code=404, detail="Organization not found")
+
+    membership = (
+        db.query(UserOrganization)
+        .filter(
+            UserOrganization.user_id == user.id,
+            UserOrganization.org_id == effective_org_id,
+            UserOrganization.is_active.is_(True),
+        )
+        .first()
+    )
+    role = membership.role if membership else UserOrganizationRole.STAFF
+
+    if role == UserOrganizationRole.TEACHER:
+        return {"menu": TEACHER_PORTAL_MENU}
 
     menu = BASE_MENU.copy()
     specific_items = ORG_SPECIFIC_MENU.get(org.org_type, [])
@@ -105,16 +136,19 @@ def get_organization_menu(
 
 
 @router.get("/config")
+@router.get("/config/{org_id}")
 def get_organization_config(
+    org_id: int | None = None,
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
 ):
-    """获取当前组织的业务配置和功能开关（org_id 来自 Token）"""
-    _, org_id = ctx
+    """获取当前组织的业务配置和功能开关（org_id 可从路径或 Token 获取）"""
+    _, token_org_id = ctx
+    effective_org_id = org_id if org_id is not None else token_org_id
     from models.tenant import TenantConfig, TenantFeatureFlag
 
-    config = db.query(TenantConfig).filter(TenantConfig.org_id == org_id).first()
-    flags = db.query(TenantFeatureFlag).filter(TenantFeatureFlag.org_id == org_id).all()
+    config = db.query(TenantConfig).filter(TenantConfig.org_id == effective_org_id).first()
+    flags = db.query(TenantFeatureFlag).filter(TenantFeatureFlag.org_id == effective_org_id).all()
 
     return {
         "config": config.config_data if config else {},

@@ -73,7 +73,7 @@ import { Activity, Alert } from '../../organization-dashboard.service';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .activities-alerts-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));

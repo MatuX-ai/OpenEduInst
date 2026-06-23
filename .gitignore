@@ -1,4 +1,4 @@
-﻿# Python
+# Python
 __pycache__/
 *.py[cod]
 *.class
@@ -33,7 +33,10 @@ dist/
 .angular/
 
 # IDE
-.vscode/
+.vscode/*
+!.vscode/sftp.json
+!.vscode/tasks.json
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
@@ -55,3 +58,24 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# Backup files
+*.bak
+*.backup
+
+# Archives / Build output
+*.tar.gz
+*.zip
+
+# Runtime / Output text files
+reports/
+*.txt
+!requirements.txt
+
+# Screenshot / Temporary images
+*.png
+!docs/**/*.png
+
+# Test acceptance results
+*acceptance*results*.json
+

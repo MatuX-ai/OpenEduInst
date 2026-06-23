@@ -1,45 +1,33 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
-interface ResourceCategory {
-  id: number;
-  name: string;
-  icon: string;
-  count: number;
-  description: string;
-  resources: TeachingResource[];
-}
-
-interface TeachingResource {
-  id: number;
-  org_id: number;
-  name: string;
-  description?: string;
-  category: string;
-  resource_type: string;
-  format: string;
-  file_size?: number;
-  download_count: number;
-  upload_time: string;
-  tags?: string;
-  difficulty_level?: string;
-}
-
-interface ResourceStats {
-  total_resources: number;
-  monthly_downloads: number;
-  video_hours: number;
-  code_examples: number;
-  category_stats: Array<{category: string, count: number}>;
-}
+import {
+  Courseware,
+  HardwareProject,
+  OpenMtSciEdService,
+  OpenSciEdStats,
+  Tutorial,
+  UnifiedSearchItem,
+} from '../../../../core/services/openmt-scied.service';
+import {
+  SciEdPageHeaderComponent,
+  SciEdResourceDetailPanelComponent,
+  SciEdResourceGridComponent,
+  SciEdResourceItem,
+  SciEdResourceType,
+  SciEdSearchInputComponent,
+  SciEdStateCardComponent,
+  SciEdStatItem,
+  SciEdStatsGridComponent,
+  SciEdTabConfig,
+} from '@openmt/scied-ui';
 
 @Component({
   selector: 'app-teaching-resources',
@@ -47,848 +35,495 @@ interface ResourceStats {
   imports: [
     CommonModule,
     FormsModule,
-    MatCardModule,
+    MatButtonModule,
     MatIconModule,
-    MatChipsModule,
-    MatProgressSpinnerModule
+    MatTabsModule,
+    SciEdPageHeaderComponent,
+    SciEdStateCardComponent,
+    SciEdStatsGridComponent,
+    SciEdResourceDetailPanelComponent,
+    SciEdSearchInputComponent,
+    SciEdResourceGridComponent,
   ],
   template: `
     <div class="resources-container">
-      <!-- Header -->
-      <div class="page-header">
-        <div>
-          <h1 class="page-title">教学资源库</h1>
-          <p class="page-subtitle">课件、代码、视频等教学资源共享平台</p>
-        </div>
-        <button class="btn-primary upload-btn">
-          <mat-icon>add</mat-icon>
-          上传资源
+      <scied-page-header
+        title="STEM 教学资源库"
+        subtitle="OpenMTSciEd 教程、课件与硬件项目 · 经云托管代理安全访问"
+      >
+        <button sciedActions type="button" class="scied-btn scied-btn--secondary" (click)="retryLoad()" [disabled]="loading">
+          <mat-icon>refresh</mat-icon>
+          刷新
         </button>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-info">
-              <p class="stat-label">资源总数</p>
-              <p class="stat-value">{{ stats.total_resources || 0 }}</p>
-              <p class="stat-desc">覆盖{{ categoryCount }}大类别</p>
-            </div>
-            <div class="stat-icon-wrapper blue">
-              <mat-icon>menu_book</mat-icon>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-info">
-              <p class="stat-label">本月下载</p>
-              <p class="stat-value">{{ stats.monthly_downloads || 0 }}</p>
-              <p class="stat-trend positive">
-                <mat-icon class="trend-icon">trending_up</mat-icon>
-                +18% 较上月
-              </p>
-            </div>
-            <div class="stat-icon-wrapper purple">
-              <mat-icon>download</mat-icon>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-info">
-              <p class="stat-label">视频时长</p>
-              <p class="stat-value">{{ stats.video_hours || 0 }}h</p>
-              <p class="stat-desc">累计录制</p>
-            </div>
-            <div class="stat-icon-wrapper amber">
-              <mat-icon>videocam</mat-icon>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-card">
-          <div class="stat-content">
-            <div class="stat-info">
-              <p class="stat-label">代码示例</p>
-              <p class="stat-value">{{ stats.code_examples || 0 }}</p>
-              <p class="stat-desc">个项目</p>
-            </div>
-            <div class="stat-icon-wrapper emerald">
-              <mat-icon>code</mat-icon>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Search and Filter -->
-      <div class="search-bar">
-        <div class="search-field-wrapper">
-          <mat-icon class="search-icon">search</mat-icon>
-          <input type="text" placeholder="搜索资源名称或关键词..." [(ngModel)]="searchKeyword" (keyup.enter)="onSearch()" class="search-input" />
-        </div>
-        <button class="btn-secondary">
-          <mat-icon>filter_list</mat-icon>
-          筛选
+        <button sciedActions type="button" class="scied-btn scied-btn--secondary" (click)="goTopicStudio()" [disabled]="integrationDisabled">
+          <mat-icon>lightbulb</mat-icon>
+          课题工作室
         </button>
-      </div>
+      </scied-page-header>
 
-      <!-- Resource Categories -->
-      <div class="categories-container">
-        <div *ngFor="let category of categories" class="category-section">
-          <div class="category-header">
-            <div class="category-info">
-              <span class="category-icon">{{ category.icon }}</span>
-              <div>
-                <h2 class="category-name">{{ category.name }}</h2>
-                <p class="category-description">{{ category.description }}</p>
-              </div>
-            </div>
-            <div class="category-actions">
-              <span class="resource-count-badge">{{ category.count }} 个资源</span>
-              <button class="btn-secondary">
-                <mat-icon>folder</mat-icon>
-                查看全部
-              </button>
-            </div>
-          </div>
+      <scied-state-card
+        *ngIf="integrationDisabled && !loading"
+        variant="warn"
+        icon="link_off"
+        title="OpenMTSciEd 集成未启用"
+        message="请在系统设置中配置 API Key，或由平台管理员设置 OPENSCIEDU_API_KEY。"
+      ></scied-state-card>
 
-          <div class="resources-grid">
-            <div *ngFor="let resource of category.resources" class="resource-card">
-              <div class="resource-header">
-                <div class="resource-icon-title">
-                  <span class="format-icon">{{ getFormatIcon(resource.format) }}</span>
-                  <div>
-                    <p class="resource-name">{{ resource.name }}</p>
-                    <p class="resource-meta">{{ resource.resource_type }} · {{ resource.format }}</p>
-                  </div>
-                </div>
-              </div>
+      <scied-state-card
+        *ngIf="loading"
+        variant="loading"
+        message="正在加载 OpenMTSciEd 资源…"
+      ></scied-state-card>
 
-              <div class="resource-details">
-                <span *ngIf="resource.file_size" class="detail-item">{{ resource.file_size }}MB</span>
-                <span class="detail-item">下载 {{ resource.download_count }}次</span>
-              </div>
+      <scied-state-card
+        *ngIf="errorMessage && !loading && !integrationDisabled"
+        variant="error"
+        icon="error_outline"
+        title="加载失败"
+        [message]="errorMessage"
+        (retry)="retryLoad()"
+      ></scied-state-card>
 
-              <div class="resource-footer">
-                <span class="upload-date">{{ formatDate(resource.upload_time) }}</span>
-                <button class="download-btn" (click)="onDownload(resource)">
-                  <mat-icon>download</mat-icon>
-                  下载
+      <ng-container *ngIf="!loading && !integrationDisabled && !errorMessage">
+        <scied-stats-grid [items]="statItems"></scied-stats-grid>
+
+        <scied-resource-detail-panel
+          *ngIf="selectedItem"
+          [item]="selectedItem"
+          [type]="activeTab"
+          (close)="selectedItem = null"
+        ></scied-resource-detail-panel>
+
+        <mat-tab-group
+          [(selectedIndex)]="tabIndex"
+          (selectedIndexChange)="onTabIndexChange($event)"
+          class="resource-tabs"
+        >
+          <mat-tab *ngFor="let tab of tabs" [label]="tab.label">
+            <div class="tab-body">
+              <p class="tab-desc">{{ tab.description }}</p>
+
+              <scied-search-input
+                placeholder="统一检索：机构本地 + OpenMTSciEd（输入 2 字以上）"
+                [(value)]="searchKeyword"
+                (valueChange)="onSearchInput($event)"
+              ></scied-search-input>
+
+              <scied-resource-grid
+                [items]="filteredItems"
+                [loading]="searchMode && searchLoading"
+                loadingText="检索中…"
+                [summary]="searchMode && !searchLoading && searchSummary ? searchSummary : ''"
+                (itemSelect)="selectItem($event)"
+              ></scied-resource-grid>
+
+              <div class="pagination" *ngIf="canLoadMore && !searchMode">
+                <button type="button" class="scied-btn scied-btn--secondary" (click)="loadMore()" [disabled]="loadingMore">
+                  {{ loadingMore ? '加载中…' : '加载更多' }}
                 </button>
+                <span class="page-info">第 {{ page }} / {{ totalPages || 1 }} 页</span>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Quick Upload Area -->
-      <div class="upload-area">
-        <div class="upload-content">
-          <div class="upload-icon-wrapper">
-            <mat-icon>add_circle_outline</mat-icon>
-          </div>
-          <h3 class="upload-title">拖拽文件到此处上传</h3>
-          <p class="upload-description">支持 PPT、PDF、视频、代码文件等多种格式</p>
-          <button class="btn-primary select-file-btn">
-            选择文件
-          </button>
-        </div>
-      </div>
+          </mat-tab>
+        </mat-tab-group>
+      </ng-container>
     </div>
   `,
-  styles: [`
-    @use '../../../../styles/design-tokens' as *;
+  styles: [
+    `
+      .resources-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 4px;
+      }
 
-    .resources-container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
+      .scied-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: var(--scied-radius-md, 8px);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+      }
 
-    /* Header */
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: $spacing-lg;
-    }
+      .scied-btn--secondary {
+        background: var(--scied-surface, #fff);
+        color: #475569;
+        border: 1px solid var(--scied-border, #e2e8f0);
+      }
 
-    .page-title {
-      font-size: $font-size-xl;
-      font-weight: 700;
-      color: $color-neutral-900;
-      margin: 0 0 4px 0;
-    }
+      .scied-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
 
-    .page-subtitle {
-      font-size: $font-size-sm;
-      color: $color-neutral-500;
-      margin: 0;
-    }
+      .resource-tabs {
+        background: var(--scied-surface, #fff);
+        border: 1px solid var(--scied-border, #e2e8f0);
+        border-radius: var(--scied-radius-lg, 12px);
+        overflow: hidden;
+      }
 
-    .upload-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: $color-primary;
-      color: white;
-      border: none;
-      border-radius: $radius-md;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s;
-      line-height: 1;
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
-      &:hover { background: $color-primary-dark; }
-    }
+      .tab-body {
+        padding: 20px;
+      }
 
-    /* Stats Grid */
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: $spacing-md;
-      margin-bottom: $spacing-lg;
-    }
+      .tab-desc {
+        margin: 0 0 16px;
+        font-size: 14px;
+        color: var(--scied-muted, #64748b);
+      }
 
-    .stat-card {
-      background: white;
-      border-radius: $radius-lg;
-      padding: 20px;
-      box-shadow: $shadow-sm;
-      border: 1px solid $color-neutral-200;
-    }
+      .pagination {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-top: 20px;
+      }
 
-    .stat-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .stat-info {
-      flex: 1;
-    }
-
-    .stat-label {
-      font-size: $font-size-xs;
-      color: $color-neutral-500;
-      margin: 0 0 4px 0;
-    }
-
-    .stat-value {
-      font-size: $font-size-3xl;
-      font-weight: 700;
-      color: $color-neutral-900;
-      margin: 0 0 4px 0;
-    }
-
-    .stat-desc {
-      font-size: $font-size-xs;
-      color: $color-neutral-500;
-      margin: 0;
-    }
-
-    .stat-trend {
-      font-size: $font-size-xs;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      margin: 0;
-    }
-
-    .stat-trend.positive {
-      color: $color-success;
-    }
-
-    .trend-icon {
-      font-size: 16px;
-    }
-
-    .stat-icon-wrapper {
-      width: 48px;
-      height: 48px;
-      border-radius: $radius-lg;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .stat-icon-wrapper mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-    }
-
-    .stat-icon-wrapper.blue {
-      background: rgba($color-primary, 0.08);
-      color: $color-primary;
-    }
-
-    .stat-icon-wrapper.purple {
-      background: rgba($color-primary, 0.08);
-      color: $color-primary;
-    }
-
-    .stat-icon-wrapper.amber {
-      background: $color-warning-light;
-      color: $color-warning;
-    }
-
-    .stat-icon-wrapper.emerald {
-      background: $color-success-light;
-      color: $color-success;
-    }
-
-    /* Search Bar */
-    .search-bar {
-      display: flex;
-      gap: $spacing-sm;
-      margin-bottom: $spacing-lg;
-      align-items: center;
-    }
-
-    .search-field-wrapper {
-      position: relative;
-      flex: 1;
-      max-width: 300px;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: $color-neutral-400;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 8px 16px 8px 36px;
-      border: 1px solid $color-neutral-200;
-      border-radius: 8px;
-      font-size: $font-size-sm;
-      outline: none;
-      background: white;
-      &:focus { border-color: $color-primary; box-shadow: 0 0 0 3px rgba($color-primary, 0.1); }
-      &::placeholder { color: $color-neutral-400; }
-    }
-
-    /* 按钮对齐原型 */
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      background: $color-primary;
-      color: white;
-      border: none;
-      border-radius: $radius-md;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.15s;
-      line-height: 1;
-      mat-icon { font-size: 18px; width: 18px; height: 18px; }
-      &:hover { background: $color-primary-dark; }
-    }
-
-    .btn-secondary {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 12px;
-      background: white;
-      color: $color-neutral-600;
-      border: 1px solid $color-neutral-200;
-      border-radius: 8px;
-      font-size: $font-size-sm;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      line-height: 1;
-      mat-icon { font-size: 16px; width: 16px; height: 16px; }
-      &:hover { background: $color-neutral-50; }
-    }
-
-    .select-file-btn {
-      padding: 10px 24px;
-    }
-
-    /* Categories Container */
-    .categories-container {
-      display: flex;
-      flex-direction: column;
-      gap: $spacing-lg;
-      margin-bottom: $spacing-lg;
-    }
-
-    .category-section {
-      background: white;
-      border-radius: $radius-lg;
-      box-shadow: $shadow-sm;
-      border: 1px solid $color-neutral-200;
-      overflow: hidden;
-    }
-
-    .category-header {
-      padding: 20px;
-      border-bottom: 1px solid $color-neutral-100;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .category-info {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-    }
-
-    .category-icon {
-      font-size: 32px;
-    }
-
-    .category-name {
-      font-size: $font-size-base;
-      font-weight: 600;
-      color: $color-neutral-800;
-      margin: 0 0 2px 0;
-    }
-
-    .category-description {
-      font-size: $font-size-xs;
-      color: $color-neutral-500;
-      margin: 0;
-    }
-
-    .category-actions {
-      display: flex;
-      align-items: center;
-      gap: $spacing-sm;
-    }
-
-    .resource-count-badge {
-      font-size: $font-size-xs;
-      padding: 4px 12px;
-      background: rgba($color-primary, 0.08);
-      color: $color-primary;
-      border-radius: $radius-full;
-      line-height: 1.4;
-    }
-
-    .view-all-btn {
-      font-size: 13px;
-    }
-
-    /* Resources Grid */
-    .resources-grid {
-      padding: $spacing-lg;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-      gap: $spacing-md;
-    }
-
-    .resource-card {
-      border: 1px solid $color-neutral-200;
-      border-radius: $radius-md;
-      padding: $spacing-md;
-      transition: all 0.2s;
-      cursor: pointer;
-    }
-
-    .resource-card:hover {
-      box-shadow: $shadow-md;
-    }
-
-    .resource-header {
-      margin-bottom: $spacing-sm;
-    }
-
-    .resource-icon-title {
-      display: flex;
-      align-items: flex-start;
-      gap: $spacing-sm;
-    }
-
-    .format-icon {
-      font-size: 24px;
-    }
-
-    .resource-name {
-      font-size: $font-size-sm;
-      font-weight: 500;
-      color: $color-neutral-900;
-      margin: 0 0 2px 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .resource-meta {
-      font-size: $font-size-xs;
-      color: $color-neutral-500;
-      margin: 0;
-    }
-
-    .resource-details {
-      display: flex;
-      justify-content: space-between;
-      font-size: $font-size-xs;
-      color: $color-neutral-500;
-      margin-bottom: $spacing-sm;
-    }
-
-    .detail-item {
-      display: flex;
-      align-items: center;
-    }
-
-    .resource-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .upload-date {
-      font-size: $font-size-xs;
-      color: $color-neutral-400;
-    }
-
-    .download-btn {
-      font-size: $font-size-xs;
-      font-weight: 500;
-      background: rgba($color-primary, 0.08);
-      border: none;
-      color: $color-primary;
-      border-radius: 8px;
-      padding: 6px 12px;
-      opacity: 0;
-      transition: opacity 0.2s;
-      cursor: pointer;
-      line-height: 1;
-      mat-icon { font-size: 14px; width: 14px; height: 14px; }
-    }
-
-    .resource-card:hover .download-btn {
-      opacity: 1;
-    }
-
-    /* Upload Area */
-    .upload-area {
-      background: linear-gradient(135deg, rgba($color-primary, 0.04) 0%, rgba($color-primary, 0.08) 100%);
-      border: 2px dashed $color-primary-light;
-      border-radius: $radius-lg;
-      padding: $spacing-xl;
-      text-align: center;
-    }
-
-    .upload-content {
-      max-width: 500px;
-      margin: 0 auto;
-    }
-
-    .upload-icon-wrapper {
-      width: 64px;
-      height: 64px;
-      background: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto $spacing-md;
-      box-shadow: $shadow-sm;
-    }
-
-    .upload-icon-wrapper mat-icon {
-      font-size: 32px;
-      width: 32px;
-      height: 32px;
-      color: $color-primary;
-    }
-
-    .upload-title {
-      font-size: $font-size-lg;
-      font-weight: 600;
-      color: $color-neutral-900;
-      margin: 0 0 $spacing-sm 0;
-    }
-
-    .upload-description {
-      font-size: $font-size-sm;
-      color: $color-neutral-600;
-      margin: 0 0 $spacing-md 0;
-    }
-
-    .select-file-btn {
-      padding: 10px 24px;
-    }
-  `]
+      .page-info {
+        font-size: 12px;
+        color: var(--scied-muted, #64748b);
+      }
+    `,
+  ],
 })
-export class TeachingResourcesComponent implements OnInit {
-  searchKeyword: string = '';
-  stats: ResourceStats = {
-    total_resources: 0,
-    monthly_downloads: 0,
-    video_hours: 0,
-    code_examples: 0,
-    category_stats: []
-  };
-
-  categories: ResourceCategory[] = [];
-  categoryCount: number = 0;
-
-  // Mock data
-  mockCategories: ResourceCategory[] = [
-    {
-      id: 1,
-      name: 'Arduino课件库',
-      icon: '📚',
-      count: 32,
-      description: '传感器/通信/控制等教学方案',
-      resources: [
-        {
-          id: 1,
-          org_id: 1,
-          name: 'Arduino基础入门教程',
-          category: 'Arduino课件库',
-          resource_type: '课件',
-          format: 'PPT',
-          file_size: 15,
-          download_count: 156,
-          upload_time: '2026-05-10T10:00:00'
-        },
-        {
-          id: 2,
-          org_id: 1,
-          name: '传感器应用实验指导',
-          category: 'Arduino课件库',
-          resource_type: '实验手册',
-          format: 'PDF',
-          file_size: 8,
-          download_count: 203,
-          upload_time: '2026-05-08T10:00:00'
-        },
-        {
-          id: 3,
-          org_id: 1,
-          name: 'PWM控制原理讲解',
-          category: 'Arduino课件库',
-          resource_type: '视频',
-          format: 'MP4',
-          file_size: 125,
-          download_count: 89,
-          upload_time: '2026-05-05T10:00:00'
-        },
-        {
-          id: 4,
-          org_id: 1,
-          name: '智能小车项目完整代码',
-          category: 'Arduino课件库',
-          resource_type: '代码',
-          format: 'ZIP',
-          file_size: 2,
-          download_count: 312,
-          upload_time: '2026-04-28T10:00:00'
-        }
-      ]
-    },
-    {
-      id: 2,
-      name: 'Python编程资源',
-      icon: '💻',
-      count: 28,
-      description: '基础语法/AI应用/数据分析',
-      resources: [
-        {
-          id: 5,
-          org_id: 1,
-          name: 'Python零基础教程',
-          category: 'Python编程资源',
-          resource_type: '课件',
-          format: 'PPT',
-          file_size: 20,
-          download_count: 245,
-          upload_time: '2026-05-12T10:00:00'
-        },
-        {
-          id: 6,
-          org_id: 1,
-          name: 'AI图像识别示例代码',
-          category: 'Python编程资源',
-          resource_type: '代码',
-          format: 'PY',
-          file_size: 5,
-          download_count: 178,
-          upload_time: '2026-05-09T10:00:00'
-        },
-        {
-          id: 7,
-          org_id: 1,
-          name: '数据处理实战案例',
-          category: 'Python编程资源',
-          resource_type: '实验手册',
-          format: 'PDF',
-          file_size: 12,
-          download_count: 134,
-          upload_time: '2026-05-06T10:00:00'
-        }
-      ]
-    },
-    {
-      id: 3,
-      name: '机器人课程包',
-      icon: '🤖',
-      count: 18,
-      description: '结构搭建/运动控制/算法设计',
-      resources: [
-        {
-          id: 8,
-          org_id: 1,
-          name: '乐高EV3基础课程',
-          category: '机器人课程包',
-          resource_type: '课件',
-          format: 'PPT',
-          file_size: 25,
-          download_count: 167,
-          upload_time: '2026-05-11T10:00:00'
-        },
-        {
-          id: 9,
-          org_id: 1,
-          name: '巡线算法详解',
-          category: '机器人课程包',
-          resource_type: '视频',
-          format: 'MP4',
-          file_size: 98,
-          download_count: 145,
-          upload_time: '2026-05-07T10:00:00'
-        },
-        {
-          id: 10,
-          org_id: 1,
-          name: '机械臂控制程序',
-          category: '机器人课程包',
-          resource_type: '代码',
-          format: 'INO',
-          file_size: 3,
-          download_count: 198,
-          upload_time: '2026-05-03T10:00:00'
-        }
-      ]
-    },
-    {
-      id: 4,
-      name: 'IoT物联网项目',
-      icon: '🌐',
-      count: 15,
-      description: 'ESP32/MQTT/云平台接入',
-      resources: [
-        {
-          id: 11,
-          org_id: 1,
-          name: 'ESP32 WiFi连接教程',
-          category: 'IoT物联网项目',
-          resource_type: '课件',
-          format: 'PPT',
-          file_size: 18,
-          download_count: 189,
-          upload_time: '2026-05-13T10:00:00'
-        },
-        {
-          id: 12,
-          org_id: 1,
-          name: 'MQTT通信协议实例',
-          category: 'IoT物联网项目',
-          resource_type: '代码',
-          format: 'ZIP',
-          file_size: 4,
-          download_count: 223,
-          upload_time: '2026-05-10T10:00:00'
-        },
-        {
-          id: 13,
-          org_id: 1,
-          name: '智能家居监控系统',
-          category: 'IoT物联网项目',
-          resource_type: '项目文档',
-          format: 'PDF',
-          file_size: 10,
-          download_count: 156,
-          upload_time: '2026-05-04T10:00:00'
-        }
-      ]
-    }
+export class TeachingResourcesComponent implements OnInit, OnDestroy {
+  tabs: SciEdTabConfig[] = [
+    { id: 'tutorials', label: '教程', icon: 'menu_book', description: 'OpenMTSciEd 结构化 STEM 教程' },
+    { id: 'coursewares', label: '课件', icon: 'edit_note', description: 'PPT、PDF、视频等课件资源' },
+    { id: 'hardware', label: '硬件项目', icon: 'memory', description: 'Arduino/机器人等实践项目（非机构设备台账）' },
   ];
 
-  ngOnInit() {
-    this.loadMockData();
+  tabIndex = 0;
+  activeTab: SciEdResourceType = 'tutorials';
+  searchKeyword = '';
+  searchMode = false;
+  searchLoading = false;
+  searchSummary = '';
+
+  loading = true;
+  loadingMore = false;
+  integrationDisabled = false;
+  errorMessage: string | null = null;
+
+  stats: OpenSciEdStats = { tutorials: 0, coursewares: 0, hardware_projects: 0 };
+  items: SciEdResourceItem[] = [];
+  selectedItem: SciEdResourceItem | null = null;
+
+  page = 1;
+  totalPages = 1;
+  readonly pageSize = 20;
+
+  private destroy$ = new Subject<void>();
+  private searchInput$ = new Subject<string>();
+
+  constructor(
+    private sciEd: OpenMtSciEdService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  get statItems(): SciEdStatItem[] {
+    return [
+      { label: '教程', value: this.stats.tutorials },
+      { label: '课件', value: this.stats.coursewares },
+      { label: '硬件项目', value: this.stats.hardware_projects },
+      { label: '当前列表', value: this.filteredItems.length },
+    ];
   }
 
-  loadMockData() {
-    // 使用Mock数据
-    this.categories = this.mockCategories;
-    this.categoryCount = this.categories.length;
-    
-    // 计算统计数据
-    let totalResources = 0;
-    let totalDownloads = 0;
-    let videoCount = 0;
-    let codeCount = 0;
+  ngOnInit(): void {
+    this.searchInput$
+      .pipe(debounceTime(350), distinctUntilChanged(), takeUntil(this.destroy$))
+      .subscribe((q) => this.runUnifiedSearch(q));
 
-    this.categories.forEach(cat => {
-      totalResources += cat.resources.length;
-      cat.resources.forEach(res => {
-        totalDownloads += res.download_count;
-        if (res.resource_type === '视频') videoCount++;
-        if (res.resource_type === '代码') codeCount++;
-      });
+    this.route.queryParamMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+      const tab = params.get('tab');
+      if (tab === 'courseware' || tab === 'coursewares') {
+        this.setTab('coursewares');
+      } else if (tab === 'hardware' || tab === 'hardware-projects') {
+        this.setTab('hardware');
+      } else if (tab === 'tutorial' || tab === 'tutorials') {
+        this.setTab('tutorials');
+      }
+      this.loadAll();
     });
+  }
 
-    this.stats = {
-      total_resources: totalResources,
-      monthly_downloads: Math.floor(totalDownloads * 0.3), // 模拟本月下载量
-      video_hours: videoCount * 0.5, // 假设每个视频30分钟
-      code_examples: codeCount,
-      category_stats: this.categories.map(cat => ({
-        category: cat.name,
-        count: cat.resources.length
-      }))
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  get filteredItems(): SciEdResourceItem[] {
+    if (this.searchMode) {
+      return this.items;
+    }
+    const q = this.searchKeyword.trim().toLowerCase();
+    if (!q) {
+      return this.items;
+    }
+    return this.items.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        (item.description || '').toLowerCase().includes(q) ||
+        (item.subject || '').toLowerCase().includes(q)
+    );
+  }
+
+  onSearchInput(value: string): void {
+    this.searchInput$.next(value);
+  }
+
+  goTopicStudio(): void {
+    const orgMatch = this.router.url.match(/\/organization\/(\d+)/);
+    const orgId = orgMatch?.[1];
+    if (orgId) {
+      void this.router.navigate(['/organization', orgId, 'topic-studio']);
+    }
+  }
+
+  private runUnifiedSearch(keyword: string): void {
+    const q = keyword.trim();
+    if (q.length < 2) {
+      this.searchMode = false;
+      this.searchSummary = '';
+      if (this.items.length === 0 && !this.loading) {
+        this.resetAndLoadTab();
+      }
+      return;
+    }
+
+    this.searchMode = true;
+    this.searchLoading = true;
+    this.selectedItem = null;
+    this.sciEd.searchUnified(q, 'all', 30).subscribe({
+      next: (res) => {
+        this.items = res.items.map((item) => this.mapUnifiedItem(item));
+        this.searchSummary = `共 ${res.total} 条 · 本地 ${res.sources.local} · SciEd ${res.sources.scied}`;
+        this.searchLoading = false;
+        this.loading = false;
+      },
+      error: (err) => {
+        this.searchLoading = false;
+        this.handleError(err);
+      },
+    });
+  }
+
+  private mapUnifiedItem(item: UnifiedSearchItem): SciEdResourceItem {
+    return {
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      subject: item.subject,
+      gradeLevel: item.grade_level,
+      extraLabel: item.local_type || item.type,
+      sourceKind: item.type,
+      sourceLabel: item.source,
+      score: item.score,
+      fileUrl: item.url || undefined,
     };
   }
 
-  getFormatIcon(format: string): string {
-    const icons: Record<string, string> = {
-      'PPT': '📊',
-      'PDF': '📄',
-      'MP4': '🎥',
-      'ZIP': '📦',
-      'PY': '🐍',
-      'INO': '⚙️',
-      'DOCX': '📝'
+  get canLoadMore(): boolean {
+    return this.page < this.totalPages;
+  }
+
+  onTabIndexChange(index: number): void {
+    const tab = this.tabs[index]?.id ?? 'tutorials';
+    this.setTab(tab);
+    this.searchKeyword = '';
+    this.searchMode = false;
+    this.searchSummary = '';
+    this.updateQueryParam(tab);
+    this.resetAndLoadTab();
+  }
+
+  setTab(tab: SciEdResourceType): void {
+    this.activeTab = tab;
+    const idx = this.tabs.findIndex((t) => t.id === tab);
+    if (idx >= 0) {
+      this.tabIndex = idx;
+    }
+  }
+
+  selectItem(item: SciEdResourceItem): void {
+    this.selectedItem = item;
+    if (this.activeTab === 'tutorials' && !this.searchMode) {
+      this.sciEd.getTutorialById(item.id).subscribe({
+        next: (detail) => {
+          this.selectedItem = this.mapTutorial(detail);
+        },
+      });
+    }
+  }
+
+  retryLoad(): void {
+    this.loadAll();
+  }
+
+  loadMore(): void {
+    if (!this.canLoadMore || this.loadingMore) {
+      return;
+    }
+    this.page += 1;
+    this.loadingMore = true;
+    this.fetchTabPage(this.activeTab, this.page, true);
+  }
+
+  private loadAll(): void {
+    this.loading = true;
+    this.errorMessage = null;
+    this.integrationDisabled = false;
+    this.selectedItem = null;
+
+    this.sciEd.getConfig().subscribe({
+      next: (cfg) => {
+        if (!cfg.enabled) {
+          this.integrationDisabled = true;
+          this.loading = false;
+          return;
+        }
+        this.sciEd.getStats().subscribe({
+          next: (stats) => (this.stats = stats),
+          error: () => {},
+        });
+        this.resetAndLoadTab();
+      },
+      error: (err) => this.handleError(err),
+    });
+  }
+
+  private resetAndLoadTab(): void {
+    this.page = 1;
+    this.totalPages = 1;
+    this.items = [];
+    this.fetchTabPage(this.activeTab, 1, false);
+  }
+
+  private fetchTabPage(tab: SciEdResourceType, page: number, append: boolean): void {
+    const done = () => {
+      this.loading = false;
+      this.loadingMore = false;
     };
-    return icons[format] || '📄';
+
+    if (tab === 'tutorials') {
+      this.sciEd.getTutorials(page, this.pageSize).subscribe({
+        next: (res) => this.applyPage(res.items.map((t) => this.mapTutorial(t)), res.total_pages, page, append),
+        error: (err) => {
+          done();
+          this.handleError(err);
+        },
+        complete: done,
+      });
+      return;
+    }
+
+    if (tab === 'coursewares') {
+      this.sciEd.getCoursewares(page, this.pageSize).subscribe({
+        next: (res) => this.applyPage(res.items.map((c) => this.mapCourseware(c)), res.total_pages, page, append),
+        error: (err) => {
+          done();
+          this.handleError(err);
+        },
+        complete: done,
+      });
+      return;
+    }
+
+    this.sciEd.getHardwareProjects(page, this.pageSize).subscribe({
+      next: (res) =>
+        this.applyPage(res.items.map((p) => this.mapHardwareProject(p)), res.total_pages, page, append),
+      error: (err) => {
+        done();
+        this.handleError(err);
+      },
+      complete: done,
+    });
   }
 
-  formatDate(dateString: string): string {
-    const date = new Date(dateString);
-    return date.toISOString().split('T')[0];
+  private applyPage(
+    mapped: SciEdResourceItem[],
+    totalPages: number,
+    page: number,
+    append: boolean
+  ): void {
+    this.page = page;
+    this.totalPages = totalPages || 1;
+    this.items = append ? [...this.items, ...mapped] : mapped;
   }
 
-  onSearch() {
-    console.log('Searching for:', this.searchKeyword);
-    // TODO: 实现搜索功能
+  private mapTutorial(t: Tutorial): SciEdResourceItem {
+    return {
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      subject: t.subject,
+      gradeLevel: t.grade_level,
+      difficulty: t.difficulty_level,
+      extraLabel: t.duration_minutes ? `${t.duration_minutes} 分钟` : undefined,
+      createdAt: t.created_at,
+    };
   }
 
-  onDownload(resource: TeachingResource) {
-    console.log('Downloading resource:', resource.name);
-    // TODO: 调用API记录下载并触发文件下载
+  private mapCourseware(c: Courseware): SciEdResourceItem {
+    return {
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      subject: c.subject,
+      gradeLevel: c.grade_level,
+      difficulty: c.difficulty_level,
+      extraLabel: c.type,
+      fileUrl: c.file_url,
+      thumbnailUrl: c.thumbnail_url,
+      createdAt: c.created_at,
+    };
+  }
+
+  private mapHardwareProject(p: HardwareProject): SciEdResourceItem {
+    return {
+      id: p.id,
+      title: p.title,
+      description: p.description,
+      subject: p.subject,
+      difficulty: p.difficulty_level,
+      extraLabel: p.category,
+      thumbnailUrl: p.thumbnail_url,
+      fileUrl: p.thumbnail_url,
+    };
+  }
+
+  private updateQueryParam(tab: SciEdResourceType): void {
+    const queryTab =
+      tab === 'coursewares' ? 'courseware' : tab === 'hardware' ? 'hardware' : 'tutorials';
+    void this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: queryTab },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private handleError(err: { status?: number; error?: { detail?: { code?: string; message?: string } | string } }): void {
+    this.loading = false;
+    this.loadingMore = false;
+    if (err.status === 403) {
+      this.integrationDisabled = true;
+      this.errorMessage = null;
+      return;
+    }
+    const detail = err.error?.detail;
+    if (typeof detail === 'object' && detail?.message) {
+      this.errorMessage = detail.message;
+    } else if (typeof detail === 'string') {
+      this.errorMessage = detail;
+    } else {
+      this.errorMessage = '无法连接 OpenMTSciEd，请稍后重试';
+    }
   }
 }

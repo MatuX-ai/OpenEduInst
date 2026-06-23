@@ -255,7 +255,7 @@ interface UserViewModel {
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       .user-assign-dialog {
         min-width: 800px;
         max-width: 1000px;

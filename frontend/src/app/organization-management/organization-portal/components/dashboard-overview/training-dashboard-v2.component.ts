@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -276,7 +276,12 @@ export interface ResourceItem {
             </div>
             <div class="section-body">
               <div class="resources-grid">
-                <button *ngFor="let resource of resources" class="resource-item">
+                <button
+                  type="button"
+                  *ngFor="let resource of resources"
+                  class="resource-item"
+                  (click)="onResourceSelect(resource)"
+                >
                   <div class="resource-icon-wrapper">
                     <mat-icon>{{ resource.icon }}</mat-icon>
                   </div>
@@ -293,7 +298,7 @@ export interface ResourceItem {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
 
     .training-dashboard {
       padding: $spacing-lg;
@@ -859,11 +864,13 @@ export class TrainingDashboardV2Component implements OnInit {
   ];
 
   @Input() resources: ResourceItem[] = [
-    { id: 'courseware', icon: 'edit_note', title: 'Arduino课件库', description: '32套教学方案' },
-    { id: 'dataset', icon: 'sensors', title: '传感器数据集', description: '15组实验数据' },
-    { id: 'competition', icon: 'campaign', title: '竞赛通知', description: '3场赛事报名中' },
-    { id: 'iot-template', icon: 'wifi', title: 'IoT代码模板', description: 'ESP32/MQTT等' }
+    { id: 'courseware', icon: 'edit_note', title: 'STEM 课件库', description: 'OpenMTSciEd 课件' },
+    { id: 'dataset', icon: 'menu_book', title: '教程资源', description: 'OpenMTSciEd 教程' },
+    { id: 'competition', icon: 'campaign', title: '竞赛通知', description: '赛事与认证' },
+    { id: 'iot-template', icon: 'memory', title: '硬件项目', description: '实践项目库' }
   ];
+
+  @Output() resourceSelect = new EventEmitter<ResourceItem>();
 
   constructor() {}
 
@@ -871,5 +878,9 @@ export class TrainingDashboardV2Component implements OnInit {
 
   onQuickAction(action: QuickActionItem): void {
     console.log('Quick action clicked:', action);
+  }
+
+  onResourceSelect(resource: ResourceItem): void {
+    this.resourceSelect.emit(resource);
   }
 }

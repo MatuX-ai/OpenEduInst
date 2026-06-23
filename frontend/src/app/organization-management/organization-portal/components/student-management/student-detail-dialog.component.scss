@@ -1,4 +1,4 @@
-@use '../../../../../styles/design-tokens' as *;
+@use 'design-tokens' as *;
 
 .dialog-container {
   min-width: 700px;
@@ -166,13 +166,7 @@ mat-progress-bar {
   }
 }
 
-mat-tab-group {
-  ::ng-deep {
-    .mat-mdc-tab-body-wrapper {
-      min-height: 300px;
-    }
-  }
-}
+/* Material tab body 高度已迁移至 styles/_material-overrides.scss (min-height: 300px) */
 
 .tab-content {
   padding: $spacing-md 0;

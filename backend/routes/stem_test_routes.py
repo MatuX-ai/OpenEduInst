@@ -14,7 +14,7 @@ from models.token_billing import TokenBalance, TokenTransaction, TokenTransactio
 from models.stem_project import STEMProject, ProjectStatus, ProjectCategory, ProjectDifficulty
 from models.maker_space import MakerSpace, SpaceStatus, SpaceType
 
-router = APIRouter(prefix="/stem-test", tags=["STEM功能测试"])
+router = APIRouter(prefix="/api/v1/stem-test", tags=["STEM功能测试"])
 
 
 @router.post("/create-sample-data")

@@ -702,6 +702,111 @@ POST /webhooks/configure
 
 ---
 
-**API版本：** V1.0  
-**最后更新：** 2026-05-22  
+## 12. OpenMTSciEd 代理接口
+
+> 详细需求见 [OPENMTSCIED_INTEGRATION_PRD.md](./OPENMTSCIED_INTEGRATION_PRD.md)  
+> 所有接口需 JWT + 机构上下文；浏览器禁止直连 OpenMTSciEd。
+
+**Base Path**: `/api/v1/opensciedu`
+
+### 12.1 健康检查
+
+**GET** `/opensciedu/health`
+
+**响应**:
+```json
+{
+  "connected": true,
+  "upstream": "https://opensciedu.matux.tech/api/v1",
+  "latency_ms": 120
+}
+```
+
+### 12.2 集成配置
+
+**GET** `/opensciedu/config`
+
+**响应**:
+```json
+{
+  "enabled": true,
+  "sync_status": "idle",
+  "last_sync": null,
+  "api_key_masked": "****abcd",
+  "platform_fallback": true
+}
+```
+
+**PUT** `/opensciedu/config`（需管理员角色）
+
+**请求体**:
+```json
+{
+  "opensciedu_api_enabled": true,
+  "opensciedu_api_key": "optional-org-key"
+}
+```
+
+### 12.3 教程
+
+**GET** `/opensciedu/tutorials?page=1&size=20&subject=physics&grade_level=9-12`
+
+**GET** `/opensciedu/tutorials/{id}`
+
+### 12.4 课件
+
+**GET** `/opensciedu/coursewares?page=1&size=20&subject=physics&type=pdf`
+
+### 12.5 硬件项目（SciEd 教学项目库，非机构设备台账）
+
+**GET** `/opensciedu/hardware-projects?page=1&size=20&difficulty=beginner&category=robotics`
+
+### 12.6 统计
+
+**GET** `/opensciedu/stats`
+
+**响应**:
+```json
+{
+  "tutorials": 120,
+  "coursewares": 340,
+  "hardware_projects": 45
+}
+```
+
+### 12.7 知识图谱推荐（只读）
+
+**GET** `/opensciedu/recommendations?limit=10&subject=physics`
+
+返回上游 `/knowledge-graph/recommend` 代理结果（数组或 `{ items: [...] }`）。
+
+### 12.8 手动同步（管理员）
+
+**POST** `/opensciedu/sync`
+
+触发单机构元数据同步，更新 `opensciedu_last_sync` 与 `opensciedu_api_config.cached_stats`。
+
+### 12.9 统一检索
+
+**GET** `/opensciedu/search?q=robot&type=all&limit=20&include_local=true&include_scied=true`
+
+合并机构本地 `teaching_resources` 与 OpenMTSciEd `/libraries/search` 结果，按 `score` 降序。
+
+### 12.10 课题工作室深链
+
+**GET** `/opensciedu/topic-studio/links?draft_id=optional`
+
+返回 `list_url`、`new_draft_url` 等 OpenMTSciEd Web SPA 地址（环境变量 `OPENSCIEDU_WEB_BASE`）。
+
+### 12.11 错误码
+
+| HTTP | code | 说明 |
+|------|------|------|
+| 403 | `OPENSCIEDU_DISABLED` | 机构未启用集成且无平台 Key |
+| 502 | `OPENSCIEDU_UPSTREAM_ERROR` | OpenMTSciEd 上游不可用 |
+
+---
+
+**API版本：** V1.1  
+**最后更新：** 2026-06-22  
 **API设计师：** Lingma AI Assistant

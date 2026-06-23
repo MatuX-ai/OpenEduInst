@@ -81,7 +81,8 @@ import { Organization } from './organization-dashboard.service';
   `,
   styles: [
     `
-      @use '../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
+@use 'shared/mixins' as mx;
       .dialog-container {
         min-width: 500px;
         max-width: 600px;
@@ -124,7 +125,7 @@ import { Organization } from './organization-dashboard.service';
         border-top: 1px solid $color-border;
       }
 
-      @media (max-width: 600px) {
+      @include mx.responsive(xs) {
         .dialog-container {
           min-width: 90vw;
         }

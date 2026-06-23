@@ -29,6 +29,25 @@ from utils.redis_client import redis_license_store
 logger = logging.getLogger(__name__)
 
 
+# ==================== 阶段三 3.3 激活相关异常 ====================
+
+
+class LicenseAlreadyActivatedError(Exception):
+    """许可证已绑定其他组织"""
+
+
+class LicenseRevokedError(Exception):
+    """许可证已被撤销，无法激活"""
+
+
+class LicenseExpiredError(Exception):
+    """许可证已过期，无法激活"""
+
+
+class LicenseInvalidStateError(Exception):
+    """许可证状态不允许激活（如 PENDING 之外）"""
+
+
 class LicenseService:
     """许可证核心服务类"""
 
@@ -70,29 +89,36 @@ class LicenseService:
 
         Returns:
             bool: 格式是否有效
+
+        Note:
+            兼容多种密钥：
+            1. 内部生成的标准格式：PREFIX-XXXX-YYYY（3 段、4 位 hex 校验和）
+            2. 外部传入的手工密钥（如 DEMO-TRAINING_INSTITUTION-2026-001）：只校验非空、长度 8-128、字符集
         """
-        if not license_key:
+        if not license_key or not isinstance(license_key, str):
+            return False
+        s = license_key.strip()
+        if len(s) < 8 or len(s) > 128:
+            return False
+        # 不允许空白/控制字符
+        if any(c.isspace() or ord(c) < 32 for c in s):
+            return False
+        # 允许字母、数字、连字符、下划线、点（兼容 DEMO-TRAINING_INSTITUTION-2026-001 等）
+        if not all(c.isalnum() or c in "-_." for c in s):
             return False
 
-        parts = license_key.split("-")
-        if len(parts) != 3:
-            return False
-
-        prefix, random_part, checksum = parts
-
-        # 验证前缀
-        if prefix != self.config.license.prefix:
-            return False
-
-        # 验证长度
-        if len(random_part) != self.config.license.key_length:
-            return False
-
-        # 验证校验和
-        expected_checksum = hashlib.md5(random_part.encode()).hexdigest()[:4].upper()
-        if checksum != expected_checksum:
-            return False
-
+        parts = s.split("-")
+        if len(parts) == 3:
+            prefix, random_part, checksum = parts
+            # 尝试按内部格式校验（不强制，前缀不匹配时仍放行）
+            if (
+                prefix == self.config.license.prefix
+                and len(random_part) == self.config.license.key_length
+            ):
+                expected_checksum = hashlib.md5(random_part.encode()).hexdigest()[:4].upper()
+                if checksum != expected_checksum:
+                    return False
+        # 其它长度一律放行（外部密钥 DEMO-XXX-2026-001 等）
         return True
 
     def create_organization(self, org_data: Dict[str, Any]) -> Organization:
@@ -425,6 +451,248 @@ class LicenseService:
             return licenses
         except Exception as e:
             logger.error(f"获取组织许可证失败: {e}")
+            return []
+
+    # ============================================================
+    # 阶段三 3.3：许可证自激活
+    # ============================================================
+
+    def activate_license_for_org(
+        self,
+        license_key: str,
+        org_id: int,
+        activated_by_user: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """
+        组织管理员自助激活许可证
+
+        状态机：
+        - PENDING  → ACTIVE（首次激活）
+        - ACTIVE   → 已激活的同 org 调用 → 返回 200 + features（幂等）
+        - ACTIVE   → 已绑定的不同 org → 抛 LicenseAlreadyActivatedError
+        - REVOKED  → 抛 LicenseRevokedError
+        - EXPIRED  → 抛 LicenseExpiredError
+
+        Returns:
+            dict: {
+                license, features, max_users, max_devices,
+                expires_at, days_until_expiry, already_activated
+            }
+
+        Raises:
+            ValueError: 密钥格式无效
+            LicenseAlreadyActivatedError: 已被其他组织绑定
+            LicenseRevokedError: 已撤销
+            LicenseExpiredError: 已过期
+            LicenseInvalidStateError: 状态机不允许
+        """
+        # 1) 格式校验
+        if not self._validate_license_key_format(license_key):
+            raise ValueError("许可证密钥格式无效")
+
+        # 2) 行级锁查询
+        license_obj = (
+            self.db.query(License)
+            .filter(License.license_key == license_key)
+            .with_for_update()
+            .first()
+        )
+        if not license_obj:
+            raise ValueError("许可证不存在")
+
+        # 3) 状态机分支
+        already_activated = False
+
+        if license_obj.status == LicenseStatus.REVOKED:
+            raise LicenseRevokedError(f"许可证 {license_key} 已被撤销")
+
+        if license_obj.is_expired:
+            # 自动纠正 DB 状态
+            license_obj.status = LicenseStatus.EXPIRED
+            self.db.commit()
+            raise LicenseExpiredError(f"许可证 {license_key} 已过期")
+
+        if license_obj.status == LicenseStatus.EXPIRED:
+            raise LicenseExpiredError(f"许可证 {license_key} 已过期")
+
+        if license_obj.status == LicenseStatus.ACTIVE:
+            # 幂等：已激活
+            if (
+                license_obj.organization_id
+                and license_obj.organization_id != org_id
+            ):
+                raise LicenseAlreadyActivatedError(
+                    f"许可证已被组织 {license_obj.organization_id} 绑定"
+                )
+            already_activated = True
+        elif license_obj.status == LicenseStatus.PENDING:
+            # 首次激活：绑定 org + 写 activated_at
+            license_obj.organization_id = org_id
+            license_obj.activated_at = datetime.utcnow()
+            license_obj.status = LicenseStatus.ACTIVE
+        else:
+            raise LicenseInvalidStateError(
+                f"许可证状态 {license_obj.status.value} 不允许激活"
+            )
+
+        # 4) 同步组织 license_count
+        org = (
+            self.db.query(Organization)
+            .filter(Organization.id == org_id)
+            .first()
+        )
+        if org and not already_activated:
+            org.license_count = (org.license_count or 0) + 1
+
+        license_obj.updated_at = datetime.utcnow()
+        self.db.commit()
+        self.db.refresh(license_obj)
+
+        # 5) 同步 Redis 缓存
+        cache_data = {
+            "id": license_obj.id,
+            "license_key": license_obj.license_key,
+            "organization_id": license_obj.organization_id,
+            "status": license_obj.status.value,
+            "issued_at": license_obj.issued_at.isoformat(),
+            "expires_at": license_obj.expires_at.isoformat(),
+            "max_users": license_obj.max_users,
+            "current_users": license_obj.current_users,
+            "features": license_obj.features or [],
+        }
+        try:
+            redis_license_store.store_license(license_key, cache_data)
+        except Exception as e:  # noqa: BLE001
+            logger.warning("Redis 缓存写入失败（不阻塞激活）: %s", e)
+
+        # 6) 写活动日志
+        self._log_license_activity(
+            license_key=license_key,
+            organization_id=org_id,
+            activity_type=(
+                "license_activated_idempotent"
+                if already_activated
+                else "license_activated"
+            ),
+            details={
+                "org_id": org_id,
+                "activated_by_user": activated_by_user,
+                "already_activated": already_activated,
+                "license_type": license_obj.license_type.value,
+            },
+        )
+
+        # 7) 提取 features
+        features = self.get_active_features_for_org(org_id)
+
+        return {
+            "license": license_obj,
+            "features": features,
+            "max_users": license_obj.max_users,
+            "max_devices": license_obj.max_devices,
+            "expires_at": license_obj.expires_at,
+            "days_until_expiry": license_obj.days_until_expiry,
+            "license_type": license_obj.license_type.value,
+            "already_activated": already_activated,
+        }
+
+    def get_active_features_for_org(self, org_id: int) -> List[str]:
+        """
+        聚合当前 org 所有 ACTIVE 且未过期的 license.features，去重后返回。
+
+        同时把聚合结果回写到 ``tenant_feature_flags`` 表，保证：
+        - features 列表作为 feature_key 出现时 is_enabled=True
+        - license 过期/撤销后对应的 feature 自动置为 False
+
+        用于前端路由守卫：返回的 feature 列表决定哪些模块可见。
+        """
+        try:
+            now = datetime.utcnow()
+            rows = (
+                self.db.query(License.features)
+                .filter(
+                    License.organization_id == org_id,
+                    License.status == LicenseStatus.ACTIVE,
+                    License.is_active.is_(True),
+                    License.expires_at > now,
+                )
+                .all()
+            )
+            seen = set()
+            result: List[str] = []
+            for (feats,) in rows:
+                if not feats:
+                    continue
+                for f in feats:
+                    if f and f not in seen:
+                        seen.add(f)
+                        result.append(f)
+
+            # --- 写入/刷新 TenantFeatureFlag ---
+            try:
+                from models.tenant import TenantFeatureFlag
+
+                # 先读取该 org 已有的所有 flag（防止与人工配置冲突）
+                existing = (
+                    self.db.query(TenantFeatureFlag)
+                    .filter(TenantFeatureFlag.org_id == org_id)
+                    .all()
+                )
+                existing_map = {flag.feature_key: flag for flag in existing}
+
+                # 1) features 列表中的：is_enabled=True
+                for key in result:
+                    flag = existing_map.get(key)
+                    if flag is None:
+                        flag = TenantFeatureFlag(
+                            org_id=org_id, feature_key=key, is_enabled=True
+                        )
+                        self.db.add(flag)
+                    else:
+                        flag.is_enabled = True
+                        flag.updated_at = now
+                    existing_map.pop(key, None)
+
+                # 2) 剩下由 license 注入但不在 active features 中的自动关闭
+                #    （仅对曾由 license 注入的 flag 做操作，避免影响其他业务开关）
+                for key, flag in list(existing_map.items()):
+                    # 标记由 license 注入：通过 custom_metadata.license_managed 标识
+                    # 如果没有标识，保守保留原值（由人工配置的开关应保留）
+                    extra = flag.extra_config or {}
+                    if extra.get("license_managed"):
+                        flag.is_enabled = False
+                        flag.updated_at = now
+
+                self.db.commit()
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "同步 License.features -> TenantFeatureFlag 失败 org=%s err=%s",
+                    org_id, exc,
+                )
+                self.db.rollback()
+
+            return result
+        except Exception as e:  # noqa: BLE001
+            logger.error("聚合 org features 失败: %s", e)
+            return []
+
+    def get_active_licenses_for_org(self, org_id: int) -> List[License]:
+        """获取当前 org 的所有有效许可证（ACTIVE 且未过期）"""
+        try:
+            now = datetime.utcnow()
+            return (
+                self.db.query(License)
+                .filter(
+                    License.organization_id == org_id,
+                    License.status == LicenseStatus.ACTIVE,
+                    License.is_active.is_(True),
+                    License.expires_at > now,
+                )
+                .order_by(License.expires_at.asc())
+                .all()
+            )
+        except Exception as e:  # noqa: BLE001
+            logger.error("获取 org 有效许可证失败: %s", e)
             return []
 
     def update_license(

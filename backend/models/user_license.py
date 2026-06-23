@@ -210,8 +210,8 @@ class TokenPackageType(str, enum.Enum):
     ENTERPRISE = "enterprise"  # 企业包
 
 
-class TokenPackage(Base):
-    """Token 套餐包模型"""
+class LegacyTokenPackage(Base):
+    """Token 套餐包模型（旧版，单租户，已被 token_billing.TokenPackage 替代）"""
 
     __tablename__ = "token_packages"
 
@@ -236,7 +236,7 @@ class TokenPackage(Base):
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
     def __repr__(self):
-        return f"<TokenPackage(id={self.id}, name='{self.name}', tokens={self.token_count})>"
+        return f"<LegacyTokenPackage(id={self.id}, name='{self.name}', tokens={self.token_count})>"
 
 
 class UserTokenBalance(Base):

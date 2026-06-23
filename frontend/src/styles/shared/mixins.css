@@ -1,0 +1,45 @@
+/*!
+ * OpenMT Shared Mixins CSS
+ * 共享样式工具类
+ */
+
+/* 弹性居中 */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 弹性行 */
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 弹性列 */
+.flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 间距辅助 */
+.gap-sm { gap: var(--spacing-sm, 8px); }
+.gap-md { gap: var(--spacing-md, 16px); }
+.gap-lg { gap: var(--spacing-lg, 24px); }
+
+/* 文本截断 */
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-md, 0 3px 6px rgba(0,0,0,0.15));
+  transform: translateY(-2px);
+}

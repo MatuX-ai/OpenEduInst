@@ -17,6 +17,29 @@
 #   docker compose logs -f --tail=200
 # ============================================================
 
+# ---- 给 celery worker/beat 启动脚本，复用 api 镜像即可 -----
+x-api-env: &api-env
+  ENV: prod
+  DATABASE_URL: ${DATABASE_URL:-postgresql://openmt_user:change_me_password@postgres:5432/openmt_edu_inst?sslmode=disable}
+  SECRET_KEY: ${SECRET_KEY:-please-change-me-to-a-long-random-string}
+  ACCESS_TOKEN_EXPIRE_MINUTES: 30
+  REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://redis:6379/1}
+  CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND:-redis://redis:6379/2}
+  CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:4200}
+  ENFORCE_HTTPS: ${ENFORCE_HTTPS:-1}
+  DEMO_MODE: ${DEMO_MODE:-0}
+  RL_ANON_LIMIT: ${RL_ANON_LIMIT:-60}
+  RL_AUTH_LIMIT: ${RL_AUTH_LIMIT:-600}
+  RL_LOGIN_LIMIT: ${RL_LOGIN_LIMIT:-10}
+  WORKERS: ${WORKERS:-4}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  IMATU_SECRET_KEY: ${IMATU_SECRET_KEY:-}
+  OPENSCIEDU_API_KEY: ${OPENSCIEDU_API_KEY:-}
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUNBUFFERED: "1"
+  CELERY_ENABLED: "1"
+
 services:
   # ----------------------------------------------------------
   # 1. 后端 FastAPI 服务
@@ -28,30 +51,7 @@ services:
     container_name: openmt-api
     restart: unless-stopped
     environment:
-      ENV: prod
-      # 数据库：推荐指向 Neon/云数据库；本地联调时使用 postgres 服务
-      DATABASE_URL: ${DATABASE_URL:-postgresql://openmt_user:change_me_password@postgres:5432/openmt_edu_inst?sslmode=disable}
-      # JWT 密钥：必须修改！建议用 48 字节以上随机字符串
-      SECRET_KEY: ${SECRET_KEY:-please-change-me-to-a-long-random-string}
-      ACCESS_TOKEN_EXPIRE_MINUTES: 30
-      # Redis（限流/缓存）
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
-      # CORS：逗号分隔，前端域名
-      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:4200}
-      # 强制 HTTPS（Nginx 终止后，应用层追加 HSTS）
-      ENFORCE_HTTPS: ${ENFORCE_HTTPS:-1}
-      # Demo 模式（1 = 只读演示环境）
-      DEMO_MODE: ${DEMO_MODE:-0}
-      # 限流参数
-      RL_ANON_LIMIT: ${RL_ANON_LIMIT:-60}
-      RL_AUTH_LIMIT: ${RL_AUTH_LIMIT:-600}
-      RL_LOGIN_LIMIT: ${RL_LOGIN_LIMIT:-10}
-      # Gunicorn 工作进程数（建议 = CPU 核数）
-      WORKERS: ${WORKERS:-4}
-      LOG_LEVEL: ${LOG_LEVEL:-info}
-      # 外部服务
-      IMATU_SECRET_KEY: ${IMATU_SECRET_KEY:-}
-      OPENSCIEDU_API_KEY: ${OPENSCIEDU_API_KEY:-}
+      <<: *api-env
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
@@ -67,7 +67,46 @@ services:
       start_period: 10s
 
   # ----------------------------------------------------------
-  # 2. Nginx 反向代理
+  # 2. Celery Worker（定时/异步任务执行器）
+  # ----------------------------------------------------------
+  celery-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openmt-celery-worker
+    restart: unless-stopped
+    environment:
+      <<: *api-env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - redis
+    command: >
+      sh -c "celery -A tasks.celery_app worker
+             --loglevel=$LOG_LEVEL --concurrency=2 --without-heartbeat --without-mingle"
+
+  # ----------------------------------------------------------
+  # 3. Celery Beat（定时任务调度器，全集群只允许 1 个）
+  # ----------------------------------------------------------
+  celery-beat:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: openmt-celery-beat
+    restart: unless-stopped
+    environment:
+      <<: *api-env
+    volumes:
+      - ./logs:/app/logs
+      - ./data:/app/data
+    depends_on:
+      - redis
+    command: >
+      sh -c "celery -A tasks.celery_app beat --loglevel=$LOG_LEVEL --pidfile=/app/data/celerybeat.pid"
+
+  # ----------------------------------------------------------
+  # 4. Nginx 反向代理
   # ----------------------------------------------------------
   nginx:
     image: nginx:1.27-alpine
@@ -83,12 +122,12 @@ services:
       - ./deploy/nginx/conf.d:/etc/nginx/conf.d:ro
       # SSL 证书（生产环境：把 cert.pem / privkey.pem 放到 deploy/nginx/ssl/ 目录
       - ./deploy/nginx/ssl:/etc/nginx/ssl:ro
-      # 前端静态文件（若把前端 build 产物放到 deploy/frontend 下，可直接由 nginx 提供）
+      # 前端静态文件
       - ./deploy/frontend:/var/www/openmt:ro
       - ./logs/nginx:/var/log/nginx
 
   # ----------------------------------------------------------
-  # 3. Redis（限流/缓存）
+  # 5. Redis（限流/缓存 / Celery Broker）
   # ----------------------------------------------------------
   redis:
     image: redis:7-alpine
@@ -104,7 +143,7 @@ services:
       retries: 3
 
   # ----------------------------------------------------------
-  # 4. PostgreSQL（可选；本地联调用，生产推荐 Neon/云数据库
+  # 6. PostgreSQL（可选；本地联调用，生产推荐 Neon/云数据库
   #     启动: COMPOSE_PROFILES=with-db docker compose up -d
   # ----------------------------------------------------------
   postgres:

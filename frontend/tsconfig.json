@@ -6,7 +6,8 @@
     "paths": {
       "@app/*": ["src/app/*"],
       "@environments/*": ["src/environments/*"],
-      "@shared/*": ["src/app/shared/*"]
+      "@shared/*": ["src/app/shared/*"],
+      "@openmt/scied-ui": ["projects/scied-ui/src/public-api.ts"]
     },
     "forceConsistentCasingInFileNames": true,
     "strict": true,

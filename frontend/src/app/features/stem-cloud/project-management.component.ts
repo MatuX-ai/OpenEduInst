@@ -407,7 +407,8 @@ export { STEMProject, ProjectCategory };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
+@use 'shared/mixins' as mx;
     .project-management {
       padding: 24px;
       background: $color-neutral-100;
@@ -1473,14 +1474,14 @@ export { STEMProject, ProjectCategory };
       font-size: 14px;
     }
 
-    /* Responsive Design */
-    @media (max-width: 1200px) {
+    /* Responsive Design - 使用统一断点 mixin */
+    @include mx.responsive(md) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    @media (max-width: 768px) {
+    @include mx.responsive(sm) {
       .project-management {
         padding: 16px;
       }
@@ -1529,7 +1530,7 @@ export { STEMProject, ProjectCategory };
       }
     }
 
-    @media (max-width: 480px) {
+    @include mx.responsive(xs) {
       .project-info-grid {
         grid-template-columns: 1fr;
       }
@@ -1538,106 +1539,8 @@ export { STEMProject, ProjectCategory };
         flex-wrap: wrap;
       }
     }
-    ::ng-deep .mat-mdc-table {
-      background: transparent;
-      color: $color-neutral-700;
-    }
 
-    ::ng-deep .mat-mdc-header-cell {
-      color: #64748b !important;
-      font-weight: 600;
-      font-size: 12px;
-      border-bottom-color: $color-neutral-200 !important;
-    }
-
-    ::ng-deep .mat-mdc-cell {
-      color: $color-neutral-700;
-      border-bottom-color: #f1f5f9 !important;
-    }
-
-    ::ng-deep .mat-mdc-row:hover {
-      background: #f8fafc;
-    }
-
-    /* Angular Material Tabs Light Theme */
-    ::ng-deep .mat-mdc-tab-group {
-      background: transparent;
-    }
-
-    ::ng-deep .mat-mdc-tab-header {
-      background: $card-bg;
-      border-radius: 12px 12px 0 0;
-      border: 1px solid $color-neutral-200;
-      border-bottom: none;
-    }
-
-    ::ng-deep .mat-mdc-tab-label {
-      color: #64748b !important;
-      font-weight: 600;
-    }
-
-    ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-active {
-      color: $color-brand-primary !important;
-    }
-
-    ::ng-deep .mat-mdc-ink-bar {
-      background-color: $color-brand-primary !important;
-      height: 2px;
-    }
-
-    ::ng-deep .mat-mdc-tab-body-wrapper {
-      background: $card-bg;
-      border-radius: 0 0 12px 12px;
-      border: 1px solid $color-neutral-200;
-      border-top: none;
-    }
-
-    /* Angular Material Buttons Light Theme */
-    ::ng-deep .mat-mdc-raised-button.mat-primary {
-      background: $color-brand-primary;
-      color: white;
-    }
-
-    ::ng-deep .mat-mdc-raised-button.mat-primary:hover {
-      background: #1d4ed8;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-    }
-
-    ::ng-deep .mat-mdc-stroked-button {
-      border-color: $color-neutral-200;
-      color: #475569;
-    }
-
-    ::ng-deep .mat-mdc-stroked-button:hover {
-      background: #f8fafc;
-      border-color: #cbd5e1;
-    }
-
-    ::ng-deep .mat-mdc-icon-button {
-      color: $color-neutral-500;
-    }
-
-    ::ng-deep .mat-mdc-icon-button:hover {
-      background: #f1f5f9;
-      color: $color-brand-primary;
-    }
-
-    /* Angular Material Progress Bar Light Theme */
-    ::ng-deep .mat-mdc-progress-bar {
-      --mdc-linear-progress-track-color: $color-neutral-200;
-    }
-
-    ::ng-deep .mat-mdc-progress-bar.progress-low {
-      --mdc-linear-progress-active-indicator-color: #f59e0b;
-    }
-
-    ::ng-deep .mat-mdc-progress-bar.progress-medium {
-      --mdc-linear-progress-active-indicator-color: $color-brand-primary;
-    }
-
-    ::ng-deep .mat-mdc-progress-bar.progress-high {
-      --mdc-linear-progress-active-indicator-color: #059669;
-    }
+    /* Angular Material 全局覆盖已迁移至 styles/_material-overrides.scss */
 
     /* Projects Grid */
     .projects-grid {
@@ -1755,8 +1658,8 @@ export { STEMProject, ProjectCategory };
       flex: 1;
     }
 
-    /* Responsive Design */
-    @media (max-width: 1200px) {
+    /* Responsive Design - 使用统一断点 mixin */
+    @include mx.responsive(md) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -1768,7 +1671,7 @@ export { STEMProject, ProjectCategory };
       }
     }
 
-    @media (max-width: 768px) {
+    @include mx.responsive(sm) {
       .stats-grid {
         grid-template-columns: 1fr;
       }

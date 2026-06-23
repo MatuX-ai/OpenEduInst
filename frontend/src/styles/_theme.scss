@@ -1,0 +1,151 @@
+@use '@angular/material' as mat;
+
+// ============================================================
+// OpenMT Angular Material 17 自定义品牌主题
+// 替换预构建 indigo-pink 主题，使用 #1976d2 品牌主色
+// ============================================================
+
+@include mat.core();
+
+// ---- 调色板定义 ----
+$openmt-primary-palette: (
+  50:  #e3f2fd,
+  100: #bbdefb,
+  200: #90caf6,
+  300: #64b5f6,
+  400: #42a5f5,
+  500: #1976d2, // 品牌主色
+  600: #1e88e5,
+  700: #1565c0,
+  800: #0d47a1,
+  900: #0a3677,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+$openmt-accent-palette: (
+  50:  #fff3e0,
+  100: #ffe0b2,
+  200: #ffcc80,
+  300: #ffb74d,
+  400: #ffa726,
+  500: #ff6f00, // 强调橙
+  600: #fb8c00,
+  700: #f57c00,
+  800: #ef6c00,
+  900: #e65100,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+$openmt-warn-palette: (
+  50:  #ffebee,
+  100: #ffcdd2,
+  200: #ef9a9a,
+  300: #e57373,
+  400: #ef5350,
+  500: #d32f2f, // 错误红
+  600: #e53935,
+  700: #d32f2f,
+  800: #c62828,
+  900: #b71c1c,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: white,
+    500: white,
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  )
+);
+
+// ---- 主题配置 ----
+$openmt-typography: mat.define-typography-config(
+  $font-family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif',
+  $headline-1: mat.define-typography-level(30px, 36px, 600),
+  $headline-2: mat.define-typography-level(24px, 32px, 600),
+  $headline-3: mat.define-typography-level(20px, 28px, 600),
+  $headline-4: mat.define-typography-level(18px, 24px, 600),
+  $headline-5: mat.define-typography-level(16px, 24px, 500),
+  $headline-6: mat.define-typography-level(14px, 20px, 500),
+  $body-1: mat.define-typography-level(14px, 20px, 400),
+  $body-2: mat.define-typography-level(14px, 20px, 400),
+  $caption: mat.define-typography-level(12px, 16px, 400),
+  $button: mat.define-typography-level(14px, 20px, 500),
+);
+
+$openmt-theme: mat.define-light-theme((
+  color: (
+    primary: mat.define-palette($openmt-primary-palette, 500),
+    accent: mat.define-palette($openmt-accent-palette, 500),
+    warn: mat.define-palette($openmt-warn-palette, 500),
+  ),
+  typography: $openmt-typography,
+  density: 0,
+));
+
+// ---- 应用主题到所有 Material 组件 ----
+@include mat.all-component-themes($openmt-theme);
+
+// ---- CSS 变量导出（供组件直接引用）----
+:root {
+  --mdc-theme-primary: #1976d2;
+  --mdc-theme-on-primary: #ffffff;
+  --mdc-theme-secondary: #ff6f00;
+  --mdc-theme-on-secondary: #ffffff;
+  --mdc-theme-error: #d32f2f;
+  --mdc-theme-surface: #ffffff;
+  --mdc-theme-on-surface: #212121;
+  --mdc-theme-background: #f5f5f5;
+  --mdc-theme-on-background: #212121;
+
+  // OpenMT 扩展令牌（与 SCSS 变量保持一致）
+  --openmt-color-brand-primary: #1976d2;
+  --openmt-color-brand-accent: #ff6f00;
+  --openmt-color-success: #2e7d32;
+  --openmt-color-warning: #ed6c02;
+  --openmt-color-error: #d32f2f;
+  --openmt-color-info: #0288d1;
+  --openmt-color-text-primary: #212121;
+  --openmt-color-text-secondary: #424242;
+  --openmt-color-text-tertiary: #616161;
+  --openmt-color-border-default: #e0e0e0;
+  --openmt-color-border-focus: #1976d2;
+  --openmt-spacing-xs: 4px;
+  --openmt-spacing-sm: 8px;
+  --openmt-spacing-md: 16px;
+  --openmt-spacing-lg: 24px;
+  --openmt-spacing-xl: 32px;
+  --openmt-radius-sm: 4px;
+  --openmt-radius-md: 8px;
+  --openmt-radius-lg: 12px;
+  --openmt-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --openmt-shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --openmt-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --openmt-transition-fast: 0.15s ease-in-out;
+  --openmt-transition-normal: 0.25s ease-in-out;
+}

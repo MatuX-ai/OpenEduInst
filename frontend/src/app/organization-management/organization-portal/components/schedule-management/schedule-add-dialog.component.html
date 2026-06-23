@@ -13,7 +13,7 @@
           <!-- 课程选择 -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>选择课程 <span class="required">*</span></mat-label>
-            <mat-select [(ngModel)]="formData.courseId" name="courseId" required>
+            <mat-select [(ngModel)]="formData.courseId" name="courseId" required (selectionChange)="onCourseChange()">
               @for (course of courses; track course.id) {
                 <mat-option [value]="course.id">
                   {{ course.name }} ({{ course.code }})
@@ -22,16 +22,10 @@
             </mat-select>
           </mat-form-field>
 
-          <!-- 教师选择 -->
+          <!-- 教师信息（由课程自动填充） -->
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>授课教师 <span class="required">*</span></mat-label>
-            <mat-select [(ngModel)]="formData.teacherId" name="teacherId" required>
-              @if (getSelectedCourse()) {
-                <mat-option [value]="getSelectedCourse()!.teacherId">
-                  {{ getSelectedCourse()!.teacherName }}
-                </mat-option>
-              }
-            </mat-select>
+            <input matInput [value]="formData.teacherName || '请先选择课程'" readonly />
           </mat-form-field>
 
           <!-- 教室选择 -->
@@ -155,22 +149,20 @@
           <div class="info-grid">
             <div class="info-item">
               <span class="label">课程:</span>
-              <span class="value">{{ getSelectedCourse()?.name || '-' }}</span>
+              <span class="value">{{ formData.courseName || '-' }}</span>
             </div>
             <div class="info-item">
               <span class="label">教师:</span>
-              <span class="value">{{ getSelectedCourse()?.teacherName || '-' }}</span>
+              <span class="value">{{ formData.teacherName || '-' }}</span>
             </div>
             <div class="info-item">
               <span class="label">教室:</span>
-              <span class="value">
-                {{ classrooms.find(c => c.id === formData.classroomId)?.name || '未选择' }}
-              </span>
+              <span class="value">{{ getSelectedClassroomName() }}</span>
             </div>
             <div class="info-item">
               <span class="label">时间:</span>
               <span class="value">
-                周{{ weekDays.find(d => d.value === formData.dayOfWeek)?.label }}
+                周{{ getSelectedDayLabel() }}
                 {{ formData.startTime }} - {{ formData.endTime }}
               </span>
             </div>
@@ -181,7 +173,7 @@
             <div class="info-item">
               <span class="label">重复:</span>
               <span class="value">
-                {{ repeatTypes.find(r => r.value === formData.repeatType)?.label }}
+                {{ getSelectedRepeatLabel() }}
                 @if (formData.repeatWeeks) {
                   ({{ formData.repeatWeeks }}周)
                 }
@@ -199,11 +191,13 @@
               <mat-icon color="warn">warning</mat-icon>
               <span>{{ conflictMessage }}</span>
             </div>
-          } @else if (conflictMessage) {
-            <div class="conflict-success">
-              <mat-icon color="accent">check_circle</mat-icon>
-              <span>无时间冲突，可以排课</span>
-            </div>
+          } @else {
+            @if (conflictMessage) {
+              <div class="conflict-success">
+                <mat-icon color="accent">check_circle</mat-icon>
+                <span>无时间冲突，可以排课</span>
+              </div>
+            }
           }
         </div>
 

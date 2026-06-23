@@ -1,0 +1,58 @@
+# ============================================================
+# OpenMT 项目 - SSH 配置片段
+#
+# 将以下内容添加到 ~/.ssh/config 文件中：
+#   1. 创建/编辑: nano ~/.ssh/config
+#   2. 粘贴以下内容
+#   3. 配置你的 SSH 密钥路径
+#
+# 配置完成后即可使用:
+#   ssh openmt              # 直接登录
+#   scp file openmt:/tmp/   # 拷贝文件
+#   rsync -avz ./ openmt:/opt/openmt/  # 同步项目
+# ============================================================
+
+# ── 主服务器：MatuX-JiGou (新加坡 Lighthouse) ──
+Host openmt
+    HostName 43.156.248.107
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking accept-new
+    ConnectTimeout 10
+    ServerAliveInterval 60
+    ServerAliveCountMax 3
+
+# ── 别名（方便记忆）──
+Host openmt-sg
+    HostName 43.156.248.107
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking accept-new
+
+Host matux-jigou
+    HostName 43.156.248.107
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    StrictHostKeyChecking accept-new
+
+# ── 快捷命令别名 ──
+# 使用方式: ssh openmt-logs  -> 直接查看 Docker 日志
+Host openmt-logs
+    HostName 43.156.248.107
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    RequestTTY force
+    RemoteCommand cd /opt/openmt/backend && docker compose -f docker-compose.lite.yml logs -f --tail=100
+
+# 使用方式: ssh openmt-ps  -> 查看容器状态
+Host openmt-ps
+    HostName 43.156.248.107
+    Port 22
+    User root
+    IdentityFile ~/.ssh/id_rsa
+    RequestTTY yes
+    RemoteCommand cd /opt/openmt/backend && docker compose -f docker-compose.lite.yml ps

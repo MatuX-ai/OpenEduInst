@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { OrgAdminGuard } from '../../guards/organization.guard';
+import { LicenseGuard } from '../../guards/license.guard';
+import { TeacherGuard } from '../../guards/teacher.guard';
 
 import { OrganizationLayoutComponent } from './organization-layout.component';
 import { OrganizationListComponent } from './organization-list.component';
@@ -214,6 +216,43 @@ const routes: Routes = [
             (m) => m.TeachingResourcesComponent
           ),
       },
+      // 知识图谱推荐（只读）
+      {
+        path: 'knowledge-graph',
+        canActivate: [TeacherGuard],
+        loadComponent: () =>
+          import('./components/knowledge-graph/knowledge-graph.component').then(
+            (m) => m.KnowledgeGraphComponent
+          ),
+      },
+      // 课题工作室（OpenMTSciEd 深链）
+      {
+        path: 'topic-studio',
+        canActivate: [TeacherGuard],
+        loadComponent: () =>
+          import('./components/topic-studio/topic-studio-launcher.component').then(
+            (m) => m.TopicStudioLauncherComponent
+          ),
+      },
+      // 教师工作台（OpenMTSciEd 备课入口）
+      {
+        path: 'teacher',
+        canActivate: [TeacherGuard],
+        children: [
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./components/teacher-portal/teacher-dashboard.component').then(
+                (m) => m.TeacherDashboardComponent
+              ),
+          },
+          {
+            path: '',
+            redirectTo: 'dashboard',
+            pathMatch: 'full',
+          },
+        ],
+      },
       // 排课管理：教育局通常不需要此功能，可考虑增加类型守卫
       {
         path: 'schedule',
@@ -248,6 +287,16 @@ const routes: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      // 云端备份管理（需要 cloud_backup feature）
+      {
+        path: 'backup-management',
+        canActivate: [LicenseGuard],
+        data: { requiredFeature: 'cloud_backup' },
+        loadComponent: () =>
+          import('./components/backup-management/backup-management.component').then(
+            (m) => m.BackupManagementComponent
+          ),
+      },
       // 许可证管理
       {
         path: 'licenses',
@@ -262,6 +311,16 @@ const routes: Routes = [
         loadComponent: () =>
           import('./components/token-purchase/token-purchase.component').then(
             (m) => m.TokenPurchaseComponent
+          ),
+      },
+      // AI 助教（需要 ai_assistant feature）
+      {
+        path: 'ai-assistant',
+        canActivate: [LicenseGuard],
+        data: { requiredFeature: 'ai_assistant' },
+        loadComponent: () =>
+          import('./components/ai-assistant/ai-assistant.component').then(
+            (m) => m.AiAssistantComponent
           ),
       },
       // 用户管理

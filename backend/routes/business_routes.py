@@ -11,7 +11,7 @@ from models.license import Organization
 from pydantic import BaseModel
 from datetime import datetime
 
-router = APIRouter()
+router = APIRouter(prefix="/api/v1", tags=["业务通用"])
 
 
 class LeadConvertRequest(BaseModel):
@@ -57,7 +57,7 @@ def get_pending_settlements(
     ).all()
 
 
-@router.get("/organizations/my")
+@router.get("/business/organizations/my")
 def get_my_organizations(
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),

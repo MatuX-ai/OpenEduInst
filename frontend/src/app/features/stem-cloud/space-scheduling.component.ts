@@ -352,7 +352,8 @@ export { SpaceRoom, Booking, SpaceCategory };
     </div>
   `,
   styles: [`
-    @use '../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
+@use 'shared/mixins' as mx;
     .space-scheduling {
       padding: 24px;
       background: $color-neutral-100;
@@ -822,8 +823,8 @@ export { SpaceRoom, Booking, SpaceCategory };
       margin-top: 8px;
     }
 
-    /* Responsive Design */
-    @media (max-width: 1200px) {
+    /* Responsive Design - 使用统一断点 mixin */
+    @include mx.responsive(md) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -835,7 +836,7 @@ export { SpaceRoom, Booking, SpaceCategory };
       }
     }
 
-    @media (max-width: 768px) {
+    @include mx.responsive(sm) {
       .stats-grid {
         grid-template-columns: 1fr;
       }

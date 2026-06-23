@@ -24,6 +24,7 @@ import { takeUntil } from 'rxjs/operators';
 
 import { Schedule } from '../../models/schedule.models';
 import { ScheduleManagementService } from '../../services/schedule-management.service';
+import { ScheduleAddDialogComponent, ScheduleEditDialogData } from './schedule-add-dialog.component';
 
 @Component({
   selector: 'app-schedule-day-view',
@@ -172,16 +173,44 @@ export class ScheduleDayViewComponent implements OnInit, OnDestroy {
    * 添加课程
    */
   onAddSchedule(): void {
-    // TODO: 打开添加课程对话框
-    alert('添加课程功能待实现');
+    this.dialog
+      .open<ScheduleAddDialogComponent, ScheduleEditDialogData>(
+        ScheduleAddDialogComponent,
+        {
+          width: '720px',
+          maxHeight: '90vh',
+          data: { mode: 'create' },
+        }
+      )
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          this.loadSchedules();
+        }
+      });
   }
 
   /**
    * 编辑课程
    */
   onEditSchedule(schedule: Schedule): void {
-    // TODO: 打开编辑对话框
-    alert(`编辑课程：${schedule.courseName}`);
+    this.dialog
+      .open<ScheduleAddDialogComponent, ScheduleEditDialogData>(
+        ScheduleAddDialogComponent,
+        {
+          width: '720px',
+          maxHeight: '90vh',
+          data: { mode: 'edit', schedule },
+        }
+      )
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          this.loadSchedules();
+        }
+      });
   }
 
   /**

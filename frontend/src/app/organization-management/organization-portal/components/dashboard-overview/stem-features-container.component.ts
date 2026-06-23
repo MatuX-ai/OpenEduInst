@@ -74,7 +74,7 @@ import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .stem-features-container {
       padding: 24px;
       background: $color-neutral-50;
@@ -102,38 +102,7 @@ import { SpaceSchedulingComponent } from '../../../../features/stem-cloud/space-
       font-size: 14px;
     }
 
-    /* Tab Group Styling - Light Mode */
-    ::ng-deep .mat-mdc-tab-group {
-      background: transparent;
-    }
-
-    ::ng-deep .mat-mdc-tab-header {
-      background: $card-bg;
-      border-radius: $radius-lg $radius-lg 0 0;
-      border: $card-border;
-      border-bottom: none;
-    }
-
-    ::ng-deep .mat-mdc-tab-label {
-      color: $color-neutral-500 !important;
-      font-weight: 600;
-    }
-
-    ::ng-deep .mat-mdc-tab-label.mat-mdc-tab-active {
-      color: $color-brand-primary !important;
-    }
-
-    ::ng-deep .mat-mdc-ink-bar {
-      background-color: $color-brand-primary !important;
-      height: 2px;
-    }
-
-    ::ng-deep .mat-mdc-tab-body-wrapper {
-      background: $card-bg;
-      border-radius: 0 0 $radius-lg $radius-lg;
-      border: $card-border;
-      border-top: none;
-    }
+    /* Tab Group Styling - 全局覆盖已迁移至 styles/_material-overrides.scss */
   `]
 })
 export class StemFeaturesContainerComponent implements OnInit {

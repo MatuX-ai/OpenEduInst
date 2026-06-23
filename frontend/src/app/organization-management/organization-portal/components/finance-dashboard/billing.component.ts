@@ -316,7 +316,7 @@ interface FinanceStats {
     </div>
   `,
   styles: [`
-    @use '../../../../styles/design-tokens' as *;
+    @use 'design-tokens' as *;
     .billing-container {
       padding: 24px;
       max-width: 1400px;

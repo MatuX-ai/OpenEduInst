@@ -19,6 +19,14 @@ from .license import (
 from .user_license import UserRole, UserLicense, UserLicenseStatus
 from .user_organization import UserOrganization, UserOrganizationRole, UserOrganizationStatus
 from .tenant import TenantConfig, TenantFeatureFlag
+from .token_billing import (  # 阶段三 3.2 充值订单
+    TokenOrder,
+    TokenOrderStatus,
+    TokenOrderCreate,
+    TokenOrderResponse,
+    PaymentMethod,
+    MockPaymentConfirmRequest,
+)
 from .schedule import Schedule, Lead, Settlement, ScheduleStatus, LeadStatus
 from .classroom import Classroom, ClassSchedule
 from .student import Student, Enrollment, AttendanceRecord, StudentStatus, Gender
@@ -52,6 +60,13 @@ __all__ = [
     # Tenant models
     "TenantConfig",
     "TenantFeatureFlag",
+    # 阶段三 3.2 Token 充值订单
+    "TokenOrder",
+    "TokenOrderStatus",
+    "TokenOrderCreate",
+    "TokenOrderResponse",
+    "PaymentMethod",
+    "MockPaymentConfirmRequest",
     # Schedule models
     "Schedule",
     "Lead",

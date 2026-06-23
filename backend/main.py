@@ -35,6 +35,13 @@ from models.hardware_device import (  # noqa: F401
     DeviceMaintenanceRecord,
     DeviceUsageLog,
 )
+from models.token_billing import (  # noqa: F401
+    TokenOrder,
+    TokenOrderStatus,
+    PaymentMethod,
+    TokenPackage,
+    TokenBalance,
+)
 
 # -------- CORS: 从环境变量读取允许的前端域名 --------
 _cors_raw = os.getenv("CORS_ALLOW_ORIGINS", "")
@@ -63,6 +70,7 @@ from routes.vocational_routes import router as vocational_router
 from routes.student_routes import router as student_router
 from routes.hardware_routes import router as hardware_router
 from routes.token_routes import router as token_router
+from routes.token_purchase_routes import router as token_purchase_router
 from routes.project_routes import router as project_router
 from routes.space_routes import router as space_router
 from routes.stem_test_routes import router as stem_test_router
@@ -75,8 +83,16 @@ from routes.parent_portal_routes import router as parent_portal_router
 from routes.educational_institution_routes import (
     router as edu_router,
     org_detail_router,
+    org_scoped_router,
 )
 from routes.org_overview_routes import router as org_overview_router
+from routes.cloud_backup_routes import router as cloud_backup_router
+from routes.ai_assistant_routes import router as ai_assistant_router
+from routes.websocket_routes import router as websocket_router
+from routes.opensciedu_routes import router as opensciedu_router
+# 新增：审计日志路由 & 系统设置路由
+from routes.audit_routes import router as audit_router
+from routes.system_routes import router as system_router
 
 
 try:
@@ -84,6 +100,14 @@ try:
     logger.info("数据库表初始化完成")
 except Exception as exc:  # pragma: no cover
     logger.error("数据库初始化失败: %s", exc)
+
+# 【安全】初始化 PostgreSQL Schema 级多租户隔离（仅 PG 引擎生效）
+try:
+    from utils.schema_isolation import init_schema_isolation
+
+    init_schema_isolation(engine)
+except Exception as exc:  # noqa: BLE001
+    logger.warning("Schema 隔离初始化失败（非阻塞）: %s", exc)
 
 
 app = FastAPI(
@@ -118,7 +142,7 @@ if os.getenv("DEMO_MODE", "0").lower() in ("1", "true", "yes"):
     logger.warning("DEMO_MODE=on：演示账号的写操作将被拦截")
 
 
-# 【安全】统一响应头：HSTS / X-Content-Type-Options / X-Frame-Options
+# 【安全】统一响应头：HSTS / X-Content-Type-Options / X-Frame-Options / CSP
 @app.middleware("http")
 async def _security_headers(request, call_next):  # type: ignore[override]
     response = await call_next(request)
@@ -129,6 +153,23 @@ async def _security_headers(request, call_next):  # type: ignore[override]
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    # CSP 头：仅允许同源资源，禁止 inline script（生产环境推荐严格策略）
+    _csp = (
+        "default-src 'self'; "
+        "img-src 'self' data: https:; "
+        "style-src 'self' 'unsafe-inline'; "
+        "script-src 'self'; "
+        "font-src 'self' data:; "
+        "connect-src 'self' ws: wss:; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'"
+    )
+    response.headers["Content-Security-Policy"] = _csp
+    # 权限策略：禁用未使用的浏览器能力
+    response.headers["Permissions-Policy"] = (
+        "geolocation=(), microphone=(), camera=(), payment=()"
+    )
     return response
 
 
@@ -143,6 +184,7 @@ app.include_router(vocational_router)
 app.include_router(student_router)
 app.include_router(hardware_router)
 app.include_router(token_router)
+app.include_router(token_purchase_router)
 app.include_router(project_router)
 app.include_router(space_router)
 app.include_router(stem_test_router)
@@ -154,7 +196,15 @@ app.include_router(marketing_router)
 app.include_router(parent_portal_router)
 app.include_router(edu_router)
 app.include_router(org_detail_router)
+app.include_router(org_scoped_router)
 app.include_router(org_overview_router)
+app.include_router(cloud_backup_router)
+app.include_router(ai_assistant_router)
+app.include_router(websocket_router)
+app.include_router(opensciedu_router)
+# 新增：审计日志 & 系统设置
+app.include_router(audit_router)
+app.include_router(system_router)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
@@ -171,3 +221,18 @@ def read_root():
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+
+@app.on_event("startup")
+async def _on_startup():
+    logger.info(
+        "系统启动完成。已加载模块: 审计日志 / 限流 / 多租户隔离 / Token黑名单 / 细粒度RBAC / 数据脱敏"
+    )
+    # 打印可用的配置
+    logger.info(
+        "ENV: LOG_LEVEL=%s, AUDIT_LEVEL=%s, AUDIT_RECORD_BODY=%s, DEMO_MODE=%s",
+        os.getenv("LOG_LEVEL", "INFO"),
+        os.getenv("AUDIT_LEVEL", "write"),
+        os.getenv("AUDIT_RECORD_BODY", "true"),
+        os.getenv("DEMO_MODE", "off"),
+    )

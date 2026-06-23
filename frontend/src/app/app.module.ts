@@ -27,6 +27,22 @@ const routes: Routes = [
     path: 'admin', 
     loadChildren: () => import('./admin/institution-management/institution-management.module').then(m => m.InstitutionManagementModule)
   },
+  {
+    path: 'admin/audit',
+    loadComponent: () => import('./admin/admin-audit.component').then(m => m.AdminAuditComponent),
+  },
+  {
+    path: 'admin/users',
+    loadComponent: () => import('./admin/admin-users.component').then(m => m.AdminUsersComponent),
+  },
+  {
+    path: 'admin/security',
+    loadComponent: () => import('./admin/admin-security.component').then(m => m.AdminSecurityComponent),
+  },
+  {
+    path: 'admin/dashboard',
+    loadComponent: () => import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+  },
   { path: '**', redirectTo: '/organization' }
 ];
 

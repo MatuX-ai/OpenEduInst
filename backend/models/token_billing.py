@@ -204,7 +204,7 @@ class TokenPackageResponse(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TokenBalanceResponse(BaseModel):
@@ -221,7 +221,7 @@ class TokenBalanceResponse(BaseModel):
     updated_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TokenTransactionCreate(BaseModel):
@@ -252,7 +252,7 @@ class TokenTransactionResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TokenUsageLogCreate(BaseModel):
@@ -286,4 +286,123 @@ class TokenUsageLogResponse(BaseModel):
     created_at: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+
+
+# ============================================================
+# 阶段三 3.2：Token 充值订单模型（订单 + Mock 支付状态机）
+# ============================================================
+
+
+class TokenOrderStatus(str, enum.Enum):
+    """Token 订单状态枚举"""
+    PENDING = "pending"        # 待支付（订单刚创建）
+    PROCESSING = "processing"  # 支付处理中（已调起支付网关）
+    SUCCESS = "success"        # 支付成功（已到账）
+    FAILED = "failed"          # 支付失败
+    REFUNDED = "refunded"      # 已退款
+    CANCELLED = "cancelled"    # 已取消
+
+
+class PaymentMethod(str, enum.Enum):
+    """支付方式"""
+    MOCK = "mock"               # 沙箱/Mock 支付（演示用）
+    WECHAT = "wechat"           # 微信支付
+    ALIPAY = "alipay"           # 支付宝
+    BANK = "bank_transfer"      # 银行转账
+
+
+class TokenOrder(Base):
+    """Token 充值订单模型"""
+
+    __tablename__ = "stem_token_orders"
+
+    id = Column(Integer, primary_key=True, index=True)
+    org_id = Column(Integer, ForeignKey("organizations.id"), nullable=False, index=True)
+
+    # 订单号：TK + YYYYMMDD + 8 位随机（前端可读、可对账）
+    order_no = Column(String(64), unique=True, nullable=False, index=True)
+
+    # 关联信息
+    package_id = Column(Integer, ForeignKey("stem_token_packages.id"), nullable=True)
+    user_id = Column(Integer, nullable=True)  # 发起人（暂时移除外键）
+
+    # 金额信息
+    token_amount = Column(Integer, nullable=False)  # 购买 Token 数量
+    price = Column(Float, nullable=False)            # 应付金额
+    currency = Column(String(10), default="CNY")     # 货币单位
+
+    # 支付信息
+    payment_method = Column(Enum(PaymentMethod), default=PaymentMethod.MOCK)
+    status = Column(Enum(TokenOrderStatus), default=TokenOrderStatus.PENDING, index=True)
+    transaction_id = Column(String(64), nullable=True)   # 支付网关流水号
+    paid_at = Column(DateTime, nullable=True)            # 支付成功时间
+    failure_reason = Column(String(255), nullable=True)  # 失败原因
+
+    # 系统字段
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # 关系
+    organization = relationship("Organization")
+    package = relationship("TokenPackage")
+
+    def __repr__(self):
+        return (
+            f"<TokenOrder(order_no='{self.order_no}', "
+            f"status='{self.status.value}', tokens={self.token_amount})>"
+        )
+
+    @property
+    def is_paid(self) -> bool:
+        return self.status == TokenOrderStatus.SUCCESS
+
+    @property
+    def is_terminal(self) -> bool:
+        """订单是否处于终态（成功/失败/取消/退款）"""
+        return self.status in (
+            TokenOrderStatus.SUCCESS,
+            TokenOrderStatus.FAILED,
+            TokenOrderStatus.CANCELLED,
+            TokenOrderStatus.REFUNDED,
+        )
+
+
+class TokenOrderCreate(BaseModel):
+    """创建 Token 订单的请求模型"""
+    package_id: int = Field(..., gt=0, description="套餐 ID")
+    payment_method: PaymentMethod = Field(
+        default=PaymentMethod.MOCK, description="支付方式"
+    )
+    user_id: Optional[int] = Field(None, description="发起人用户 ID（可选）")
+
+
+class TokenOrderResponse(BaseModel):
+    """Token 订单响应模型"""
+    id: int
+    org_id: int
+    order_no: str
+    package_id: Optional[int]
+    user_id: Optional[int]
+    token_amount: int
+    price: float
+    currency: str
+    payment_method: PaymentMethod
+    status: TokenOrderStatus
+    transaction_id: Optional[str]
+    paid_at: Optional[datetime]
+    failure_reason: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    is_paid: bool
+    is_terminal: bool
+
+    class Config:
+        from_attributes = True
+
+
+class MockPaymentConfirmRequest(BaseModel):
+    """Mock 支付确认请求（演示用，强制指定成功或失败）"""
+    force_fail: bool = Field(
+        default=False, description="是否强制失败（用于演示失败链路）"
+    )

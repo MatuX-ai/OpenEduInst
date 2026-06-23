@@ -516,7 +516,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
   `,
   styles: [
     `
-      @use '../../../../styles/design-tokens' as *;
+      @use 'design-tokens' as *;
       /* ============================================
          数据看板 - 专业 UI/UX 设计系统
          Design System: MatuX Analytics Dashboard
@@ -963,11 +963,12 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         margin-top: 32px;
       }
 
-      ::ng-deep .modern-tabs {
+      /* 现代标签页与进度条已迁移至 styles/_material-overrides.scss (.modern-tabs / .stat-item / .category-item) */
+      .modern-tabs {
         background: transparent;
       }
 
-      ::ng-deep .modern-tabs .mat-mdc-tab-header {
+      .modern-tabs .mat-mdc-tab-header {
         background: $card-bg;
         border-radius: 12px 12px 0 0;
         border: 1px solid $color-neutral-200;
@@ -975,7 +976,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         padding: 0 8px;
       }
 
-      ::ng-deep .modern-tabs .mat-mdc-tab {
+      .modern-tabs .mat-mdc-tab {
         min-width: 140px;
         padding: 0 20px;
         height: 56px;
@@ -995,7 +996,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         height: 20px;
       }
 
-      ::ng-deep .modern-tabs .mat-mdc-tab-body-wrapper {
+      .modern-tabs .mat-mdc-tab-body-wrapper {
         background: $card-bg;
         border: 1px solid $color-neutral-200;
         border-radius: 0 0 12px 12px;
@@ -1095,7 +1096,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         color: $color-brand-primary;
       }
 
-      ::ng-deep .stat-item mat-progress-bar {
+      .stat-item mat-progress-bar {
         margin-bottom: 8px;
         border-radius: 4px;
       }
@@ -1573,7 +1574,7 @@ import { DataAnalyticsService } from '../../services/data-analytics.service';
         font-weight: 700;
       }
 
-      ::ng-deep .category-item mat-progress-bar {
+      .category-item mat-progress-bar {
         margin-bottom: 8px;
         border-radius: 4px;
       }

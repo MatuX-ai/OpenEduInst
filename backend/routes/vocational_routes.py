@@ -12,7 +12,7 @@ from utils.database import get_db
 from utils.auth_utils import require_org_context
 from pydantic import BaseModel, Field
 
-router = APIRouter(prefix="/vocational", tags=["vocational"])
+router = APIRouter(prefix="/api/v1/vocational", tags=["vocational"])
 
 
 # --- Pydantic Models ---

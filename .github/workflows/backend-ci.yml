@@ -59,3 +59,44 @@ jobs:
         run: |
           cd backend
           PYTHONPATH=. pytest -q tests/
+
+  # ---------------------------------------------------------------------------
+  # 认证日志专项：登录失败日志区分 user_not_found / bad_password
+  # 独立 job 运行，避免与主 tests 共享 session 状态
+  # ---------------------------------------------------------------------------
+  auth_logging:
+    runs-on: ubuntu-latest
+    env:
+      ENV: dev
+      SECRET_KEY: ci-auth-logging-secret-placeholder-please-override-9876543210
+      # 该专项测试不依赖 Postgres/Redis：脚本内部会在临时目录创建 SQLite
+      # 这里仍提供 DATABASE_URL 占位，避免 settings 加载失败
+      DATABASE_URL: sqlite:///./_ci_auth_logging_placeholder.db
+      CORS_ALLOW_ORIGINS: http://localhost:4200
+      ENFORCE_HTTPS: "0"
+      PG_SSL_DISABLE: "1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install deps
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest httpx
+
+      - name: Syntax & module import
+        run: |
+          cd backend
+          python -c "import main; print('ok')"
+
+      - name: Run auth logging tests
+        run: |
+          cd backend
+          PYTHONPATH=. pytest tests/test_credential_stuffing_logging.py -v --tb=short
