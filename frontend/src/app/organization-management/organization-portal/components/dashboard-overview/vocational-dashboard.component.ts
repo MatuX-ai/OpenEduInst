@@ -1,9 +1,11 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatBadgeModule } from '@angular/material/badge';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { VocationalService, VocDashboardStats } from '../../../services/vocational.service';
 
 export interface VocationalMetrics {
   totalStudents: number;
@@ -15,41 +17,59 @@ export interface VocationalMetrics {
 @Component({
   selector: 'app-vocational-dashboard',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatBadgeModule],
+  imports: [CommonModule, MatCardModule, MatIconModule, MatButtonModule, MatBadgeModule, MatProgressBarModule],
   template: `
     <div class="vocational-dashboard">
+      <!-- 加载状态 -->
+      <div *ngIf="loading" class="loading-bar">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+
       <!-- 核心指标卡片 -->
       <div class="metrics-grid">
         <mat-card class="metric-card" (click)="onMetricClick('students')">
           <mat-card-content>
             <div class="metric-header">
-              <mat-icon class="metric-icon purple">school</mat-icon>
-              <span class="trend up">↑ 6%</span>
+              <mat-icon class="metric-icon purple">precision_manufacturing</mat-icon>
+              <span class="trend" [class.up]="true" [class.stable]="false">设备总数 {{ stats.total_equipment }}</span>
             </div>
-            <div class="metric-value">{{ metrics.totalStudents }}</div>
-            <div class="metric-label">在训学员数</div>
+            <div class="metric-value">{{ stats.equipment_usage_rate }}</div>
+            <div class="metric-label">实训设备利用率</div>
+            <div class="metric-sub">
+              <span>可用 {{ stats.equipment_available }}</span>
+              <span>使用中 {{ stats.equipment_in_use }}</span>
+              <span>维修 {{ stats.equipment_maintenance }}</span>
+            </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card class="metric-card" (click)="onMetricClick('equipment')">
           <mat-card-content>
             <div class="metric-header">
-              <mat-icon class="metric-icon blue">precision_manufacturing</mat-icon>
-              <span class="trend up">↑ 10%</span>
+              <mat-icon class="metric-icon blue">assignment_return</mat-icon>
+              <span class="trend" [class.up]="stats.overdue_borrows === 0" [class.stable]="stats.overdue_borrows > 0">
+                {{ stats.overdue_borrows > 0 ? '逾期 ' + stats.overdue_borrows : '正常' }}
+              </span>
             </div>
-            <div class="metric-value">{{ metrics.equipmentUsageRate }}</div>
-            <div class="metric-label">实训设备利用率</div>
+            <div class="metric-value">{{ stats.active_borrows }}</div>
+            <div class="metric-label">设备借用中</div>
+            <div class="metric-sub">
+              <span>闲置预警 {{ stats.equipment_idle_count }} 台</span>
+            </div>
           </mat-card-content>
         </mat-card>
 
         <mat-card class="metric-card" (click)="onMetricClick('certification')">
           <mat-card-content>
             <div class="metric-header">
-              <mat-icon class="metric-icon green">card_membership</mat-icon>
-              <span class="trend stable">→ 稳定</span>
+              <mat-icon class="metric-icon green">build</mat-icon>
+              <span class="trend">待处理</span>
             </div>
-            <div class="metric-value">{{ metrics.certificationPassRate }}</div>
-            <div class="metric-label">技能认证通过率</div>
+            <div class="metric-value">{{ stats.total_faults_pending }}</div>
+            <div class="metric-label">待处理故障</div>
+            <div class="metric-sub">
+              <span>安全运行 {{ stats.safety_days }} 天</span>
+            </div>
           </mat-card-content>
         </mat-card>
 
@@ -57,10 +77,13 @@ export interface VocationalMetrics {
           <mat-card-content>
             <div class="metric-header">
               <mat-icon class="metric-icon orange">work</mat-icon>
-              <span class="trend up">↑ 8%</span>
+              <span class="trend up">就业对接</span>
             </div>
             <div class="metric-value">{{ metrics.employmentRate }}</div>
             <div class="metric-label">就业对接率</div>
+            <div class="metric-sub">
+              <span>在训 {{ metrics.totalStudents }} 人</span>
+            </div>
           </mat-card-content>
         </mat-card>
       </div>
@@ -75,7 +98,7 @@ export interface VocationalMetrics {
             </div>
             <div class="module-info">
               <h4>实训管理</h4>
-              <p class="subtitle">今日 12 个实训班组</p>
+              <p class="subtitle">设备借用 / 归还 / 维护</p>
             </div>
             <mat-icon class="arrow">chevron_right</mat-icon>
           </mat-card-content>
@@ -84,11 +107,11 @@ export interface VocationalMetrics {
         <mat-card class="module-card" (click)="onModuleClick('internship')">
           <mat-card-content>
             <div class="module-icon">
-              <mat-icon matBadge="235" matBadgeColor="warn">work</mat-icon>
+              <mat-icon matBadge="active" matBadgeColor="warn">work</mat-icon>
             </div>
             <div class="module-info">
               <h4>实习跟踪</h4>
-              <p class="subtitle">235人在岗实习</p>
+              <p class="subtitle">实习记录 / 企业评价</p>
             </div>
             <mat-icon class="arrow">chevron_right</mat-icon>
           </mat-card-content>
@@ -100,8 +123,8 @@ export interface VocationalMetrics {
               <mat-icon>emoji_events</mat-icon>
             </div>
             <div class="module-info">
-              <h4>技能认证</h4>
-              <p class="subtitle">本月 45 人参加考试</p>
+              <h4>技能竞赛</h4>
+              <p class="subtitle">竞赛报名 / 成绩管理</p>
             </div>
             <mat-icon class="arrow">chevron_right</mat-icon>
           </mat-card-content>
@@ -114,7 +137,7 @@ export interface VocationalMetrics {
             </div>
             <div class="module-info">
               <h4>企业对接</h4>
-              <p class="subtitle">合作企业 38 家</p>
+              <p class="subtitle">合作企业 / 联合项目</p>
             </div>
             <mat-icon class="arrow">chevron_right</mat-icon>
           </mat-card-content>
@@ -145,11 +168,11 @@ export interface VocationalMetrics {
             <p class="feature-desc">PLC、CNC、工业机器人全生命周期管理</p>
             <div class="feature-stats">
               <div class="stat-item">
-                <span class="stat-value">86</span>
+                <span class="stat-value">{{ stats.total_equipment }}</span>
                 <span class="stat-label">设备总数</span>
               </div>
               <div class="stat-item">
-                <span class="stat-value purple">72%</span>
+                <span class="stat-value purple">{{ stats.equipment_usage_rate }}</span>
                 <span class="stat-label">利用率</span>
               </div>
             </div>
@@ -165,10 +188,10 @@ export interface VocationalMetrics {
               <mat-icon class="status-icon success">check_circle</mat-icon>
             </div>
             <h4>安全监控系统</h4>
-            <p class="feature-desc">实时监測、智能预警、紧急停机</p>
+            <p class="feature-desc">实时监测、智能预警、紧急停机</p>
             <div class="feature-stats">
               <div class="stat-item">
-                <span class="stat-value green">120</span>
+                <span class="stat-value green">{{ stats.safety_days }}</span>
                 <span class="stat-label">安全天数</span>
               </div>
               <div class="stat-item">
@@ -191,7 +214,7 @@ export interface VocationalMetrics {
             <p class="feature-desc">基于实际操作的能力量化评估</p>
             <div class="feature-stats">
               <div class="stat-item">
-                <span class="stat-value">156</span>
+                <span class="stat-value">{{ stats.total_equipment }}</span>
                 <span class="stat-label">评估人次</span>
               </div>
               <div class="stat-item">
@@ -218,7 +241,7 @@ export interface VocationalMetrics {
                 <span class="stat-label">合作项目</span>
               </div>
               <div class="stat-item">
-                <span class="stat-value orange">65%</span>
+                <span class="stat-value orange">{{ metrics.employmentRate }}</span>
                 <span class="stat-label">就业率</span>
               </div>
             </div>
@@ -234,6 +257,10 @@ export interface VocationalMetrics {
       padding: $spacing-lg; 
       background: $color-neutral-50;
       min-height: 100%;
+    }
+    
+    .loading-bar {
+      margin-bottom: $spacing-md;
     }
     
     .metrics-grid { 
@@ -303,6 +330,14 @@ export interface VocationalMetrics {
       color: $color-neutral-500; 
       font-size: $font-size-sm;
       font-weight: 500;
+    }
+
+    .metric-sub {
+      display: flex;
+      gap: $spacing-sm;
+      font-size: $font-size-xs;
+      color: $color-neutral-400;
+      margin-top: $spacing-xs;
     }
     
     .section-title {
@@ -534,7 +569,9 @@ export interface VocationalMetrics {
   `]
 })
 export class VocationalDashboardComponent implements OnInit {
-  @Input() metrics: any = {
+  private vocationalService = inject(VocationalService);
+
+  @Input() metrics: VocationalMetrics = {
     totalStudents: 856,
     equipmentUsageRate: '72%',
     certificationPassRate: '88%',
@@ -542,19 +579,48 @@ export class VocationalDashboardComponent implements OnInit {
   };
   
   @Input() quickActions = [
-    { id: 'equip-reserve', label: '设备预约', icon: 'calendar_plus' },
-    { id: 'safety-check', label: '安全准入', icon: 'shield_check' },
-    { id: 'intern-report', label: '实习报告', icon: 'file_text' },
-    { id: 'cert-apply', label: '证书申请', icon: 'award' },
+    { id: 'equip-reserve', label: '设备预约', icon: 'calendar_today' },
+    { id: 'safety-check', label: '安全准入', icon: 'shield' },
+    { id: 'intern-report', label: '实习报告', icon: 'description' },
+    { id: 'cert-apply', label: '证书申请', icon: 'verified' },
     { id: 'enterprise-contact', label: '企业联络', icon: 'phone' }
   ];
   
   @Output() quickActionClick = new EventEmitter<any>();
   @Output() stemFeatureClick = new EventEmitter<string>();
 
-  constructor() {}
+  stats: VocDashboardStats = {
+    total_equipment: 0,
+    equipment_in_use: 0,
+    equipment_available: 0,
+    equipment_maintenance: 0,
+    equipment_usage_rate: '0%',
+    equipment_idle_count: 0,
+    active_borrows: 0,
+    overdue_borrows: 0,
+    total_faults_pending: 0,
+    safety_days: 0,
+  };
+  
+  loading = false;
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadDashboardStats();
+  }
+
+  private loadDashboardStats(): void {
+    this.loading = true;
+    this.vocationalService.getDashboardStats().subscribe({
+      next: (data) => {
+        this.stats = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('加载仪表盘数据失败', err);
+        this.loading = false;
+      },
+    });
+  }
   
   onMetricClick(metric: string): void {
     console.log('Metric clicked:', metric);

@@ -13,8 +13,8 @@ from sqlalchemy.orm import selectinload
 
 from config.license_config import load_sentinel_config
 from models.license import License
-from models.user import User, UserRole
-from models.user_license import UserLicense, UserLicenseStatus
+from models.base_models import User
+from models.user_license import UserLicense, UserLicenseStatus, UserRole
 from utils.redis_client import RedisLicenseStore
 
 logger = logging.getLogger(__name__)

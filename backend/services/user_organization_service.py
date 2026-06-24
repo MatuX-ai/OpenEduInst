@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy.orm import Session, joinedload
 
 from models.learning_source import LearningSourceType
-from models.user import User
+from models.base_models import User
 from models.user_organization import (
     UserOrganization,
     UserOrganizationCreate,

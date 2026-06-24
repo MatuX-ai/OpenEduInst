@@ -43,6 +43,29 @@ const routes: Routes = [
     path: 'admin/dashboard',
     loadComponent: () => import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
   },
+  // STEM 教育管理路由
+  {
+    path: 'stem',
+    children: [
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./features/stem-cloud/stem-dashboard.component').then(m => m.StemDashboardComponent),
+      },
+      {
+        path: 'clubs',
+        loadComponent: () => import('./features/stem-cloud/stem-club-list.component').then(m => m.StemClubListComponent),
+      },
+      {
+        path: 'clubs/:id',
+        loadComponent: () => import('./features/stem-cloud/stem-club-detail.component').then(m => m.StemClubDetailComponent),
+      },
+      {
+        path: 'consumables',
+        loadComponent: () => import('./features/stem-cloud/stem-consumable-list.component').then(m => m.StemConsumableListComponent),
+      },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
   { path: '**', redirectTo: '/organization' }
 ];
 

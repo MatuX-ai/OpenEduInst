@@ -134,6 +134,34 @@ XX-module-name/
 
 **内容来源**：原 `docs/TRAINING_PLATFORM_PRD.md`
 
+### 02-05 Vocational School — 职业学校 STEM 实训教学管理
+
+| 文档 | 说明 |
+|------|------|
+| [05-vocational-school/index.md](05-vocational-school/index.md) | 产品总览、核心价值、与云托管版关系、功能模块全景图 |
+| [05-vocational-school/functional-requirements.md](05-vocational-school/functional-requirements.md) | 功能需求：实训设备管理、实训耗材、校企合作、双创孵化、技能竞赛、STEM 教务、实习就业、安全准入、技能评估、数据看板 |
+| [05-vocational-school/user-stories.md](05-vocational-school/user-stories.md) | 用户故事：实训中心主任、实训导师、学生、企业管理员、区域管理员 |
+| [05-vocational-school/acceptance-criteria.md](05-vocational-school/acceptance-criteria.md) | 验收标准：4 个阶段验收 + 通用验收标准 |
+
+**内容来源**：原型站（梅山县职业技术学校）演示数据 + 现有 [VOCATIONAL_STEM_CLOUD_HOSTING_PRD.md](../VOCATIONAL_STEM_CLOUD_HOSTING_PRD.md)
+
+### 模块代码表更新
+
+在现有模块代码基础上，新增以下职业学校专用模块代码：
+
+| 代码 | 模块 |
+|------|------|
+| `VEQ` | 实训设备管理 |
+| `VCON` | 实训耗材管理 |
+| `VCOOP` | 校企合作管理 |
+| `VINC` | 双创孵化管理 |
+| `VCOMP` | 技能竞赛管理 |
+| `VACA` | STEM 教务管理 |
+| `VEMP` | 实习就业跟踪 |
+| `VSAF` | 安全监控与准入 |
+| `VASS` | 技能评估体系 |
+| `VDSH` | 数据看板与分析 |
+
 ---
 
 ## 阅读建议

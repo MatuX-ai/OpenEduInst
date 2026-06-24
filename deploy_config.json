@@ -1,0 +1,44 @@
+{
+    "_comment": "OpenMT 部署配置文件 - 按需修改以下参数",
+    
+    "server": {
+        "host": "43.156.248.107",
+        "user": "root",
+        "ssh_key": "~/.ssh/id_ed25519",
+        "remote_dir": "/opt/openmt",
+        "port": 22
+    },
+
+    "build": {
+        "frontend_dir": "frontend",
+        "dist_subdir": "dist/openmt-edu-inst",
+        "deploy_target": "backend/deploy/frontend",
+        "build_command": "npx ng build --configuration production",
+        "skip_frontend_build": false
+    },
+
+    "docker": {
+        "compose_dir": "backend",
+        "compose_file": "docker-compose.lite.yml",
+        "env_file": ".env",
+        "no_cache": true,
+        "health_check_url": "https://jigou.matux.tech",
+        "health_check_port": 8000,
+        "health_wait_seconds": 15
+    },
+
+    "sync": {
+        "method": "rsync",
+        "exclude": [
+            ".git", "__pycache__", "*.pyc",
+            "node_modules", ".venv", "venv",
+            "logs", "data", ".env",
+            "deploy/nginx/ssl", ".mypy_cache",
+            "deploy_tmp"
+        ]
+    },
+
+    "urls": {
+        "main_site": "https://jigou.matux.tech"
+    }
+}

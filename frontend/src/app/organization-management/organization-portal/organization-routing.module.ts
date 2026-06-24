@@ -287,6 +287,179 @@ const routes: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      // STEM 教育管理
+      {
+        path: 'stem',
+        children: [
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('../../features/stem-cloud/stem-dashboard.component').then(
+                (m) => m.StemDashboardComponent
+              ),
+          },
+          {
+            path: 'clubs',
+            loadComponent: () =>
+              import('../../features/stem-cloud/stem-club-list.component').then(
+                (m) => m.StemClubListComponent
+              ),
+          },
+          {
+            path: 'clubs/:id',
+            loadComponent: () =>
+              import('../../features/stem-cloud/stem-club-detail.component').then(
+                (m) => m.StemClubDetailComponent
+              ),
+          },
+          {
+            path: 'consumables',
+            loadComponent: () =>
+              import('../../features/stem-cloud/stem-consumable-list.component').then(
+                (m) => m.StemConsumableListComponent
+              ),
+          },
+          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+        ],
+      },
+      // 教育局管理平台
+      {
+        path: 'bureau',
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('./components/bureau/bureau-layout.component').then(
+                (m) => m.BureauLayoutComponent
+              ),
+          },
+          { path: '', redirectTo: '', pathMatch: 'full' },
+        ],
+      },
+      // 职业学校 - 实训设备管理
+      {
+        path: 'vocational',
+        children: [
+          {
+            path: 'dashboard',
+            loadComponent: () =>
+              import('./components/dashboard-overview/vocational-dashboard.component').then(
+                (m) => m.VocationalDashboardComponent
+              ),
+          },
+          {
+            path: 'equipment',
+            loadComponent: () =>
+              import('../../features/stem-cloud/hardware-management.component').then(
+                (m) => m.HardwareManagementComponent
+              ),
+          },
+          {
+            path: 'consumables',
+            loadComponent: () =>
+              import('../../features/stem-cloud/stem-consumable-list.component').then(
+                (m) => m.StemConsumableListComponent
+              ),
+          },
+          // Phase 2: 安全准入
+          {
+            path: 'safety',
+            loadComponent: () =>
+              import('./components/vocational/safety-management.component').then(
+                (m) => m.SafetyManagementComponent
+              ),
+          },
+          // Phase 2: 实训课程
+          {
+            path: 'courses',
+            loadComponent: () =>
+              import('./components/vocational/course-management.component').then(
+                (m) => m.CourseManagementComponent
+              ),
+          },
+          // Phase 2: 实训室管理
+          {
+            path: 'rooms',
+            loadComponent: () =>
+              import('./components/vocational/room-management.component').then(
+                (m) => m.RoomManagementComponent
+              ),
+          },
+          // Phase 2: 排课管理
+          {
+            path: 'schedules',
+            loadComponent: () =>
+              import('./components/vocational/schedule-management.component').then(
+                (m) => m.ScheduleManagementComponent
+              ),
+          },
+          // Phase 3: 合作企业
+          {
+            path: 'enterprises',
+            loadComponent: () =>
+              import('./components/vocational/enterprise-management.component').then(
+                (m) => m.EnterpriseManagementComponent
+              ),
+          },
+          // Phase 3: 校企联合项目
+          {
+            path: 'cooperation-projects',
+            loadComponent: () =>
+              import('./components/vocational/cooperation-project.component').then(
+                (m) => m.CooperationProjectComponent
+              ),
+          },
+          // Phase 3: 技能竞赛
+          {
+            path: 'competitions',
+            loadComponent: () =>
+              import('./components/vocational/competition-management.component').then(
+                (m) => m.CompetitionManagementComponent
+              ),
+          },
+          // Phase 3: 实习管理
+          {
+            path: 'internships',
+            loadComponent: () =>
+              import('./components/vocational/internship-management.component').then(
+                (m) => m.InternshipManagementComponent
+              ),
+          },
+          // Phase 3: 就业管理
+          {
+            path: 'employment',
+            loadComponent: () =>
+              import('./components/vocational/employment-management.component').then(
+                (m) => m.EmploymentManagementComponent
+              ),
+          },
+          // Phase 3: 双创孵化
+          {
+            path: 'incubator',
+            loadComponent: () =>
+              import('./components/vocational/incubator-management.component').then(
+                (m) => m.IncubatorManagementComponent
+              ),
+          },
+          // Phase 4: 技能评估
+          {
+            path: 'assessments',
+            loadComponent: () =>
+              import('./components/vocational/assessment-management.component').then(
+                (m) => m.AssessmentManagementComponent
+              ),
+          },
+          // Phase 4: 证书管理
+          {
+            path: 'certificates',
+            loadComponent: () =>
+              import('./components/vocational/certificate-management.component').then(
+                (m) => m.CertificateManagementComponent
+              ),
+          },
+          { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+        ],
+      },
       // 云端备份管理（需要 cloud_backup feature）
       {
         path: 'backup-management',

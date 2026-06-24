@@ -19,6 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
@@ -44,6 +45,7 @@ import {
     MatIconModule,
     MatInputModule,
     MatPaginatorModule,
+    MatProgressSpinnerModule,
     MatSelectModule,
     MatTableModule,
     MatSnackBarModule,
@@ -357,7 +359,7 @@ export class AdminAuditComponent implements OnInit, OnDestroy {
       });
   }
 
-  private chipColor(method?: string): 'primary' | 'warn' | 'accent' | undefined {
+  chipColor(method?: string): 'primary' | 'warn' | 'accent' | undefined {
     if (!method) return undefined;
     if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) return 'warn';
     return 'primary';

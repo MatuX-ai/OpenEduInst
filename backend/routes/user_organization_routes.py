@@ -9,7 +9,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
 
-from models.user import User
+from models.base_models import User
 from models.user_organization import (
     UserOrganization,
     UserOrganizationCreate,

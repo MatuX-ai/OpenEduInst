@@ -19,6 +19,8 @@ export const TEACHER_PORTAL_MENU: MenuItem[] = [
   { id: 'teacher-topic-studio', title: '课题工作室', icon: 'lightbulb', path: 'topic-studio' },
   { id: 'teacher-schedule', title: '我的课表', icon: 'calendar_month', path: 'schedule' },
   { id: 'teacher-ai', title: 'AI 助教', icon: 'psychology', path: 'ai-assistant' },
+  { id: 'teacher-stem-dashboard', title: 'STEM 看板', icon: 'dashboard', path: 'stem/dashboard' },
+  { id: 'teacher-stem-clubs', title: 'STEM 社团', icon: 'group_work', path: 'stem/clubs' },
 ];
 
 @Injectable({
@@ -51,6 +53,25 @@ export class TenantMenuService {
     { id: 'equipment', title: '设备与器材管理', icon: 'devices', path: 'devices' },
     { id: 'competitions', title: '竞赛认证', icon: 'emoji_events', path: 'competitions' },
     { id: 'ai-assistant', title: 'AI 助教 · 小启', icon: 'psychology', path: 'ai-assistant' },
+    {
+      id: 'stem', title: 'STEM 教育管理', icon: 'stadia_controller', children: [
+        { id: 'stem-dashboard', title: 'STEM 看板', icon: 'dashboard', path: 'stem/dashboard' },
+        { id: 'stem-clubs', title: '社团管理', icon: 'group_work', path: 'stem/clubs' },
+        { id: 'stem-consumables', title: '耗材管理', icon: 'inventory_2', path: 'stem/consumables' },
+      ]
+    },
+    {
+      id: 'bureau', title: '教育局管理平台', icon: 'account_balance', children: [
+        { id: 'bureau-dashboard', title: '数据总览', icon: 'dashboard', path: 'bureau' },
+        { id: 'bureau-schools', title: '学校监管', icon: 'school', path: 'bureau' },
+        { id: 'bureau-equipment', title: '设备调配', icon: 'devices', path: 'bureau' },
+        { id: 'bureau-training', title: '师资培训', icon: 'school', path: 'bureau' },
+        { id: 'bureau-competitions', title: '竞赛管理', icon: 'emoji_events', path: 'bureau' },
+        { id: 'bureau-budget', title: '经费管理', icon: 'account_balance_wallet', path: 'bureau' },
+        { id: 'bureau-curriculum', title: '课程资源', icon: 'library_books', path: 'bureau' },
+        { id: 'bureau-reports', title: '数据报表', icon: 'assessment', path: 'bureau' },
+      ]
+    },
     {
       id: 'finance', title: '财务与资产', icon: 'account_balance_wallet', children: [
         { id: 'finance-dashboard', title: '财务管理', icon: 'payments', path: 'finance' },

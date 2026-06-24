@@ -62,7 +62,7 @@ type CardMetric = {
         <div class="dashboard__header-actions">
           <span class="role-chip" *ngIf="currentUser?.role">
             <mat-icon>security</mat-icon>
-            {{ currentUser.role }}
+            {{ currentUser!.role }}
           </span>
           <button mat-raised-button color="primary" routerLink="/admin/audit">
             <mat-icon>description</mat-icon>

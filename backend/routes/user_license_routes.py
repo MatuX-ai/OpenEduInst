@@ -12,7 +12,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from models.license import License
-from models.user import User
+from models.base_models import User
 from models.user_license import (
     AssignUserLicenseRequest,
     UpdateUserLicenseRequest,
@@ -20,7 +20,7 @@ from models.user_license import (
     UserLicenseResponse,
     UserLicenseStatus,
 )
-from routes.auth_routes import get_current_user
+from utils.auth_utils import get_current_user_sync
 from utils.database import get_db
 
 router = APIRouter(prefix="/api/users", tags=["用户许可证"])
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/api/users", tags=["用户许可证"])
 async def get_user_licenses(
     user_id: int = Path(..., description="用户ID"),
     include_inactive: bool = Query(False, description="是否包含非活跃的许可证"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """获取用户的所有许可证关联"""
@@ -72,7 +72,7 @@ async def get_user_licenses(
 async def assign_license_to_user(
     user_id: int = Path(..., description="用户ID"),
     request: AssignUserLicenseRequest = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """为用户分配许可证"""
@@ -143,7 +143,7 @@ async def assign_license_to_user(
 async def get_user_license(
     user_id: int = Path(..., description="用户ID"),
     license_id: int = Path(..., description="许可证ID"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """获取用户特定许可证的关联信息"""
@@ -180,7 +180,7 @@ async def update_user_license(
     user_id: int = Path(..., description="用户ID"),
     license_id: int = Path(..., description="许可证ID"),
     request: UpdateUserLicenseRequest = None,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """更新用户许可证关联"""
@@ -238,7 +238,7 @@ async def update_user_license(
 async def remove_user_license(
     user_id: int = Path(..., description="用户ID"),
     license_id: int = Path(..., description="许可证ID"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """移除用户许可证关联"""
@@ -269,7 +269,7 @@ async def remove_user_license(
 @router.get("/me/licenses", response_model=List[UserLicenseResponse])
 async def get_my_licenses(
     include_inactive: bool = Query(False, description="是否包含非活跃的许可证"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user_sync),
     db: AsyncSession = Depends(get_db),
 ):
     """获取当前用户的所有许可证关联（便捷接口）"""

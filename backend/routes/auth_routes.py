@@ -8,7 +8,6 @@ import logging
 import os
 import re
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, field_validator, Field
@@ -20,18 +19,19 @@ from utils.auth_utils import (
     create_refresh_token_sync,
     get_current_user_sync,
     verify_token_sync,
+    hash_password,
+    verify_password,
 )
 from config.settings import settings
-import bcrypt
 import requests
+
+# 向后兼容：user_license_routes.py 等此前依赖此别名
+get_current_user = get_current_user_sync
 
 router = APIRouter(prefix="/api/v1/auth", tags=["认证"])
 
 # 模块级 logger：日志中出现 `routes.auth_routes`，方便 grep 过滤
 logger = logging.getLogger(__name__)
-
-# 确保 User 模型有 password_hash 字段
-# 如果 base_models.py 中还没有，请手动添加: password_hash = Column(String(255), nullable=False)
 
 # ---------- 校验规则常量（集中管理，便于测试与调整） ----------
 USERNAME_MIN_LEN = 3
@@ -264,16 +264,6 @@ class LinkImatuRequest(BaseModel):
 
 class VerifyImatuRequest(BaseModel):
     imatu_token: str = Field(..., min_length=1, max_length=2048)
-
-
-def hash_password(password: str) -> str:
-    """对密码进行哈希处理"""
-    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """验证密码"""
-    return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
 
 @router.post("/email/send-code", summary="发送邮箱验证码")

@@ -14,6 +14,7 @@ from __future__ import annotations
 import logging
 import time
 import uuid
+import bcrypt
 from datetime import datetime, timedelta
 from typing import Optional, Tuple
 
@@ -32,6 +33,20 @@ from utils.database import get_db
 logger = logging.getLogger(__name__)
 
 oauth2_scheme = HTTPBearer(auto_error=False)
+
+
+# ---------- 密码哈希 / 验证（集中定义，避免各路由重复实现） ----------
+def hash_password(password: str) -> str:
+    """使用 bcrypt 对密码进行加盐哈希。"""
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
+def verify_password(plain_password: str, hashed_password: str) -> bool:
+    """验证明文密码与 bcrypt 哈希是否匹配。"""
+    try:
+        return bcrypt.checkpw(plain_password.encode("utf-8"), hashed_password.encode("utf-8"))
+    except (ValueError, TypeError):
+        return False
 
 
 def _decode_token(token: str) -> dict:

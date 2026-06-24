@@ -13,6 +13,23 @@ export interface LoginResponse {
   token_type: string;
 }
 
+export interface DemoAccount {
+  username: string;
+  label: string;
+  org_name: string;
+  description: string;
+  org_type: string;
+}
+
+export interface DemoLoginResponse {
+  access_token: string;
+  token_type: string;
+  username: string;
+  user_id: number;
+  org_id: number | null;
+  role: string;
+}
+
 export interface UserInfo {
   user_id: number;
   username: string;
@@ -40,6 +57,38 @@ export class AuthService {
         console.error('Failed to parse user info:', e);
       }
     }
+  }
+
+  /**
+   * 演示账号一键登录
+   */
+  demoLogin(username: string): Observable<DemoLoginResponse> {
+    return this.http.post<DemoLoginResponse>(`${this.apiUrl}/demo/login`, { username }).pipe(
+      tap(response => {
+        localStorage.setItem('access_token', response.access_token);
+        localStorage.setItem('user_info', JSON.stringify({
+          user_id: response.user_id,
+          username: response.username,
+          org_id: response.org_id,
+          role: response.role,
+        }));
+        this.currentUserSubject.next({
+          user_id: response.user_id,
+          username: response.username,
+          email: '',
+          full_name: response.username,
+          org_id: response.org_id,
+          role: response.role,
+        });
+      })
+    );
+  }
+
+  /**
+   * 获取演示账号列表
+   */
+  getDemoAccounts(): Observable<{ accounts: DemoAccount[]; password_hint: string }> {
+    return this.http.get<{ accounts: DemoAccount[]; password_hint: string }>(`${this.apiUrl}/demo/accounts`);
   }
 
   /**

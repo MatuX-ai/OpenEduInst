@@ -42,6 +42,38 @@ from models.token_billing import (  # noqa: F401
     TokenPackage,
     TokenBalance,
 )
+from models.club import (  # noqa: F401
+    Club, ClubMember, ClubActivity, ClubAttendance,
+    ClubRecruitment, ClubApplication,
+)
+from models.consumable import (  # noqa: F401
+    Consumable, ConsumableUsage, ConsumablePurchaseRequest, PurchaseRequestItem,
+)
+from models.vocational_equipment import (  # noqa: F401
+    VocEquipment, VocEquipmentBorrow, VocEquipmentMaintenance,
+    VocFaultReport, VocInventoryRecord,
+)
+from models.vocational_safety import (  # noqa: F401
+    VocSafetyCertification, VocSafetyChecklist, VocIncidentReport,
+    VocCourse, VocTrainingRoom, VocTrainingSchedule,
+)
+from models.vocational_cooperation import (  # noqa: F401
+    VocEnterprise, VocEnterpriseDemand, VocCooperationProject,
+    VocProjectMilestone, VocCompetition, VocCompetitionRegistration,
+    VocInternshipPosition, VocInternshipRecord, VocEmploymentRecord,
+    VocIncubatorProject, VocIncubatorMember,
+)
+from models.vocational_assessment import (  # noqa: F401
+    VocSkillStandard, VocSkillAssessment, VocCertificate,
+)
+from models.bureau_models import (  # noqa: F401
+    BureauSchool, SchoolSTEMScore, BureauEquipmentPool,
+    EquipmentRequest, EquipmentAllocation, CrossSchoolSharing,
+    TrainingSession, TrainingRegistration,
+    BureauCompetition, CompetitionResult,
+    BudgetPlan, BudgetExpense,
+    BureauCurriculumResource,
+)
 
 # -------- CORS: 从环境变量读取允许的前端域名 --------
 _cors_raw = os.getenv("CORS_ALLOW_ORIGINS", "")
@@ -93,6 +125,16 @@ from routes.opensciedu_routes import router as opensciedu_router
 # 新增：审计日志路由 & 系统设置路由
 from routes.audit_routes import router as audit_router
 from routes.system_routes import router as system_router
+# 新增：STEM 社团 & 耗材 & 看板路由
+from routes.club_routes import router as club_router
+from routes.consumable_routes import router as consumable_router
+from routes.stem_dashboard_routes import router as stem_dashboard_router
+from routes.demo_routes import router as demo_router
+# 新增：职业学校 安全/教务/合作/竞赛/评估 路由
+from routes.vocational_safety_routes import router as vocational_safety_router
+from routes.vocational_cooperation_routes import router as vocational_cooperation_router
+from routes.vocational_assessment_routes import router as vocational_assessment_router
+from routes.bureau_routes import router as bureau_router
 
 
 try:
@@ -205,6 +247,17 @@ app.include_router(opensciedu_router)
 # 新增：审计日志 & 系统设置
 app.include_router(audit_router)
 app.include_router(system_router)
+# 新增：STEM 社团 & 耗材 & 看板
+app.include_router(club_router)
+app.include_router(consumable_router)
+app.include_router(stem_dashboard_router)
+app.include_router(demo_router)
+# 注册：职业学校 安全/教务/合作/竞赛/评估 路由
+app.include_router(vocational_safety_router)
+app.include_router(vocational_cooperation_router)
+app.include_router(vocational_assessment_router)
+# 注册：教育局管理平台 路由
+app.include_router(bureau_router)
 
 
 @app.get("/favicon.ico", include_in_schema=False)

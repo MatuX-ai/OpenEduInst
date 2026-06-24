@@ -35,6 +35,57 @@ from .competition import Competition, CompetitionRegistration, Certification, Ex
 from .notification import Notification, NotificationType, NotificationPriority
 from .marketing import MarketingCampaign, Coupon, CampaignType, CampaignStatus
 from .parent_portal import ClassFeedback, StudentAchievement, ParentMessage, FeedbackRating
+from .club import (
+    Club, ClubMember, ClubActivity, ClubAttendance,
+    ClubRecruitment, ClubApplication,
+    ClubCategory, ClubStatus, ClubMemberRole, ClubMemberStatus,
+    ActivityType, AttendanceStatus, ApplicationStatus,
+    ClubCreate, ClubUpdate, ClubResponse,
+    ClubMemberCreate, ClubMemberUpdate, ClubMemberResponse,
+    ClubActivityCreate, ClubActivityUpdate, ClubActivityResponse,
+    ClubAttendanceCreate, ClubAttendanceResponse,
+    ClubRecruitmentCreate, ClubRecruitmentUpdate, ClubRecruitmentResponse,
+    ClubApplicationCreate, ClubApplicationReview, ClubApplicationResponse,
+    ClubStatsResponse, ClubDetailStats,
+)
+from .consumable import (
+    Consumable, ConsumableUsage, ConsumablePurchaseRequest, PurchaseRequestItem,
+    ConsumableCategory, PurchaseRequestStatus,
+    ConsumableCreate, ConsumableUpdate, ConsumableResponse,
+    ConsumableUsageCreate, ConsumableUsageResponse,
+    PurchaseRequestCreate, PurchaseRequestReview, PurchaseRequestResponse,
+    PurchaseRequestItemCreate, PurchaseRequestItemResponse,
+    ConsumableStatsResponse, LowStockItem,
+)
+from .vocational_equipment import (
+    VocEquipment, VocEquipmentBorrow, VocEquipmentMaintenance,
+    VocFaultReport, VocInventoryRecord,
+    VocEquipmentCategory, VocEquipmentStatus, VocSafetyLevel,
+    VocBorrowStatus, VocMaintenanceType,
+)
+from .vocational_safety import (
+    VocSafetyCertification, VocSafetyChecklist, VocIncidentReport,
+    VocCourse, VocTrainingRoom, VocTrainingSchedule,
+    VocSafetyCertStatus, VocIncidentType,
+    VocSafetyCertCreate, VocChecklistCreate, VocIncidentCreate,
+    VocCourseCreate, VocRoomCreate, VocScheduleCreate,
+    VocSafetyStats, VocRoomUtilization,
+)
+from .vocational_cooperation import (
+    VocEnterprise, VocEnterpriseDemand, VocCooperationProject,
+    VocProjectMilestone, VocCompetition, VocCompetitionRegistration,
+    VocInternshipPosition, VocInternshipRecord, VocEmploymentRecord,
+    VocIncubatorProject, VocIncubatorMember,
+    VocEnterpriseCreate, VocEnterpriseResponse,
+    VocCoopProjectCreate, VocIncubatorCreate,
+    VocCompetitionCreate, VocInternshipCreate, VocEmploymentCreate,
+    VocCooperationStats,
+)
+from .vocational_assessment import (
+    VocSkillStandard, VocSkillAssessment, VocCertificate,
+    VocSkillStandardCreate, VocAssessmentCreate, VocCertificateCreate,
+    VocStudentSkillProfile,
+)
 
 __all__ = [
     # License models
@@ -106,4 +157,49 @@ __all__ = [
     "StudentAchievement",
     "ParentMessage",
     "FeedbackRating",
+    # Club models
+    "Club", "ClubMember", "ClubActivity", "ClubAttendance",
+    "ClubRecruitment", "ClubApplication",
+    "ClubCategory", "ClubStatus", "ClubMemberRole", "ClubMemberStatus",
+    "ActivityType", "AttendanceStatus", "ApplicationStatus",
+    "ClubCreate", "ClubUpdate", "ClubResponse",
+    "ClubMemberCreate", "ClubMemberUpdate", "ClubMemberResponse",
+    "ClubActivityCreate", "ClubActivityUpdate", "ClubActivityResponse",
+    "ClubAttendanceCreate", "ClubAttendanceResponse",
+    "ClubRecruitmentCreate", "ClubRecruitmentUpdate", "ClubRecruitmentResponse",
+    "ClubApplicationCreate", "ClubApplicationReview", "ClubApplicationResponse",
+    "ClubStatsResponse", "ClubDetailStats",
+    # Consumable models
+    "Consumable", "ConsumableUsage", "ConsumablePurchaseRequest", "PurchaseRequestItem",
+    "ConsumableCategory", "PurchaseRequestStatus",
+    "ConsumableCreate", "ConsumableUpdate", "ConsumableResponse",
+    "ConsumableUsageCreate", "ConsumableUsageResponse",
+    "PurchaseRequestCreate", "PurchaseRequestReview", "PurchaseRequestResponse",
+    "PurchaseRequestItemCreate", "PurchaseRequestItemResponse",
+    "ConsumableStatsResponse", "LowStockItem",
+    # Vocational Equipment models
+    "VocEquipment", "VocEquipmentBorrow", "VocEquipmentMaintenance",
+    "VocFaultReport", "VocInventoryRecord",
+    "VocEquipmentCategory", "VocEquipmentStatus", "VocSafetyLevel",
+    "VocBorrowStatus", "VocMaintenanceType",
+    # Vocational Safety & Academic models
+    "VocSafetyCertification", "VocSafetyChecklist", "VocIncidentReport",
+    "VocCourse", "VocTrainingRoom", "VocTrainingSchedule",
+    "VocSafetyCertStatus", "VocIncidentType",
+    "VocSafetyCertCreate", "VocChecklistCreate", "VocIncidentCreate",
+    "VocCourseCreate", "VocRoomCreate", "VocScheduleCreate",
+    "VocSafetyStats", "VocRoomUtilization",
+    # Vocational Cooperation models
+    "VocEnterprise", "VocEnterpriseDemand", "VocCooperationProject",
+    "VocProjectMilestone", "VocCompetition", "VocCompetitionRegistration",
+    "VocInternshipPosition", "VocInternshipRecord", "VocEmploymentRecord",
+    "VocIncubatorProject", "VocIncubatorMember",
+    "VocEnterpriseCreate", "VocEnterpriseResponse",
+    "VocCoopProjectCreate", "VocIncubatorCreate",
+    "VocCompetitionCreate", "VocInternshipCreate", "VocEmploymentCreate",
+    "VocCooperationStats",
+    # Vocational Assessment models
+    "VocSkillStandard", "VocSkillAssessment", "VocCertificate",
+    "VocSkillStandardCreate", "VocAssessmentCreate", "VocCertificateCreate",
+    "VocStudentSkillProfile",
 ]
