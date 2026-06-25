@@ -34,26 +34,6 @@ import { environment } from '../../../../../environments/environment';
   ],
   template: `
     <div class="side-nav-container">
-      <!-- Logo 区域（对齐原型） -->
-      <div class="logo-section">
-        <div class="logo-icon">
-          <mat-icon>memory</mat-icon>
-        </div>
-        <div class="logo-text">
-          <h1 class="org-name">{{ orgName }}</h1>
-          <p class="org-subtitle">{{ orgSubtitle }}</p>
-        </div>
-      </div>
-
-      <!-- 用户信息（对齐原型） -->
-      <div class="user-section">
-        <div class="user-avatar">{{ userInitial }}</div>
-        <div class="user-info">
-          <p class="user-name">{{ userName }}</p>
-          <p class="user-role">{{ userRole }}</p>
-        </div>
-      </div>
-
       <!-- 导航菜单 -->
       <nav class="nav-section">
         <ng-container *ngFor="let group of menuItems">
@@ -105,97 +85,6 @@ import { environment } from '../../../../../environments/environment';
         display: flex;
         flex-direction: column;
         height: 100%;
-      }
-
-      /* === Logo 区域（对齐原型） === */
-      .logo-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 20px;
-        border-bottom: 1px solid $sidebar-border;
-      }
-
-      .logo-icon {
-        width: 36px;
-        height: 36px;
-        background: linear-gradient(135deg, $sidebar-accent-from, $sidebar-accent-to);
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-
-      .logo-icon mat-icon {
-        color: white;
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-
-      .logo-text {
-        min-width: 0;
-      }
-
-      .org-name {
-        font-size: 14px;
-        font-weight: 700;
-        color: $sidebar-text-primary;
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .org-subtitle {
-        font-size: 11px;
-        color: $sidebar-text-tertiary;
-        margin: 0;
-      }
-
-      /* === 用户信息（对齐原型） === */
-      .user-section {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 16px 20px;
-        border-bottom: 1px solid $sidebar-border;
-      }
-
-      .user-avatar {
-        width: 40px;
-        height: 40px;
-        background: $sidebar-active-bg;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 14px;
-        font-weight: 600;
-        flex-shrink: 0;
-        box-shadow: 0 0 0 2px $sidebar-avatar-ring;
-      }
-
-      .user-info {
-        min-width: 0;
-      }
-
-      .user-name {
-        font-size: 14px;
-        font-weight: 600;
-        color: $sidebar-text-secondary;
-        margin: 0;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-
-      .user-role {
-        font-size: 12px;
-        color: $sidebar-text-tertiary;
-        margin: 0;
       }
 
       /* === 导航菜单 === */
@@ -360,10 +249,13 @@ export class OrganizationSideNavComponent implements OnInit, OnDestroy {
 
   loadMenu(): void {
     const role = this.authService.getCurrentUser()?.role ?? 'admin';
+    const orgType = this.orgContext.currentContext?.type || 'training_institution';
     this.subs.add(
       this.tenantMenuService.getMenu(this.orgId).subscribe({
         next: (res) => {
-          this.menuItems = this.tenantMenuService.filterMenuForRole(res.menu, role);
+          let menu = this.tenantMenuService.filterMenuForRole(res.menu, role);
+          menu = this.tenantMenuService.filterMenuForOrgType(menu, orgType);
+          this.menuItems = menu;
           const firstGroup = this.menuItems.find(m => m.children && m.children.length > 0);
           if (firstGroup) {
             this.expandedGroups.add(firstGroup.id);

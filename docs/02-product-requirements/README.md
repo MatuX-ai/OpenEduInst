@@ -145,6 +145,18 @@ XX-module-name/
 
 **内容来源**：原型站（梅山县职业技术学校）演示数据 + 现有 [VOCATIONAL_STEM_CLOUD_HOSTING_PRD.md](../VOCATIONAL_STEM_CLOUD_HOSTING_PRD.md)
 
+### 02-06 Exam Management — 考试管理
+
+| 文档 | 说明 |
+|------|------|
+| [06-exam-management/index.md](06-exam-management/index.md) | 考试管理总览、业务流程、角色权限、系统架构、数据结构设计、用户流程图、界面原型草图、实施优先级建议 |
+| [06-exam-management/functional-requirements.md](06-exam-management/functional-requirements.md) | 功能需求：题库获取（FR-EXAM-01）、试卷排版与打印（FR-EXAM-02）、试题组织（FR-EXAM-03）、线上考试安排（FR-EXAM-04） |
+| [06-exam-management/non-functional-requirements.md](06-exam-management/non-functional-requirements.md) | 非功能需求：性能、安全、可用性、用户体验、兼容性、数据规范 |
+| [06-exam-management/user-stories.md](06-exam-management/user-stories.md) | 用户故事：授课教师、机构管理员、教务主管、学员、家长 |
+| [06-exam-management/acceptance-criteria.md](06-exam-management/acceptance-criteria.md) | 验收标准：四大模块详细验收标准 + M1-M4 里程碑验收计划 |
+
+**内容来源**：新建需求文档（2026-06-24），基于OpenMT教育平台考试管理业务需求。
+
 ### 模块代码表更新
 
 在现有模块代码基础上，新增以下职业学校专用模块代码：
@@ -161,6 +173,7 @@ XX-module-name/
 | `VSAF` | 安全监控与准入 |
 | `VASS` | 技能评估体系 |
 | `VDSH` | 数据看板与分析 |
+| `EXAM` | 考试管理 |
 
 ---
 

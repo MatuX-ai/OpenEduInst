@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = "https://eduInst.matux.tech";
+  const baseUrl = "https://jigou.matux.tech";
 
   return [
     {
@@ -64,6 +64,12 @@ export default function sitemap() {
     },
     {
       url: `${baseUrl}/features/makerspace`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/features/cloud-hosting`,
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.8,

@@ -336,6 +336,83 @@ const routes: Routes = [
           { path: '', redirectTo: '', pathMatch: 'full' },
         ],
       },
+      // 考试管理
+      {
+        path: 'exam',
+        children: [
+          {
+            path: 'bank',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-question-bank.component').then(
+                (m) => m.ExamQuestionBankComponent
+              ),
+          },
+          {
+            path: 'papers',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-paper-list.component').then(
+                (m) => m.ExamPaperListComponent
+              ),
+          },
+          {
+            path: 'papers/:paperId',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-paper-editor.component').then(
+                (m) => m.ExamPaperEditorComponent
+              ),
+          },
+          {
+            path: 'papers/:paperId/edit',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-paper-editor.component').then(
+                (m) => m.ExamPaperEditorComponent
+              ),
+          },
+          {
+            path: 'tasks',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-task-list.component').then(
+                (m) => m.ExamTaskListComponent
+              ),
+          },
+          {
+            path: 'tasks/create',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-task-create.component').then(
+                (m) => m.ExamTaskCreateComponent
+              ),
+          },
+          {
+            path: 'tasks/:taskId/exam',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-student-exam.component').then(
+                (m) => m.ExamStudentExamComponent
+              ),
+          },
+          {
+            path: 'tasks/:taskId/results',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-results.component').then(
+                (m) => m.ExamResultsComponent
+              ),
+          },
+          {
+            path: 'tasks/results/:resultId',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-grading.component').then(
+                (m) => m.ExamGradingComponent
+              ),
+          },
+          {
+            path: 'my-exams',
+            loadComponent: () =>
+              import('../../features/exam-management/exam-student-exam.component').then(
+                (m) => m.ExamStudentExamComponent
+              ),
+          },
+          { path: '', redirectTo: 'bank', pathMatch: 'full' },
+        ],
+      },
       // 职业学校 - 实训设备管理
       {
         path: 'vocational',

@@ -1,12 +1,10 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterModule, Routes, provideRouter } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { OrganizationsModule } from './organization-management/organization-portal/organizations.module';
-import { InstitutionManagementModule } from './admin/institution-management/institution-management.module';
 import { authInterceptor } from './interceptors/auth.interceptor';
 
 const routes: Routes = [
@@ -23,25 +21,30 @@ const routes: Routes = [
     path: 'organization', 
     loadChildren: () => import('./organization-management/organization-portal/organizations.module').then(m => m.OrganizationsModule)
   },
-  { 
-    path: 'admin', 
-    loadChildren: () => import('./admin/institution-management/institution-management.module').then(m => m.InstitutionManagementModule)
-  },
   {
-    path: 'admin/audit',
-    loadComponent: () => import('./admin/admin-audit.component').then(m => m.AdminAuditComponent),
-  },
-  {
-    path: 'admin/users',
-    loadComponent: () => import('./admin/admin-users.component').then(m => m.AdminUsersComponent),
-  },
-  {
-    path: 'admin/security',
-    loadComponent: () => import('./admin/admin-security.component').then(m => m.AdminSecurityComponent),
-  },
-  {
-    path: 'admin/dashboard',
-    loadComponent: () => import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+    path: 'admin',
+    children: [
+      {
+        path: '',
+        loadChildren: () => import('./admin/institution-management/institution-management.module').then(m => m.InstitutionManagementModule),
+      },
+      {
+        path: 'audit',
+        loadComponent: () => import('./admin/admin-audit.component').then(m => m.AdminAuditComponent),
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./admin/admin-users.component').then(m => m.AdminUsersComponent),
+      },
+      {
+        path: 'security',
+        loadComponent: () => import('./admin/admin-security.component').then(m => m.AdminSecurityComponent),
+      },
+      {
+        path: 'dashboard',
+        loadComponent: () => import('./admin/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+      },
+    ],
   },
   // STEM 教育管理路由
   {
@@ -66,7 +69,10 @@ const routes: Routes = [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
-  { path: '**', redirectTo: '/organization' }
+  { 
+    path: '**', 
+    loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent)
+  }
 ];
 
 @NgModule({
@@ -75,8 +81,6 @@ const routes: Routes = [
     BrowserModule,
     BrowserAnimationsModule,
     RouterModule.forRoot(routes),
-    OrganizationsModule,
-    InstitutionManagementModule
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor]))

@@ -6,6 +6,7 @@ OpenMTSciEd 代理路由
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -26,8 +27,10 @@ from services.opensciedu_client import (
     resolve_api_key,
 )
 from services.opensciedu_search_service import unified_search
-from utils.auth_utils import get_current_user_sync, require_org_context, require_role
+from utils.auth_utils import get_current_user_sync, require_org_context, require_role, generate_scied_token
 from utils.database import get_db
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/opensciedu", tags=["OpenMTSciEd 集成"])
 
@@ -154,20 +157,73 @@ def get_topic_studio_links(
     draft_id: Optional[str] = None,
     db: Session = Depends(get_db),
     ctx=Depends(require_org_context),
+    user=Depends(get_current_user_sync),
 ):
-    """课题工作室深链（新窗口打开 OpenMTSciEd SPA）"""
+    """课题工作室深链（携带跨平台 JWT 实现免登录）"""
     _, org_id = ctx
     org = _get_org(db, org_id)
     web_base = normalize_web_base(settings.OPENSCIEDU_WEB_BASE, settings.OPENSCIEDU_API_BASE)
     enabled = is_integration_enabled(org)
+
+    # 生成跨平台 Token
+    scied_token = ""
+    if enabled and settings.EDUINST_SHARED_SECRET:
+        try:
+            scied_token = generate_scied_token(user, org_id)
+        except Exception as exc:
+            logger.warning("生成跨平台 Token 失败: %s", exc)
+
+    token_param = f"?token={scied_token}" if scied_token else ""
+
     return {
         "enabled": enabled,
         "web_base": web_base,
-        "list_url": build_topic_studio_url(),
-        "new_draft_url": build_topic_studio_url("new"),
-        "draft_url": build_topic_studio_url(draft_id) if draft_id else None,
+        "list_url": build_topic_studio_url() + token_param,
+        "new_draft_url": build_topic_studio_url("new") + token_param,
+        "draft_url": (build_topic_studio_url(draft_id) + token_param) if draft_id else None,
         "org_id": org_id,
-        "note": "课题工作室需在 OpenMTSciEd 桌面端/Web 登录后使用；EduInst 仅提供深链入口",
+        "token": scied_token,
+        "note": "课题工作室通过跨平台 JWT 实现免登录访问；Token 有效期与登录会话一致",
+    }
+
+
+@router.get("/token")
+def get_scied_cross_token(
+    db: Session = Depends(get_db),
+    ctx=Depends(require_org_context),
+    user=Depends(get_current_user_sync),
+):
+    """获取跨平台认证 Token，用于 iframe 嵌入 OpenMTSciEd 页面"""
+    _, org_id = ctx
+    org = _get_org(db, org_id)
+
+    if not settings.EDUINST_SHARED_SECRET:
+        raise HTTPException(
+            status_code=501,
+            detail={"code": "NOT_CONFIGURED", "message": "跨平台统一认证未配置（缺少 EDUINST_SHARED_SECRET）"},
+        )
+
+    if not is_integration_enabled(org):
+        raise HTTPException(
+            status_code=403,
+            detail={"code": "OPENSCIEDU_DISABLED", "message": "OpenMTSciEd 集成未启用"},
+        )
+
+    try:
+        token = generate_scied_token(user, org_id)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail={"code": "TOKEN_GENERATE_FAILED", "message": f"生成跨平台 Token 失败: {exc}"},
+        ) from exc
+
+    web_base = normalize_web_base(settings.OPENSCIEDU_WEB_BASE, settings.OPENSCIEDU_API_BASE)
+    return {
+        "token": token,
+        "web_base": web_base,
+        "studio_url": f"{web_base}/topic-studio?token={token}",
+        "courseware_url": f"{web_base}/coursewares?token={token}",
+        "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     }
 
 

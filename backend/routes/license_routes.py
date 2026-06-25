@@ -436,10 +436,3 @@ async def license_system_health(
 
     return health_status
 
-
-# 错误处理器 - 暂时禁用（应在 main.py 中全局注册）
-# @router.exception_handler(Exception)
-# async def general_exception_handler(request: Request, exc: Exception):
-#     """通用异常处理器"""
-#     return {"error": "内部服务器错误", "message": str(exc), "path": request.url.path}
-

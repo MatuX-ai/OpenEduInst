@@ -11,7 +11,12 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AuthService, DemoAccount } from '../../core/services/auth.service';
+import {
+  DemoOrgSelectDialogComponent,
+  OrgTypeOption,
+} from './demo-org-select-dialog.component';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +33,8 @@ import { AuthService, DemoAccount } from '../../core/services/auth.service';
     MatIconModule,
     MatChipsModule,
     MatDividerModule,
+    MatDialogModule,
+    DemoOrgSelectDialogComponent,
   ],
   template: `
     <div class="login-container">
@@ -86,33 +93,32 @@ import { AuthService, DemoAccount } from '../../core/services/auth.service';
           <!-- 演示账号一键登录 -->
           <div class="demo-section">
             <div class="demo-title">
-              <mat-icon color="accent">stars</mat-icon>
+              <mat-icon class="demo-star-icon">stars</mat-icon>
               <span>一键体验演示系统</span>
             </div>
-            <p class="demo-hint">选择以下任一角色快速登录，无需输入密码</p>
-            <div class="demo-accounts">
-              <button
-                *ngFor="let acc of demoAccounts"
-                class="demo-account-btn"
-                [class.loading]="demoLoading === acc.username"
-                (click)="onDemoLogin(acc)"
-                [disabled]="demoLoading !== null"
-              >
-                <div class="demo-account-info">
-                  <div class="demo-account-label">{{ acc.label }}</div>
-                  <div class="demo-account-org">
-                    <mat-icon>business</mat-icon>
-                    {{ acc.org_name }}
-                  </div>
+            <p class="demo-hint">无需输入密码，选择机构类型快速进入演示环境</p>
+            <button
+              class="demo-entry-btn"
+              [class.loading]="demoLoading !== null"
+              (click)="openDemoDialog()"
+              [disabled]="demoLoading !== null"
+            >
+              <div class="demo-entry-content">
+                <mat-icon class="demo-entry-icon">rocket_launch</mat-icon>
+                <div class="demo-entry-text">
+                  <span class="demo-entry-label">一键演示</span>
+                  <span class="demo-entry-desc">选择机构类型快速体验</span>
                 </div>
-                <mat-icon class="demo-account-arrow" *ngIf="demoLoading !== acc.username">arrow_forward_ios</mat-icon>
+              </div>
+              <div class="demo-entry-action">
                 <mat-progress-spinner
-                  *ngIf="demoLoading === acc.username"
-                  diameter="18"
+                  *ngIf="demoLoading !== null"
+                  diameter="20"
                   mode="indeterminate"
                 ></mat-progress-spinner>
-              </button>
-            </div>
+                <mat-icon *ngIf="demoLoading === null" class="demo-entry-arrow">arrow_forward</mat-icon>
+              </div>
+            </button>
           </div>
         </mat-card-content>
 
@@ -194,10 +200,11 @@ import { AuthService, DemoAccount } from '../../core/services/auth.service';
       margin-bottom: 4px;
     }
 
-    .demo-title mat-icon {
+    .demo-star-icon {
       font-size: 22px;
       width: 22px;
       height: 22px;
+      color: #ffb300;
     }
 
     .demo-hint {
@@ -206,78 +213,106 @@ import { AuthService, DemoAccount } from '../../core/services/auth.service';
       margin: 4px 0 16px 0;
     }
 
-    .demo-accounts {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 320px;
-      overflow-y: auto;
-    }
-
-    .demo-account-btn {
+    .demo-entry-btn {
       display: flex;
       align-items: center;
       justify-content: space-between;
       width: 100%;
-      padding: 12px 16px;
-      border: 1px solid #e0e0e0;
-      border-radius: 10px;
-      background: #fafafa;
+      padding: 16px 20px;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
       text-align: left;
       font-family: inherit;
+      position: relative;
+      overflow: hidden;
     }
 
-    .demo-account-btn:hover:not(:disabled) {
-      background: #e3f2fd;
-      border-color: #90caf9;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(25, 118, 210, 0.12);
+    .demo-entry-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #e3f2fd 0%, #fce4ec 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    .demo-account-btn:disabled {
+    .demo-entry-btn:hover:not(:disabled) {
+      border-color: #1565c0;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(21, 101, 192, 0.15);
+    }
+
+    .demo-entry-btn:hover:not(:disabled)::before {
+      opacity: 1;
+    }
+
+    .demo-entry-btn:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(21, 101, 192, 0.1);
+    }
+
+    .demo-entry-btn:disabled {
       opacity: 0.7;
       cursor: not-allowed;
     }
 
-    .demo-account-btn.loading {
-      background: #e3f2fd;
+    .demo-entry-btn.loading {
       border-color: #90caf9;
+      background: #e3f2fd;
     }
 
-    .demo-account-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .demo-account-label {
-      font-weight: 600;
-      font-size: 14px;
-      color: #333;
-    }
-
-    .demo-account-org {
+    .demo-entry-content {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .demo-entry-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #1565c0;
+    }
+
+    .demo-entry-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .demo-entry-label {
+      font-weight: 700;
+      font-size: 15px;
+      color: #1a1a2e;
+    }
+
+    .demo-entry-desc {
       font-size: 12px;
-      color: #888;
-      margin-top: 2px;
+      color: #999;
     }
 
-    .demo-account-org mat-icon {
-      font-size: 14px;
-      width: 14px;
-      height: 14px;
+    .demo-entry-action {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
     }
 
-    .demo-account-arrow {
-      font-size: 16px;
-      width: 16px;
-      height: 16px;
-      color: #bbb;
-      flex-shrink: 0;
+    .demo-entry-arrow {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #1565c0;
+      transition: transform 0.25s ease;
+    }
+
+    .demo-entry-btn:hover:not(:disabled) .demo-entry-arrow {
+      transform: translateX(4px);
     }
 
     .footer-hint {
@@ -299,7 +334,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -313,6 +349,67 @@ export class LoginComponent implements OnInit {
       },
       error: () => {
         console.log('演示账号列表加载失败（后端可能未启动）');
+      },
+    });
+  }
+
+  /** 打开机构类型选择弹窗 */
+  openDemoDialog(): void {
+    const dialogRef = this.dialog.open(DemoOrgSelectDialogComponent, {
+      width: '540px',
+      maxWidth: '92vw',
+      panelClass: ['demo-org-select-panel'],
+      disableClose: false,
+      autoFocus: false,
+      backdropClass: 'demo-org-select-backdrop',
+    });
+
+    dialogRef.afterClosed().subscribe((option: OrgTypeOption | null) => {
+      if (!option) return;
+
+      // 根据选择的机构类型查找对应的演示账号
+      this.performDemoLogin(option);
+    });
+  }
+
+  /** 根据机构类型执行演示登录 */
+  private performDemoLogin(option: OrgTypeOption): void {
+    if (this.demoLoading) return;
+
+    // 查找与所选机构类型匹配的演示账号
+    const matchedAccount = this.demoAccounts.find(
+      (acc) => acc.org_type === option.type
+    );
+
+    if (!matchedAccount) {
+      this.snackBar.open(`未找到「${option.label}」类型的演示账号，请确认 seed 数据已正确初始化`, '关闭', {
+        duration: 4000,
+        panelClass: ['error-snackbar'],
+      });
+      return;
+    }
+
+    // 记录用户选择的机构类型（可用于后续分析）
+    console.log(`[Demo] 用户选择了机构类型: ${option.label} (${option.type})，使用账号: ${matchedAccount.username}`);
+
+    this.demoLoading = matchedAccount.username;
+
+    this.authService.demoLogin(matchedAccount.username).subscribe({
+      next: () => {
+        this.demoLoading = null;
+        this.snackBar.open(`以「${option.label}」演示身份登录成功！`, '关闭', {
+          duration: 2500,
+          panelClass: ['success-snackbar'],
+        });
+        this.router.navigate(['/organization']);
+      },
+      error: (error: any) => {
+        this.demoLoading = null;
+        const errorMessage = error.error?.detail || '演示登录失败，请确认后端已运行 seed 脚本';
+        this.snackBar.open(errorMessage, '关闭', {
+          duration: 4000,
+          panelClass: ['error-snackbar'],
+        });
       },
     });
   }
@@ -341,30 +438,6 @@ export class LoginComponent implements OnInit {
         const errorMessage = error.error?.detail || '登录失败，请检查用户名和密码';
         this.snackBar.open(errorMessage, '关闭', {
           duration: 3000,
-          panelClass: ['error-snackbar'],
-        });
-      },
-    });
-  }
-
-  onDemoLogin(account: DemoAccount): void {
-    if (this.demoLoading) return;
-    this.demoLoading = account.username;
-
-    this.authService.demoLogin(account.username).subscribe({
-      next: () => {
-        this.demoLoading = null;
-        this.snackBar.open(`以「${account.label}」身份登录成功！`, '关闭', {
-          duration: 2500,
-          panelClass: ['success-snackbar'],
-        });
-        this.router.navigate(['/organization']);
-      },
-      error: (error: any) => {
-        this.demoLoading = null;
-        const errorMessage = error.error?.detail || '演示登录失败，请确认后端已运行 seed 脚本';
-        this.snackBar.open(errorMessage, '关闭', {
-          duration: 4000,
           panelClass: ['error-snackbar'],
         });
       },

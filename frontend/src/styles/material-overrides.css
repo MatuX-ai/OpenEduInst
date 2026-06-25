@@ -29,3 +29,45 @@
 .mat-mdc-raised-button {
   margin: var(--spacing-xs, 4px) !important;
 }
+
+/* ===== 演示机构选择弹窗 ===== */
+
+/* 弹窗面板圆角 */
+.demo-org-select-panel .mat-mdc-dialog-surface {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+/* 弹窗背景遮罩 */
+.demo-org-select-backdrop {
+  background: rgba(0, 0, 0, 0.45) !important;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* 弹窗入场动画 */
+.demo-org-select-panel {
+  animation: dialogScaleIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dialogScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* 响应式：小屏设备适配 */
+@media (max-width: 480px) {
+  .demo-org-select-panel .mat-mdc-dialog-surface {
+    border-radius: 16px !important;
+  }
+
+  .demo-org-select-panel .mat-mdc-dialog-container {
+    padding: 12px;
+  }
+}

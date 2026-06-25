@@ -74,6 +74,9 @@ from models.bureau_models import (  # noqa: F401
     BudgetPlan, BudgetExpense,
     BureauCurriculumResource,
 )
+from models.exam import (  # noqa: F401
+    QuestionBank, Question, ExamPaper, PaperQuestion, ExamTask, ExamResult,
+)
 
 # -------- CORS: 从环境变量读取允许的前端域名 --------
 _cors_raw = os.getenv("CORS_ALLOW_ORIGINS", "")
@@ -91,50 +94,8 @@ else:
 # 安全配置
 _enforce_https = os.getenv("ENFORCE_HTTPS", "0").lower() in ("1", "true", "yes")
 
-# -------- 路由导入 --------
-from routes.license_routes import router as license_router
-from routes.auth_routes import router as auth_router
-from routes.org_creation_routes import router as org_creation_router
-from routes.schedule_routes import router as schedule_router
-from routes.business_routes import router as business_router
-from routes.tenant_routes import router as tenant_router
-from routes.vocational_routes import router as vocational_router
-from routes.student_routes import router as student_router
-from routes.hardware_routes import router as hardware_router
-from routes.token_routes import router as token_router
-from routes.token_purchase_routes import router as token_purchase_router
-from routes.project_routes import router as project_router
-from routes.space_routes import router as space_router
-from routes.stem_test_routes import router as stem_test_router
-from routes.leads_routes import router as leads_router
-from routes.resource_routes import router as resource_router
-from routes.competition_routes import router as competition_router
-from routes.notification_routes import router as notification_router
-from routes.marketing_routes import router as marketing_router
-from routes.parent_portal_routes import router as parent_portal_router
-from routes.educational_institution_routes import (
-    router as edu_router,
-    org_detail_router,
-    org_scoped_router,
-)
-from routes.org_overview_routes import router as org_overview_router
-from routes.cloud_backup_routes import router as cloud_backup_router
-from routes.ai_assistant_routes import router as ai_assistant_router
-from routes.websocket_routes import router as websocket_router
-from routes.opensciedu_routes import router as opensciedu_router
-# 新增：审计日志路由 & 系统设置路由
-from routes.audit_routes import router as audit_router
-from routes.system_routes import router as system_router
-# 新增：STEM 社团 & 耗材 & 看板路由
-from routes.club_routes import router as club_router
-from routes.consumable_routes import router as consumable_router
-from routes.stem_dashboard_routes import router as stem_dashboard_router
-from routes.demo_routes import router as demo_router
-# 新增：职业学校 安全/教务/合作/竞赛/评估 路由
-from routes.vocational_safety_routes import router as vocational_safety_router
-from routes.vocational_cooperation_routes import router as vocational_cooperation_router
-from routes.vocational_assessment_routes import router as vocational_assessment_router
-from routes.bureau_routes import router as bureau_router
+# -------- 路由导入（集中管理于 routes/__init__.py）--------
+from routes import ALL_ROUTERS
 
 
 try:
@@ -215,49 +176,9 @@ async def _security_headers(request, call_next):  # type: ignore[override]
     return response
 
 
-# -------- 路由注册 --------
-app.include_router(auth_router)
-app.include_router(org_creation_router)
-app.include_router(license_router)
-app.include_router(schedule_router)
-app.include_router(business_router)
-app.include_router(tenant_router)
-app.include_router(vocational_router)
-app.include_router(student_router)
-app.include_router(hardware_router)
-app.include_router(token_router)
-app.include_router(token_purchase_router)
-app.include_router(project_router)
-app.include_router(space_router)
-app.include_router(stem_test_router)
-app.include_router(leads_router)
-app.include_router(resource_router)
-app.include_router(competition_router)
-app.include_router(notification_router)
-app.include_router(marketing_router)
-app.include_router(parent_portal_router)
-app.include_router(edu_router)
-app.include_router(org_detail_router)
-app.include_router(org_scoped_router)
-app.include_router(org_overview_router)
-app.include_router(cloud_backup_router)
-app.include_router(ai_assistant_router)
-app.include_router(websocket_router)
-app.include_router(opensciedu_router)
-# 新增：审计日志 & 系统设置
-app.include_router(audit_router)
-app.include_router(system_router)
-# 新增：STEM 社团 & 耗材 & 看板
-app.include_router(club_router)
-app.include_router(consumable_router)
-app.include_router(stem_dashboard_router)
-app.include_router(demo_router)
-# 注册：职业学校 安全/教务/合作/竞赛/评估 路由
-app.include_router(vocational_safety_router)
-app.include_router(vocational_cooperation_router)
-app.include_router(vocational_assessment_router)
-# 注册：教育局管理平台 路由
-app.include_router(bureau_router)
+# -------- 路由注册（由 routes/__init__.py 统一管理）--------
+for router in ALL_ROUTERS:
+    app.include_router(router)
 
 
 @app.get("/favicon.ico", include_in_schema=False)

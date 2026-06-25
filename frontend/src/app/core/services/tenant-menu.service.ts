@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { OrganizationType } from './organization-context.service';
 
 export interface MenuItem {
   id: string;
@@ -21,6 +22,7 @@ export const TEACHER_PORTAL_MENU: MenuItem[] = [
   { id: 'teacher-ai', title: 'AI 助教', icon: 'psychology', path: 'ai-assistant' },
   { id: 'teacher-stem-dashboard', title: 'STEM 看板', icon: 'dashboard', path: 'stem/dashboard' },
   { id: 'teacher-stem-clubs', title: 'STEM 社团', icon: 'group_work', path: 'stem/clubs' },
+  { id: 'teacher-exam', title: '考试管理', icon: 'quiz', path: 'exam/tasks' },
 ];
 
 @Injectable({
@@ -73,6 +75,14 @@ export class TenantMenuService {
       ]
     },
     {
+      id: 'exam', title: '考试管理', icon: 'quiz', children: [
+        { id: 'exam-bank', title: '题库浏览', icon: 'library_books', path: 'exam/bank' },
+        { id: 'exam-papers', title: '试卷管理', icon: 'description', path: 'exam/papers' },
+        { id: 'exam-tasks', title: '考试管理', icon: 'assignment', path: 'exam/tasks' },
+        { id: 'exam-my-exams', title: '我的考试', icon: 'edit_note', path: 'exam/my-exams' },
+      ]
+    },
+    {
       id: 'finance', title: '财务与资产', icon: 'account_balance_wallet', children: [
         { id: 'finance-dashboard', title: '财务管理', icon: 'payments', path: 'finance' },
         { id: 'licenses', title: '许可证/Token', icon: 'vpn_key', path: 'tokens' }
@@ -105,6 +115,18 @@ export class TenantMenuService {
       return [...TEACHER_PORTAL_MENU];
     }
     return menu;
+  }
+
+  /** 按机构类型过滤菜单（教育局不显示考试管理、营销、财务等模块） */
+  filterMenuForOrgType(menu: MenuItem[], orgType: OrganizationType): MenuItem[] {
+    if (orgType === 'education_bureau') {
+      // 教育局仅显示：教育局管理平台 + 系统设置
+      return menu.filter(item =>
+        item.id === 'bureau' || item.id === 'system' || item.id === 'dashboard'
+      );
+    }
+    // 所有非教育局机构：移除教育局管理平台，保留考试管理
+    return menu.filter(item => item.id !== 'bureau');
   }
 
   getConfig(orgId: number): Observable<{ config: any; features: Record<string, boolean> }> {

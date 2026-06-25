@@ -72,9 +72,14 @@ export class LicenseGuard implements CanActivate {
         return true;
       }),
       catchError(() => {
-        // API 不可达时放行（避免阻塞页面）
-        console.warn('[LicenseGuard] 获取 features 失败，默认放行');
-        return of(true);
+        // API 不可达时阻止访问（fail-closed），防止未授权功能泄露
+        console.error('[LicenseGuard] 获取 features 失败，已阻止访问');
+        this.snackBar.open(
+          '无法验证许可证状态，请稍后重试',
+          '关闭',
+          { duration: 5000, panelClass: ['error-snackbar'] }
+        );
+        return of(false);
       })
     );
   }

@@ -6,9 +6,70 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🚀%3C/text%3E%3C/svg%3E">
-  <!-- Material Icons -->
+  <!-- Material Icons 多 CDN 备用方案（按优先级：本地 → jsdelivr → Google） -->
+  <style>
+    @font-face {
+      font-family: 'Material Icons';
+      font-style: normal;
+      font-weight: 400;
+      src: url('./assets/fonts/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2'),
+           url('https://cdn.jsdelivr.net/npm/material-icons@1.13.12/font/MaterialIcons-Regular.woff2') format('woff2'),
+           url('https://fonts.gstatic.com/s/materialicons/v145/flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2') format('woff2');
+      font-display: swap;
+    }
+    .material-icons {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-block;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+  </style>
+  <!-- Material Icons CDN fallback -->
+  <link href="https://fonts.loli.net/icon?family=Material+Icons" rel="stylesheet">
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <!-- Roboto Font -->
+  <!-- Roboto Font 多 CDN 备用 -->
+  <style>
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 300;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/roboto-font@0.1.0/fonts/Roboto/Roboto-Light.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/roboto-font@0.1.0/fonts/Roboto/Roboto-Regular.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 500;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/roboto-font@0.1.0/fonts/Roboto/Roboto-Medium.woff2') format('woff2');
+    }
+    @font-face {
+      font-family: 'Roboto';
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+      src: url('https://cdn.jsdelivr.net/npm/roboto-font@0.1.0/fonts/Roboto/Roboto-Bold.woff2') format('woff2');
+    }
+  </style>
+  <link href="https://fonts.loli.net/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>

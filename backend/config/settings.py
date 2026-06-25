@@ -65,6 +65,9 @@ class Settings(BaseSettings):
     # OpenMTSciEd 桌面端 / Web SPA（课题工作室深链）
     OPENSCIEDU_WEB_BASE: str = os.getenv("OPENSCIEDU_WEB_BASE", "")
 
+    # EduInst-SciEd 跨平台统一认证共享密钥
+    EDUINST_SHARED_SECRET: str = os.getenv("EDUINST_SHARED_SECRET", "")
+
     # iMato 配置
     IMATU_API_BASE: str = os.getenv("IMATU_API_BASE", "https://api.imatu.com")
     IMATU_API_KEY: str = os.getenv("IMATU_API_KEY", "")

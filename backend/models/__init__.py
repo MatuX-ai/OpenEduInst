@@ -86,6 +86,11 @@ from .vocational_assessment import (
     VocSkillStandardCreate, VocAssessmentCreate, VocCertificateCreate,
     VocStudentSkillProfile,
 )
+from .exam import (
+    QuestionBank, Question, ExamPaper, PaperQuestion, ExamTask, ExamResult,
+    QuestionType, QuestionDifficulty, QuestionBankSource, QuestionStatus,
+    ExamPaperStatus, ExamMode, ExamTaskStatus, ExamResultStatus, SubmitType,
+)
 
 __all__ = [
     # License models
@@ -202,4 +207,8 @@ __all__ = [
     "VocSkillStandard", "VocSkillAssessment", "VocCertificate",
     "VocSkillStandardCreate", "VocAssessmentCreate", "VocCertificateCreate",
     "VocStudentSkillProfile",
+    # Exam models
+    "QuestionBank", "Question", "ExamPaper", "PaperQuestion", "ExamTask", "ExamResult",
+    "QuestionType", "QuestionDifficulty", "QuestionBankSource", "QuestionStatus",
+    "ExamPaperStatus", "ExamMode", "ExamTaskStatus", "ExamResultStatus", "SubmitType",
 ]

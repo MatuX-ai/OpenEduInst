@@ -328,3 +328,29 @@ def verify_token_sync(token: str) -> Optional[dict]:
 
 # 向后兼容别名
 get_current_user = get_current_user_sync
+
+
+# ---------------- 跨平台 Token（EduInst → OpenMTSciEd） ----------------
+def generate_scied_token(user: User, org_id: int) -> str:
+    """
+    使用 EDUINST_SHARED_SECRET 签发跨平台 Token，
+    供 OpenMTSciEd 验证并识别教师身份。
+    """
+    if not settings.EDUINST_SHARED_SECRET:
+        raise RuntimeError("EDUINST_SHARED_SECRET 未配置，无法生成跨平台 Token")
+
+    payload = {
+        "sub": user.username,
+        "user_id": user.id,
+        "eduinst_user_id": user.id,
+        "role": (getattr(user, "role", "teacher") or "teacher").lower(),
+        "org_id": org_id,
+        "iat": int(time.time()),
+        "jti": uuid.uuid4().hex,
+        "type": "eduinst_cross",
+    }
+    # 过期时间与 ACCESS_TOKEN_EXPIRE_MINUTES 一致
+    expire = datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    payload["exp"] = expire
+
+    return jwt.encode(payload, settings.EDUINST_SHARED_SECRET, algorithm=settings.ALGORITHM)

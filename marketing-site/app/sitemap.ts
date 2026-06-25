@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = "https://eduInst.matux.tech";
+  const baseUrl = "https://jigou.matux.tech";
 
   return [
     {
@@ -69,6 +69,12 @@ export default function sitemap() {
       priority: 0.8,
     },
     {
+      url: `${baseUrl}/features/cloud-hosting`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/docs`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
@@ -91,6 +97,30 @@ export default function sitemap() {
       lastModified: new Date(),
       changeFrequency: "monthly" as const,
       priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/docs/deploy`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/docs/user-guide`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/docs/community`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
+    {
+      url: `${baseUrl}/pricing`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
     },
   ];
 }
