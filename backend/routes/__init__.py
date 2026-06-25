@@ -68,6 +68,9 @@ from routes.bureau_routes import router as bureau_router
 # 考试管理
 from routes.exam_routes import router as exam_router
 
+# 功能屏蔽管理
+from routes.feature_routes import router as feature_router
+
 
 # 批量注册用的路由列表（保持注册顺序与功能分组一致）
 ALL_ROUTERS = [
@@ -125,4 +128,6 @@ ALL_ROUTERS = [
     bureau_router,
     # ---- 考试管理 ----
     exam_router,
+    # ---- 功能屏蔽管理 ----
+    feature_router,
 ]

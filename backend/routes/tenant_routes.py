@@ -79,6 +79,7 @@ BASE_MENU = [
             {"id": "notifications", "title": "消息中心", "icon": "notifications", "path": "notifications"},
             {"id": "parent-portal", "title": "家长中心", "icon": "family_restroom", "path": "parent-portal"},
             {"id": "settings", "title": "基础配置", "icon": "tune", "path": "settings"},
+            {"id": "feature-management", "title": "功能管理", "icon": "toggle_on", "path": "settings/features"},
         ],
     },
 ]

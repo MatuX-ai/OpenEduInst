@@ -144,6 +144,14 @@ const routes: Routes = [
             (m) => m.SystemSettingsComponent
           ),
       },
+      // 功能管理（子路由：/settings/features）
+      {
+        path: 'settings/features',
+        loadComponent: () =>
+          import('./components/feature-management/feature-management.component').then(
+            (m) => m.FeatureManagementComponent
+          ),
+      },
       // 消息中心
       {
         path: 'notifications',

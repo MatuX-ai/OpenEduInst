@@ -150,6 +150,9 @@ class Organization(Base):
     feature_flags = relationship(
         "TenantFeatureFlag", back_populates="organization", cascade="all, delete-orphan"
     )
+    org_feature_flags = relationship(
+        "OrgFeatureFlag", back_populates="organization", cascade="all, delete-orphan"
+    )
     # resource_quotas = relationship(
     #     "TenantResourceQuota",
     #     back_populates="organization",

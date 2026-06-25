@@ -91,6 +91,12 @@ from .exam import (
     QuestionType, QuestionDifficulty, QuestionBankSource, QuestionStatus,
     ExamPaperStatus, ExamMode, ExamTaskStatus, ExamResultStatus, SubmitType,
 )
+from .feature_flag import (
+    FeatureModule, OrgFeatureFlag, FeatureChangeLog,
+    FeatureCategory, FeatureModuleResponse, FeatureToggleRequest,
+    BatchToggleRequest, OrgFeatureFlagResponse, FeatureChangeLogResponse,
+    FeatureConfigResponse,
+)
 
 __all__ = [
     # License models
@@ -211,4 +217,9 @@ __all__ = [
     "QuestionBank", "Question", "ExamPaper", "PaperQuestion", "ExamTask", "ExamResult",
     "QuestionType", "QuestionDifficulty", "QuestionBankSource", "QuestionStatus",
     "ExamPaperStatus", "ExamMode", "ExamTaskStatus", "ExamResultStatus", "SubmitType",
+    # Feature Flag models
+    "FeatureModule", "OrgFeatureFlag", "FeatureChangeLog",
+    "FeatureCategory", "FeatureModuleResponse", "FeatureToggleRequest",
+    "BatchToggleRequest", "OrgFeatureFlagResponse", "FeatureChangeLogResponse",
+    "FeatureConfigResponse",
 ]

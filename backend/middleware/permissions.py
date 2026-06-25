@@ -100,6 +100,10 @@ class Permission(str, Enum):
     BACKUP_READ = "backup:read"
     BACKUP_WRITE = "backup:write"
 
+    # 功能屏蔽管理
+    FEATURE_READ = "feature:read"
+    FEATURE_WRITE = "feature:write"
+
 
 # 角色 -> 权限集合
 ROLE_PERMISSIONS: Dict[Role, Set[Permission]] = {
@@ -119,6 +123,7 @@ ROLE_PERMISSIONS: Dict[Role, Set[Permission]] = {
         Permission.SCHEDULE_READ, Permission.SCHEDULE_WRITE,
         Permission.RESOURCE_READ, Permission.RESOURCE_WRITE,
         Permission.BACKUP_READ, Permission.BACKUP_WRITE,
+        Permission.FEATURE_READ, Permission.FEATURE_WRITE,
     },
 
     Role.TEACHER: {

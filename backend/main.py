@@ -14,6 +14,7 @@ from middleware.audit_middleware import AuditMiddleware
 from middleware.demo_readonly import DemoReadOnlyMiddleware
 from middleware.rate_limit_middleware import RateLimitMiddleware
 from middleware.tenant_isolation import TenantIsolationMiddleware
+from middleware.feature_gate_middleware import FeatureGateMiddleware
 from utils.database import Base, engine
 
 # 配置日志
@@ -77,6 +78,9 @@ from models.bureau_models import (  # noqa: F401
 from models.exam import (  # noqa: F401
     QuestionBank, Question, ExamPaper, PaperQuestion, ExamTask, ExamResult,
 )
+from models.feature_flag import (  # noqa: F401
+    FeatureModule, OrgFeatureFlag, FeatureChangeLog,
+)
 
 # -------- CORS: 从环境变量读取允许的前端域名 --------
 _cors_raw = os.getenv("CORS_ALLOW_ORIGINS", "")
@@ -135,6 +139,9 @@ app.add_middleware(AuditMiddleware)
 
 # 【审计】租户隔离中间件（注入 org_id/user_id 到 request.state）
 app.add_middleware(TenantIsolationMiddleware)
+
+# 【功能网关】功能屏蔽中间件（拦截已禁用功能的请求，需放在租户隔离之后）
+app.add_middleware(FeatureGateMiddleware)
 
 # 【安全】限流中间件（放在最外层：先限流、再鉴权、再业务）
 app.add_middleware(RateLimitMiddleware)
@@ -199,8 +206,20 @@ def health_check():
 
 @app.on_event("startup")
 async def _on_startup():
+    # 初始化功能模块定义
+    try:
+        from services.feature_init_service import init_feature_modules
+        from utils.database import SessionLocal
+        db = SessionLocal()
+        try:
+            init_feature_modules(db)
+        finally:
+            db.close()
+    except Exception as exc:
+        logger.warning("功能模块初始化失败（非阻塞）: %s", exc)
+
     logger.info(
-        "系统启动完成。已加载模块: 审计日志 / 限流 / 多租户隔离 / Token黑名单 / 细粒度RBAC / 数据脱敏"
+        "系统启动完成。已加载模块: 审计日志 / 限流 / 多租户隔离 / Token黑名单 / 细粒度RBAC / 数据脱敏 / 功能屏蔽"
     )
     # 打印可用的配置
     logger.info(

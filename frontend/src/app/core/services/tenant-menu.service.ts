@@ -90,14 +90,15 @@ export class TenantMenuService {
     },
     { id: 'multi-campus', title: '多校区管理', icon: 'business', path: 'multi-campus' },
     {
-      id: 'system', title: '系统设置', icon: 'settings', children: [
-        { id: 'users', title: '团队与权限', icon: 'group', path: 'users' },
-        { id: 'notifications', title: '消息中心', icon: 'notifications', path: 'notifications' },
-        { id: 'backup-management', title: '云端备份', icon: 'backup', path: 'backup-management' },
-        { id: 'parent-portal', title: '家长中心', icon: 'family_restroom', path: 'parent-portal' },
-        { id: 'settings', title: '基础配置', icon: 'tune', path: 'settings' }
-      ]
-    }
+        id: 'system', title: '系统设置', icon: 'settings', children: [
+          { id: 'users', title: '团队与权限', icon: 'group', path: 'users' },
+          { id: 'notifications', title: '消息中心', icon: 'notifications', path: 'notifications' },
+          { id: 'backup-management', title: '云端备份', icon: 'backup', path: 'backup-management' },
+          { id: 'parent-portal', title: '家长中心', icon: 'family_restroom', path: 'parent-portal' },
+          { id: 'settings', title: '基础配置', icon: 'tune', path: 'settings' },
+          { id: 'feature-management', title: '功能管理', icon: 'toggle_on', path: 'settings/features' }
+        ]
+      }
   ];
 
   constructor(private http: HttpClient) {}
